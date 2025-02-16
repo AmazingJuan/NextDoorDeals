@@ -25,6 +25,34 @@
                 <input type="number" class="form-control" name="maxPrice" value="{{ request.GET.maxPrice }}"/>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="minSES" class="form-label">SES min:</label>
+                <select id="minSES" name="minSES" value = {{request.GET.minSES}}>
+                    <option value=""></option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="maxSES" class="form-label">SES max:</label>
+                <select id="maxSES" name="maxSES" value = {{request.GET.maxSES}}>
+                    <option value=""></option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+        </div>
+
+
         <br>
         <button type="submit" class = "btn btn-primary">Search</button>      
     </form>
