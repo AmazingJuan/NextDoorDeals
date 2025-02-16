@@ -3,6 +3,12 @@
 </head>
 
 
+<br>
+<h1 style="text-align: center; background-color: lightblue; padding: 10px; border-radius: 10px;" >Welcome to NextDoorDeals.</h1>
+<br>
+<img src="NextDoorDeals/media/property/images/NextDoorDealsLogo.png" alt="NextDoorDealsLogo" style= "width: 50px;">
+
+
 
 
 <div class = "container">
@@ -13,22 +19,24 @@
                     Search for Property:
                 </strong> 
             </label>
-            <input type="text" class="form-control" name = "searchProperty" value = "{{ request.GET.searchProperty }}"/>
+            <input type="text" class="form-control" name = "searchProperty" value = "{{ request.GET.searchProperty }}" style="width: 400px;"/>
         </div>
         <div class="row">
             <div class="col-md-6">
                 <label for="minPrice" class="form-label"><strong>Minimum Price:</strong></label>
-                <input type="number" class="form-control" name="minPrice" value="{{ request.GET.minPrice }}">
+                <input type="number" class="form-control" name="minPrice" value="{{ request.GET.minPrice }}" style="width: 150px;"/>
             </div>
             <div class="col-md-6">
                 <label for="maxPrice" class="form-label"><strong>Maximum Price:</strong></label>
-                <input type="number" class="form-control" name="maxPrice" value="{{ request.GET.maxPrice }}"/>
+                <input type="number" class="form-control" name="maxPrice" value="{{ request.GET.maxPrice }}" style="width: 150px;"/>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6">
-                <label for="minSES" class="form-label">SES min:</label>
-                <select id="minSES" name="minSES" value = {{request.GET.minSES}}>
+                <br>
+                <label for="minSES" class="form-label"><strong>Minimum Socio Economic Status:</strong></label>
+                <br>
+                <select id="minSES" name="minSES" value = "{{request.GET.minSES}}" >
                     <option value=""></option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -39,8 +47,10 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <label for="maxSES" class="form-label">SES max:</label>
-                <select id="maxSES" name="maxSES" value = {{request.GET.maxSES}}>
+                <br>
+                <label for="maxSES" class="form-label"><strong>Maximum Socio Economic Status:</strong></label>
+                <br>
+                <select id="maxSES" name="maxSES" value = "{{request.GET.maxSES}}">
                     <option value=""></option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -78,7 +88,7 @@
                             <h6><strong>District: </strong></h6>
                             <p class = "card-text"><!--Aquí iría {{ property.district }} cuando lo pongamos en models --> </p>                     
                             {% if property.location %}
-                            <a href="{{ property.url }}" class = "btn btn-primary">
+                            <a href="{{ property.location }}" class = "btn btn-primary">
                                 Property Location 
                             </a>
                             {% endif %}
@@ -87,7 +97,7 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p>sorry it ain't no properties that match with your query</p>
+            <p>Sorry it ain't no properties that match with your query</p>
         {% endif %}
     </div>
     <br/>
