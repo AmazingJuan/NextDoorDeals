@@ -8,11 +8,24 @@
 <div class = "container">
     <form action="">
         <div class = "mb-3">
-            <label for="searchProperty" class = "form-label">
-                Search for Property: 
+            <label for="searchProperty" class = "form-label"> 
+                <strong>
+                    Search for Property:
+                </strong> 
             </label>
-            <input type="text" class="form-control" name = "searchProperty"/>
+            <input type="text" class="form-control" name = "searchProperty" value = "{{ request.GET.searchProperty }}"/>
         </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="minPrice" class="form-label"><strong>Minimum Price:</strong></label>
+                <input type="number" class="form-control" name="minPrice" value="{{ request.GET.minPrice }}">
+            </div>
+            <div class="col-md-6">
+                <label for="maxPrice" class="form-label"><strong>Maximum Price:</strong></label>
+                <input type="number" class="form-control" name="maxPrice" value="{{ request.GET.maxPrice }}"/>
+            </div>
+        </div>
+        <br>
         <button type="submit" class = "btn btn-primary">Search</button>      
     </form>
     <p>Searching for: {{ searchTerm }}</p>
@@ -31,6 +44,8 @@
                     <p class = "card-text"> {{ property.price }}</p>
                     <h6><strong>Socio Economic Status:</strong></h6>
                     <p class = "card-text"> {{property.socioEconomicStatus}}</p>
+                    <h6><strong>District: </strong></h6>
+                    <p class = "card-text"><!--Aquí iría {{ property.district }} cuando lo pongamos en models --> </p>                     
                     {% if property.location %}
                     <a href="{{ property.url }}" class = "btn btn-primary">
                          Property Location 

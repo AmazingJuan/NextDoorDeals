@@ -12,5 +12,6 @@ class Property(models.Model):
     location = models.URLField()
     socioEconomicStatus = models.CharField(max_length= 1)
     identificator = models.FloatField(null = True)
+    #district = models.IntegerField(null = True)
 
 
