@@ -28,33 +28,39 @@
         <br>
         <button type="submit" class = "btn btn-primary">Search</button>      
     </form>
+    {% if searchTerm is not None %}
     <p>Searching for: {{ searchTerm }}</p>
-    <div class = "row row-cols-1 row-cols-md-3 g-4"> 
-        {% for property in propertys %}
-        <div v-for = "property in propertys" class = "col">
-            <div class = "card">
-                <img class = "card-im-top" src="{{ property.image.url }}" />
-                <div class = "card-body">
-                    <h5 class = "card-title fw-bold"> {{ property.name }}</h5>
-                    <h6><strong>Description:</strong></h6>
-                    <p class = "card-text">{{ property.description }}</p>
-                    <h6><strong>Property type:</strong></h6>
-                    <p class = "card-text"> {{ property.propertyType }} </p>
-                    <h6><strong>Price:</strong></h6>
-                    <p class = "card-text"> {{ property.price }}</p>
-                    <h6><strong>Socio Economic Status:</strong></h6>
-                    <p class = "card-text"> {{property.socioEconomicStatus}}</p>
-                    <h6><strong>District: </strong></h6>
-                    <p class = "card-text"><!--Aquí iría {{ property.district }} cuando lo pongamos en models --> </p>                     
-                    {% if property.location %}
-                    <a href="{{ property.url }}" class = "btn btn-primary">
-                         Property Location 
-                    </a>
-                    {% endif %}
+    {% endif %}
+    <div class = "row row-cols-1 row-cols-md-3 g-4">
+        {% if propertyPresence %}
+            {% for property in propertys %}
+                <div v-for = "property in propertys" class = "col">
+                    <div class = "card">
+                        <img class = "card-im-top" src="{{ property.image.url }}" />
+                        <div class = "card-body">
+                            <h5 class = "card-title fw-bold"> {{ property.name }}</h5>
+                            <h6><strong>Description:</strong></h6>
+                            <p class = "card-text">{{ property.description }}</p>
+                            <h6><strong>Property type:</strong></h6>
+                            <p class = "card-text"> {{ property.propertyType }} </p>
+                            <h6><strong>Price:</strong></h6>
+                            <p class = "card-text"> {{ property.price }}</p>
+                            <h6><strong>Socio Economic Status:</strong></h6>
+                            <p class = "card-text"> {{property.socioEconomicStatus}}</p>
+                            <h6><strong>District: </strong></h6>
+                            <p class = "card-text"><!--Aquí iría {{ property.district }} cuando lo pongamos en models --> </p>                     
+                            {% if property.location %}
+                            <a href="{{ property.url }}" class = "btn btn-primary">
+                                Property Location 
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <p>sorry it ain't no properties that match with your query</p>
+        {% endif %}
     </div>
     <br/>
     <br/>
