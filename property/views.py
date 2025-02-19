@@ -48,4 +48,3 @@ def home(request):
     propertyPresence = True if properties.count() > 0 else False
     
     return render(request, 'home.html', {'searchTerm': searchTerm, 'propertys': properties, 'minPrice': minPrice, 'maxPrice': maxPrice, 'propertyPresence' : propertyPresence})
- 
