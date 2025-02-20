@@ -6,7 +6,7 @@
 <br>
 <h1 style="text-align: center; background-color: lightblue; padding: 10px; border-radius: 10px;" >Welcome to NextDoorDeals.</h1>
 <br>
-<img src="NextDoorDeals/media/property/images/NextDoorDealsLogo.png" alt="NextDoorDealsLogo" style= "width: 50px;">
+<img src="/media/property/images/NextDoorDealsLogo.png" alt="NextDoorDealsLogo" style= "width: 500px; align-self: center;">
 
 
 
@@ -21,48 +21,49 @@
             </label>
             <input type="text" class="form-control" name = "searchProperty" value = "{{ request.GET.searchProperty }}" style="width: 400px;"/>
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <label for="minPrice" class="form-label"><strong>Minimum Price:</strong></label>
-                <input type="number" class="form-control" name="minPrice" value="{{ request.GET.minPrice }}" style="width: 150px;"/>
-            </div>
-            <div class="col-md-6">
-                <label for="maxPrice" class="form-label"><strong>Maximum Price:</strong></label>
-                <input type="number" class="form-control" name="maxPrice" value="{{ request.GET.maxPrice }}" style="width: 150px;"/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <br>
-                <label for="minSES" class="form-label"><strong>Minimum Socio Economic Status:</strong></label>
-                <br>
-                <select id="minSES" name="minSES" value = "{{request.GET.minSES}}" >
-                    <option value=""></option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                </select>
-            </div>
-            <div class="col-md-6">
-                <br>
-                <label for="maxSES" class="form-label"><strong>Maximum Socio Economic Status:</strong></label>
-                <br>
-                <select id="maxSES" name="maxSES" value = "{{request.GET.maxSES}}">
-                    <option value=""></option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                </select>
-            </div>
-        </div>
-
-
+        <details>
+            <summary>Filters</summary>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="minPrice" class="form-label"><strong>Minimum Price:</strong></label>
+                        <input type="number" class="form-control" name="minPrice" value="{{ request.GET.minPrice }}" style="width: 150px;"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="maxPrice" class="form-label"><strong>Maximum Price:</strong></label>
+                        <input type="number" class="form-control" name="maxPrice" value="{{ request.GET.maxPrice }}" style="width: 150px;"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <br>
+                        <label for="minSES" class="form-label"><strong>Minimum Socio Economic Status:</strong></label>
+                        <br>
+                        <select id="minSES" name="minSES" value = "{{request.GET.minSES}}" >
+                            <option value=""></option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <br>
+                        <label for="maxSES" class="form-label"><strong>Maximum Socio Economic Status:</strong></label>
+                        <br>
+                        <select id="maxSES" name="maxSES" value = "{{request.GET.maxSES}}">
+                            <option value=""></option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </div>
+                </div>
+          </details>
         <br>
         <button type="submit" class = "btn btn-primary">Search</button>      
     </form>
@@ -88,7 +89,7 @@
                             <h6><strong>District: </strong></h6>
                             <p class = "card-text"><!--Aquí iría {{ property.district }} cuando lo pongamos en models --> </p>                     
                             {% if property.location %}
-                            <a href="{{ property.location }}" class = "btn btn-primary">
+                            <a href="{{ property.location }}" class = "btn btn-primary" target = "_blank">
                                 Property Location 
                             </a>
                             {% endif %}
