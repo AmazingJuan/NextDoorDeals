@@ -55,5 +55,3 @@ class Property(models.Model):
     location = models.URLField()
     socioEconomicStatus = models.CharField(max_length = 1)
     addressID = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
-
-

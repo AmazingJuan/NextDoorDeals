@@ -34,7 +34,6 @@ def filterDistrict(district, properties):
     return properties.filter(addressID__neigID__dID = district)
     
 
-
 def home(request):
     searchTerm = request.GET.get('searchProperty')
     minPrice = request.GET.get('minPrice')
