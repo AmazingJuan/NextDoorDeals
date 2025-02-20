@@ -5,6 +5,8 @@ from .models import Province
 from .models import Neighborhood
 from .models import Address
 from .models import District
+from .models import RoadType
+from .models import Cardinality
 # Register your models here.
 
 admin.site.register(Property)
@@ -13,4 +15,5 @@ admin.site.register(Province)
 admin.site.register(Neighborhood)
 admin.site.register(Address)
 admin.site.register(District)
-
+admin.site.register(RoadType)
+admin.site.register(Cardinality)

@@ -38,7 +38,7 @@
                         <br>
                         <label for="minSES" class="form-label"><strong>Minimum Socio Economic Status:</strong></label>
                         <br>
-                        <select id="minSES" name="minSES" value = "{{request.GET.minSES}}" >
+                        <select id="minSES" name="minSES">
                             <option value=""></option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -52,7 +52,7 @@
                         <br>
                         <label for="maxSES" class="form-label"><strong>Maximum Socio Economic Status:</strong></label>
                         <br>
-                        <select id="maxSES" name="maxSES" value = "{{request.GET.maxSES}}">
+                        <select id="maxSES" name="maxSES">
                             <option value=""></option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -62,6 +62,16 @@
                             <option value="6">6</option>
                         </select>
                     </div>
+                </div>
+
+                <div class = "row">
+                    <label for = "district" class = "form-label">District</label>
+                    <select id = "district" name = "district" class = "col-md-6">
+                        <option value=""></option>
+                    {% for district in districts %}
+                        <option value="{{district.id}}" {% if district.id|stringformat:"s" == request.GET.district %} selected {% endif %}>{{district.name}}</option>
+                    {% endfor %}
+                    </select>
                 </div>
           </details>
         <br>
