@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 class UserType(models.Model): 
 
@@ -8,13 +8,9 @@ class UserType(models.Model):
 
 
 class Account(models.Model):
-
-    username = models.CharField(blank= False, max_length= 11)
-    password = models.CharField(blank= False, max_length= 70)
-    profilePicture = models.ImageField()
-    cellphone = models.IntegerField()
-    email = models.CharField(blank = False, max_length= 50)
-    idAccount = models.IntegerField(blank = False, primary_key=True) 
+    user = models.OneToOneField(User, on_delete =models.CASCADE)
+    profilePicture = models.ImageField(null = True)
+    phone = models.IntegerField()
     userType = models.ForeignKey(UserType, on_delete = models.CASCADE)
     #registrationTime = models.TimeField() ????
 
@@ -29,13 +25,13 @@ class PersonAccount(models.Model):
 
     firstName = models.CharField(max_length= 30)
     lastName = models.CharField(max_length= 30)
-    idPersonAccount = models.IntegerField(blank = False, primary_key=True)
+    id = models.OneToOneField(Account, on_delete = models.CASCADE, blank = False, primary_key=True)
     role = models.ForeignKey(Role, on_delete = models.CASCADE)
     #aquí todos los atributos de la person account
 
 class BussinessAccount(models.Model): 
-
-    nitBussinessAccount = models.IntegerField(blank = True, primary_key=True)
+    id = models.OneToOneField(Account, on_delete = models.CASCADE, blank = False, primary_key=True)
+    nitBussinessAccount = models.IntegerField(blank = True)
     nameBussiness = models.CharField(max_length= 20)
     roleBussinessAccount = models.ForeignKey(Role, on_delete = models.CASCADE)
 
