@@ -1,58 +1,53 @@
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script>
-        function toggleUserTypeForm() {
-            var userType = document.getElementById("userType").value;
-            document.getElementById("personForm").style.display = (userType === "persona") ? "block" : "none";
-            document.getElementById("businessForm").style.display = (userType === "negocio") ? "block" : "none";
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign Up</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    </head>
+    <body class="container mt-5">
+        <h2 id = "example">Sign up</h2>
+        <form method="post" enctype="multipart/form-data" id = "registerForm">
 
-        // Ejecutar al cargar la página para mostrar el formulario correcto si ya hay un valor seleccionado
-        window.onload = function() {
-            toggleUserTypeForm();
-        };
-    </script>
-</head>
-<body class="container mt-5">
-    <h2>Sign up</h2>
-    <form action="signup/" method="post" enctype="multipart/form-data">
-
-        <!-- Formulario principal con UserType -->
-        
-            {% csrf_token %}
-            {{ userType }}
-
-
-        <!-- Formulario para Persona Natural -->
-        <div id="personForm" style="display: none;">
-            <h3>Natural Account</h3>
-            {% csrf_token %}
-            {{ naturalForm }}
-        </div>
-
-        <!-- Formulario para Negocio -->
-        <div id="businessForm" style="display: none;">
-            <h3>Business Account</h3>
-            <div class="mb-3">
-                <label class="form-label">NIT:</label>
-                <input type="number" class="form-control" name="nitBussinessAccount">
+            <!-- Formulario que tienen que hacer todos los user -->
+            <div id = "regularForm">
+                {% csrf_token %}
+                {{ userType | crispy}}
             </div>
-            <div class="mb-3">
-                <label class="form-label">Business Name:</label>
-                <input type="text" class="form-control" name="nameBussiness" maxlength="20">
+            <!-- Formulario para Persona natural -->
+            <div id="personForm" style="display: none;">
+                <h3>Natural Account</h3>
+                {% csrf_token %}
+                {{ naturalForm | crispy}}
             </div>
-            <div class="mb-3">
-                <label class="form-label">Role:</label>
-                <input type="text" class="form-control" name="roleBussinessAccount">
+            <!-- Formulario para Persona juridica o negocio -->
+            <div id="businessForm" style="display: none;">
+                <h3>Business Account</h3>
+                <div class="mb-3">
+                    <label class="form-label">NIT:</label>
+                    <input type="number" class="form-control" name="nitBussinessAccount">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Business Name:</label>
+                    <input type="text" class="form-control" name="nameBussiness" maxlength="20">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Role:</label>
+                    <input type="text" class="form-control" name="roleBussinessAccount">
+                </div>
             </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
-</body>
+            <div >
+
+            </div>
+
+            <button type="button" onclick = "next(document.getElementById('userType').value)" class="btn btn-primary" id = "boton-next">Next</button>
+            <br>
+            <button type="submit" class="btn btn-primary" style = "display: none;" id = "boton-register" onclick = "validateRole(document.getElementById('userType').value)">Register</button>
+        </form>
+    </body>
+    {% load static %}
+    <script src = "{% static 'js/forms.js' %}"></script>
 </html>

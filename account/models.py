@@ -8,13 +8,10 @@ class UserType(models.Model):
 
 
 class Account(models.Model):
-    user = models.OneToOneField(User, on_delete =models.CASCADE)
+    user = models.OneToOneField(User, on_delete =models.CASCADE, primary_key= True)
     profilePicture = models.ImageField(null = True)
     phone = models.IntegerField()
     userType = models.ForeignKey(UserType, on_delete = models.CASCADE)
-    #registrationTime = models.TimeField() ????
-
-    #def __str__(self): return self.username 
 
 class Role(models.Model):
 
@@ -22,10 +19,9 @@ class Role(models.Model):
     nameRole = models.CharField(blank = False, max_length= 20)
 
 class PersonAccount(models.Model):
-
+    associatedAccount = models.OneToOneField(Account, on_delete = models.CASCADE, blank = False, primary_key=True)
     firstName = models.CharField(max_length= 30)
     lastName = models.CharField(max_length= 30)
-    id = models.OneToOneField(Account, on_delete = models.CASCADE, blank = False, primary_key=True)
     role = models.ForeignKey(Role, on_delete = models.CASCADE)
     #aquí todos los atributos de la person account
 
