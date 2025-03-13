@@ -25,24 +25,9 @@
             <!-- Formulario para Persona juridica o negocio -->
             <div id="businessForm" style="display: none;">
                 <h3>Business Account</h3>
-                <div class="mb-3">
-                    <label class="form-label">NIT:</label>
-                    <input type="number" class="form-control" name="nitBussinessAccount">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Business Name:</label>
-                    <input type="text" class="form-control" name="nameBussiness" maxlength="20">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Role:</label>
-                    <input type="text" class="form-control" name="roleBussinessAccount">
-                </div>
+                {% csrf_token %}
+                {}
             </div>
-
-            <div >
-
-            </div>
-
             <button type="button" onclick = "next(document.getElementById('userType').value)" class="btn btn-primary" id = "boton-next">Next</button>
             <br>
             <button type="submit" class="btn btn-primary" style = "display: none;" id = "boton-register" onclick = "validateRole(document.getElementById('userType').value)">Register</button>

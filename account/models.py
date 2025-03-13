@@ -26,7 +26,7 @@ class PersonAccount(models.Model):
     #aquí todos los atributos de la person account
 
 class BussinessAccount(models.Model): 
-    id = models.OneToOneField(Account, on_delete = models.CASCADE, blank = False, primary_key=True)
+    associatedAccount = models.OneToOneField(Account, on_delete = models.CASCADE, blank = False, primary_key=True)
     nitBussinessAccount = models.IntegerField(blank = True)
     nameBussiness = models.CharField(max_length= 20)
     roleBussinessAccount = models.ForeignKey(Role, on_delete = models.CASCADE)

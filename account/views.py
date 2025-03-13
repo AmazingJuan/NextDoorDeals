@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
-from .forms import AccountForm, NaturalForm
+from .forms import AccountForm, NaturalForm, BussinesForm
 from .utilities import getRole
 from .models import Account, BussinessAccount, PersonAccount, UserType, Role
 # Create your views here.
@@ -49,10 +49,10 @@ def signup(request):
         return createUser(request)
     else:
         naturalForm = NaturalForm()
-        form = AccountForm()
-        return render(request, 'signup.html', {"userType": form, "naturalForm" : naturalForm, "roles": getRole(), "requestPath":request.path})
+        accountForm = AccountForm()
+        bussinesForm = BussinesForm()
+        return render(request, 'signup.html', {"userType": accountForm, "naturalForm" : naturalForm, "roles": getRole(), "requestPath":request.path, "bussinesForm":bussinesForm})
     
-
 
          
         

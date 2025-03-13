@@ -19,4 +19,12 @@ class NaturalForm(forms.Form):
     role = forms.ChoiceField(
         choices = getRole(), 
         widget=forms.Select(attrs={'class': 'form-control'}), required=False  
-    )
+    ) 
+
+class BussinesForm(forms.Form):
+    nit = forms.IntegerField(label = "NIT: ", required=False)
+    name = forms.CharField(label = "Bussines Name:  ", required=False)
+    role = forms.ChoiceField(
+        choices = getRole(), 
+        widget=forms.Select(attrs={'class': 'form-control'}), required=False  
+    ) 
