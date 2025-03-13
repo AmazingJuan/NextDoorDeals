@@ -55,7 +55,7 @@ def signup(request):
         return render(request, 'signup.html', {"userType": accountForm, "naturalForm" : naturalForm, "roles": getRole(), "requestPath":request.path, "bussinesForm":bussinesForm})
 
 
-def login(request): 
+def loginUser(request): 
      
     if request.method == "POST":
             form = loginForm(request.POST)
