@@ -12,7 +12,7 @@ from .models import Account, BussinessAccount, PersonAccount, UserType, Role
 
 def signupSuccess(request):
      
-     return render("signUp/")
+     return render(request, 'success.html')
 
 def createUser(request):
         regularForm = AccountForm(request.POST)
