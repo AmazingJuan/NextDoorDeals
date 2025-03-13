@@ -5,7 +5,7 @@ from .utilities import getRole
 
 class AccountForm(forms.Form):
     username = forms.CharField(label = "Username: ", max_length = 16)
-    password = forms.CharField(label = "Password", widget = forms.PasswordInput)
+    password = forms.CharField(label = "Password: ", widget = forms.PasswordInput)
     email = forms.EmailField(label = "Email: ")
     phone = forms.IntegerField(label = "Phone Number: ")
     userType = forms.ChoiceField(
@@ -28,3 +28,8 @@ class BussinesForm(forms.Form):
         choices = getRole(), 
         widget=forms.Select(attrs={'class': 'form-control'}), required=False  
     ) 
+
+class loginForm(forms.Form):
+
+    username = forms.CharField(label = "Username: ")
+    password = forms.CharField(label = "Password: ", widget = forms.PasswordInput)

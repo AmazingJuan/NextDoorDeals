@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Account, UserType
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
-from .forms import AccountForm, NaturalForm, BussinesForm
+from .forms import AccountForm, NaturalForm, BussinesForm, loginForm
 from .utilities import getRole
 from .models import Account, BussinessAccount, PersonAccount, UserType, Role
+from django.contrib import messages
 # Create your views here.
 
 
@@ -52,7 +53,27 @@ def signup(request):
         accountForm = AccountForm()
         bussinesForm = BussinesForm()
         return render(request, 'signup.html', {"userType": accountForm, "naturalForm" : naturalForm, "roles": getRole(), "requestPath":request.path, "bussinesForm":bussinesForm})
-    
+
+
+def login(request): 
+     
+    if request.method == "POST":
+            form = loginForm(request.POST)
+            if form.is_valid():
+                username = form.cleaned_data["username"]
+                password = form.cleaned_data["password"]
+                user = authenticate(request, username=username, password=password)
+
+                if user is not None:
+                    login(request, user)
+                    return redirect('home')  # Cambia 'home' por la URL de la página de inicio
+                else:
+                    messages.error(request, "Invalid username or password. Please try again.")
+
+            else:
+                form = loginForm()
+        
+    return render(request, 'login.html')
 
          
         
