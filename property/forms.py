@@ -30,9 +30,9 @@ class PublishForm(forms.Form):
     SES = forms.ChoiceField(choices=getSES, widget = forms.Select(), 
                             label = "SES: "
                             )
-    type = forms.ChoiceField(choices=getType, widget = forms.Select(), 
+    """type = forms.ChoiceField(choices=getType, widget = forms.Select(), 
                             label = "SES: "
-                            )
+                            )"""
     price = forms.IntegerField(label = "Price: ")
     pictures = MultipleFileField()
     
