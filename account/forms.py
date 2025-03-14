@@ -10,7 +10,7 @@ class AccountForm(forms.Form):
     phone = forms.IntegerField(label = "Phone Number: ")
     userType = forms.ChoiceField(
         choices = getUserType(), 
-        widget=forms.Select(attrs={'id': 'userType', 'class': 'form-control'}),  
+        widget=forms.Select(attrs={'id': 'userType'}),  
     )
 
 class NaturalForm(forms.Form):

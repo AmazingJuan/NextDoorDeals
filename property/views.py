@@ -1,8 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from .models import Property
-from .models import City
-from .models import District
+from .models import Property, City, District
+from .forms import PublishForm
 # Create your views here.
 def filterPrice(minAttr, maxAttr, property):
     if minAttr:
@@ -76,3 +74,7 @@ def home(request):
         'propertyPresence': propertyPresence,
         'districts': districts
     })
+
+def publish(request):
+    publishForm = PublishForm()
+    return render(request, 'publish.html', {'publishForm':publishForm})

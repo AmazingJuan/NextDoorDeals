@@ -69,11 +69,10 @@ def loginUser(request):
                     return redirect('home')  # Cambia 'home' por la URL de la página de inicio
                 else:
                     messages.error(request, "Invalid username or password. Please try again.")
-
-            else:
-                form = loginForm()
-        
-    return render(request, 'login.html')
+    else:
+        form = loginForm()
+        form.label_suffix = "" 
+    return render(request, 'login.html', {'loginForm':form})
 
          
         

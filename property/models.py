@@ -44,14 +44,19 @@ class Address(models.Model):
     crossingCardinality = models.CharField(max_length=10, null=True, blank=True)
     plateNumber = models.CharField(max_length=10)
     neigID = models.ForeignKey(Neighborhood, on_delete=models.CASCADE)
-    
+
+class PropertyType(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length = 50)
+
 class Property(models.Model):
     id = models.IntegerField(primary_key = True)
     name = models.CharField(max_length = 50)   
     description = models.CharField(max_length = 1000) 
-    image = models.ImageField(upload_to = 'property/images', null = True)
-    propertyType = models.CharField(max_length = 20)
-    price = models.FloatField()
-    location = models.URLField()
+    propertyType = models.ForeignKey(PropertyType, on_delete = models.CASCADE)
+    price = models.IntegerField()
     socioEconomicStatus = models.CharField(max_length = 1)
     addressID = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+
+class Images(models.Model):
+    property = models.ForeignKey(property, on_delete=models.CASCADE)

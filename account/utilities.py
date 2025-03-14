@@ -13,6 +13,4 @@ def getRole():
     optionsRole = [["1", "Select a role for your account"]]
     for i in Role.objects.all():
         optionsRole.append([str(i.idRole + 1), i.nameRole]) 
-        print(i.nameRole)
-    
     return optionsRole

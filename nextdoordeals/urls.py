@@ -24,8 +24,9 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', propertyViews.home, name = 'home'), 
     path('account/', include('account.urls')),
+    path('', include('property.urls')),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
