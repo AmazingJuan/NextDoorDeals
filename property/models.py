@@ -3,39 +3,27 @@ from django.db import models
 # Create your models here.
 
 class Cardinality(models.Model):
-    id = models.IntegerField(primary_key = True)
     name = models.CharField(max_length=10)
 
 class RoadType(models.Model):
-    id = models.IntegerField(primary_key = True)
     name = models.CharField(max_length=20)
 
 class Province(models.Model):
-    
-    id = models.IntegerField(primary_key = True)
     name = models.CharField(max_length = 50)
     
 class City(models.Model):
-    
-    id = models.IntegerField(primary_key = True)
     provinID = models.ForeignKey(Province, on_delete=models.CASCADE)
     name = models.CharField(max_length = 50)
     
 class District(models.Model):
-    
-    id = models.IntegerField(primary_key = True)
     name = models.CharField(max_length = 50)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     
 class Neighborhood(models.Model):
-    
-    id = models.IntegerField(primary_key = True)
     name = models.CharField(max_length=50)
     dID = models.ForeignKey(District, on_delete=models.CASCADE)
     
 class Address(models.Model):
-
-    id = models.IntegerField(primary_key = True)
     roadType = models.ForeignKey(RoadType, on_delete=models.CASCADE)
     road = models.IntegerField()
     roadPrefix = models.CharField(max_length=10, null=True, blank=True)
@@ -46,17 +34,17 @@ class Address(models.Model):
     neigID = models.ForeignKey(Neighborhood, on_delete=models.CASCADE)
 
 class PropertyType(models.Model):
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length = 50)
 
 class Property(models.Model):
-    id = models.IntegerField(primary_key = True)
-    name = models.CharField(max_length = 50)   
+    title = models.CharField(max_length = 50)   
     description = models.CharField(max_length = 1000) 
     propertyType = models.ForeignKey(PropertyType, on_delete = models.CASCADE)
     price = models.IntegerField()
-    socioEconomicStatus = models.CharField(max_length = 1)
+    SES = models.CharField(max_length = 1)
     addressID = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
 
 class Images(models.Model):
-    property = models.ForeignKey(property, on_delete=models.CASCADE)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    image = models.ImageField(null = True, blank = True, upload_to= "property/images")
+

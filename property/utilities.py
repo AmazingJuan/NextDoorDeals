@@ -3,3 +3,6 @@ def getSES():
     for i in "123456":
         SES.append([str(int(i) + 1), i])
     return SES
+
+def getType():
+    ...

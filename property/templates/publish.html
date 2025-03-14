@@ -1,12 +1,17 @@
 {% extends 'base.html'%} 
 {% load crispy_forms_tags %}
 
+{% block title %}
+<title>Publish a property</title>
+{% endblock %}
+
 {% block content %}
 <body>
 
-    <form method = "post">
+    <form method = "post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ publishForm | crispy}}
+        <button type = "submit" class = "btn-primary">Publish property</button>
     </form>
 </body>
 {% endblock %}

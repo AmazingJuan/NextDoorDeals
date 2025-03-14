@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from .models import Property, City, District
+from .models import Property, City, District, Images
 from .forms import PublishForm
+from django.views.generic.edit import FormView
 # Create your views here.
 def filterPrice(minAttr, maxAttr, property):
     if minAttr:
@@ -75,6 +76,22 @@ def home(request):
         'districts': districts
     })
 
+
 def publish(request):
-    publishForm = PublishForm()
+    if request.method == "POST":
+        publishForm = PublishForm(request.POST, request.FILES)
+        if publishForm.is_valid():
+            data = publishForm.cleaned_data
+            title = data["title"]
+            type = data[""]
+            description = data["description"]
+            SES = data["SES"]
+            price = data["price"]
+            newProperty = Property(title = title, description = description, SES = SES, price = price)
+            newProperty.save()
+            images = data["pictures"]
+            for i in images:
+                Images.objects.create(property = newProperty, image = i)
+    else:
+        publishForm = PublishForm()
     return render(request, 'publish.html', {'publishForm':publishForm})
