@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Property, City, District, Images, PropertyType
 from .forms import PublishForm
+from django.contrib import messages
 # Create your views here.
 
 
@@ -91,11 +92,11 @@ def publish(request):
             price = data["price"]
             newProperty = Property(title = title, description = description, SES = SES, price = price, propertyType = PropertyType.objects.get(id = int(type)-1))
             newProperty.save()
-            print("id : ", newProperty.id)
             images = data["pictures"]
             for i in images:
-                print(i)
                 Images.objects.create(property = newProperty, image = i)
+            publishForm = PublishForm()
+            messages.success(request, "Property published succesfully")
     else:
         publishForm = PublishForm()
     return render(request, 'publish.html', {'publishForm':publishForm})
