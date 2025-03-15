@@ -1,19 +1,220 @@
-{% extends 'base.html'%} 
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
 {% block title %}
-<title>Publish a property</title>
+    <title>NextDoorDeals | Publish Property</title>
+    <meta name="description" content="Publish your property listing on NextDoorDeals">
+{% endblock %}
+
+{% block extra_css %}
+        /* Modern CSS Variables for easy theming */
+        :root {
+            --primary-gradient-start: #0a3d62;
+            --primary-gradient-end: #1e5799;
+            --primary-color: #0a3d62;
+            --secondary-color: #2b3499;
+            --border-radius: 1rem;
+            --transition-speed: 0.3s;
+        }
+
+        .card {
+            border-radius: var(--border-radius);
+            transition: transform var(--transition-speed) ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .btn-gradient-primary {
+            background: linear-gradient(45deg, var(--primary-gradient-start), var(--primary-gradient-end));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .btn-gradient-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(10, 61, 98, 0.3);
+        }
+
+        .btn-gradient-primary:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(10, 61, 98, 0.3);
+        }
+
+        .custom-file-upload {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .custom-file-upload .form-control {
+            padding: 2rem;
+            border: 2px dashed #dee2e6;
+            border-radius: 1rem;
+            background-color: #f8fafc;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .custom-file-upload .form-control:hover,
+        .custom-file-upload .form-control:focus {
+            border-color: var(--primary-color);
+            background-color: #ffffff;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(43, 52, 153, 0.15);
+        }
+
+        .alert {
+            border: none;
+            border-radius: var(--border-radius);
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Accessibility improvements */
+        .form-control:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading state */
+        .btn-gradient-primary.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn-gradient-primary.loading::after {
+            content: "";
+            position: absolute;
+            width: 1.25rem;
+            height: 1.25rem;
+            top: 50%;
+            left: 50%;
+            margin: -0.625rem 0 0 -0.625rem;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+
+        @keyframes button-loading-spinner {
+            from {
+                transform: rotate(0turn);
+            }
+            to {
+                transform: rotate(1turn);
+            }
+        }
 {% endblock %}
 
 {% block content %}
-<body>
-    {% for msg in messages %}
-        {{ msg }}
-    {% endfor %}
-    <form method = "post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ publishForm | crispy}}
-        <button type = "submit" class = "btn-primary">Publish property</button>
-    </form>
-</body>
+    <div class="container py-5">
+        {% if messages %}
+            <div class="messages mb-4" role="alert" aria-live="polite">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <div class="d-flex align-items-center">
+                            {% if message.tags == 'success' %}
+                                <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i>
+                            {% else %}
+                                <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                            <button type="button" 
+                                    class="btn-close ms-auto" 
+                                    data-bs-dismiss="alert" 
+                                    aria-label="Close">
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="card border-0 shadow-lg mx-auto" style="max-width: 800px;">
+            <div class="card-header bg-gradient-primary text-white py-4">
+                <div class="d-flex align-items-center justify-content-center">
+                    <i class="bi bi-house-add fs-1 me-3" aria-hidden="true"></i>
+                    <h1 class="h2 mb-0">Publish New Property</h1>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <form method="post" 
+                    enctype="multipart/form-data" 
+                    class="needs-validation" 
+                    novalidate
+                    id="propertyForm">
+                    {% csrf_token %}
+                    
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <div class="section-header d-flex align-items-center mb-3">
+                                <i class="bi bi-info-circle text-primary me-2" aria-hidden="true"></i>
+                                <h2 class="h4 text-primary mb-0">Basic Information</h2>
+                            </div>
+                            {{ publishForm.title|as_crispy_field }}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {{ publishForm.price|as_crispy_field }}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            {{ publishForm.type|as_crispy_field }}
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="section-header d-flex align-items-center mb-3 mt-4">
+                                <i class="bi bi-images text-primary me-2" aria-hidden="true"></i>
+                                <h2 class="h4 text-primary mb-0">Media Upload</h2>
+                            </div>
+                            <div class="custom-file-upload">
+                                {{ publishForm.pictures|as_crispy_field }}
+                                <small class="text-muted d-block mt-2">
+                                    Supported formats: JPG, PNG, WEBP (Max size: 5MB per image)
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-5">
+                        <button type="submit" 
+                                class="btn btn-gradient-primary"
+                                id="submitButton">
+                            <i class="bi bi-upload me-2" aria-hidden="true"></i>
+                            Publish Property
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

@@ -52,6 +52,8 @@ class Property(models.Model):
     #addressID = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
 
 class Images(models.Model):
-    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="imagenes")
     image = models.ImageField(null = True, blank = True, upload_to= "property/images/")
 
+class Appointment(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)

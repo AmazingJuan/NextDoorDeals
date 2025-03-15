@@ -1,29 +1,154 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+{% block title %}
+<title>NextDoorDeals | Login to Your Account</title>
+<meta name="description" content="Login to access your NextDoorDeals account">
+{% endblock %}
+
+{% block extra_css %}
+    :root {
+        --form-max-width: 450px;
+        --card-border-radius: 1rem;
+        --transition-base: 0.3s ease;
+        --primary-gradient: linear-gradient(135deg, var(--primary-color), #3a45b4);
+        --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .login-container {
+        min-height: calc(100vh - var(--navbar-height) - 2rem);
+        padding: 2rem 1rem;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: var(--form-max-width);
+        border: none;
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+
+    .login-header {
+        background: var(--primary-gradient);
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-white);
+    }
+
+    .login-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .login-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .login-body {
+        padding: 2rem;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(43, 52, 153, 0.15);
+    }
+
+    .login-button {
+        background: var(--primary-gradient);
+        border: none;
+        padding: 0.75rem;
+        font-weight: 600;
+        transition: all var(--transition-base);
+    }
+
+    .login-button:hover,
+    .login-button:focus {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(43, 52, 153, 0.25);
+    }
+
+    .signup-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color var(--transition-base);
+    }
+
+    .signup-link:hover {
+        color: #3a45b4;
+        text-decoration: underline;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border-left: 4px solid #dc2626;
+    }
+
+    @media (max-width: 576px) {
+        .login-header {
+            padding: 1.5rem;
+        }
+
+        .login-body {
+            padding: 1.5rem;
+        }
+    }
+{% endblock %}
+
 {% block content %}
-<div class="container d-flex justify-content-center">
-    <div class="form-container">
-        <h2 class="text-center">Login</h2>
+<div class="login-container d-flex align-items-center justify-content-center">
+    <div class="login-card card">
+        <div class="login-header">
+            <i class="bi bi-person-circle login-icon" aria-hidden="true"></i>
+            <h1 class="login-title">Welcome Back</h1>
+        </div>
 
-        {% if messages %}
-            <div class="alert alert-danger">
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
+        <div class="login-body">
+            {% if messages %}
+                <div class="alert alert-danger mb-4" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>
+                        <div>
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {{ loginForm|crispy }}
+
+                <button type="submit" 
+                        class="btn btn-primary login-button w-100 mt-4"
+                        aria-label="Login to your account">
+                    <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>
+                    Login
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="mb-0">
+                    Don't have an account? 
+                    <a href="{% url 'signup' %}" 
+                       class="signup-link"
+                       aria-label="Create a new account">
+                        Sign Up
+                    </a>
+                </p>
             </div>
-        {% endif %}
-
-        <form method="POST">
-            {% csrf_token %}
-            {{ loginForm | crispy }}
-
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
-
-        <p class="text-center mt-3">
-            Don't have an account? <a href="{% url 'signup' %}">Sign Up</a>
-        </p>
+        </div>
     </div>
 </div>
 {% endblock %}

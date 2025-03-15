@@ -9,9 +9,7 @@ from django.contrib import messages
 def filterPrice(minAttr, maxAttr, property):
     if minAttr:
         minAttr = float(minAttr)
-        print(minAttr)
         property = property.filter(price__gte = minAttr)
-    print(property)
     if maxAttr:
         maxAttr = float(maxAttr)
         if minAttr and minAttr <= maxAttr:
@@ -48,20 +46,16 @@ def home(request):
     maxSES = request.GET.get('maxSES')
     district = request.GET.get('district')
 
-    # Capturar valores faltantes para filtro SES
-    isChecked = request.GET.get('useRangeSES', 'off') == 'on'  # Verifica si el checkbox está marcado
-    attr = request.GET.get('singleSES', None)  # Estrato único si el checkbox está activado
-
-    print(minSES, maxSES, isChecked, attr)  # Para depuración
-
+    isChecked = request.GET.get('useRangeSES', 'off') == 'on'  
+    attr = request.GET.get('singleSES', None) 
     properties = Property.objects.all()
     properties = filterPrice(minPrice, maxPrice, properties)
-    properties = filterSES(minSES, maxSES, properties, isChecked, attr)  # Ahora los parámetros están definidos
+    properties = filterSES(minSES, maxSES, properties, isChecked, attr) 
     cities = City.objects.all()
     districts = District.objects.all()
 
     if searchTerm: 
-        properties = properties.filter(name__icontains=searchTerm)
+        properties = properties.filter(title__icontains=searchTerm)
     else:
         searchTerm = None
 
@@ -76,7 +70,7 @@ def home(request):
         'minPrice': minPrice,
         'maxPrice': maxPrice,
         'propertyPresence': propertyPresence,
-        'districts': districts
+        'districts': districts, 'types': PropertyType.objects.all()
     })
 
 
@@ -100,3 +94,11 @@ def publish(request):
     else:
         publishForm = PublishForm()
     return render(request, 'publish.html', {'publishForm':publishForm})
+
+def view_property(request, id):
+    property = Property.objects.get(id = id)
+    type = property.propertyType.name
+    return render(request, 'property_info.html', {'property':property, 'pType': type})
+
+def schedule_appointment(request, id):
+    ...
