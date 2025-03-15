@@ -1,5 +1,12 @@
 from django.db import models
 
+def stablishImagePath(instance, image):
+    print("instancia: ", instance)
+    id = instance.id
+    print(id)
+    print(image)
+
+
 # Create your models here.
 
 class Cardinality(models.Model):
@@ -42,9 +49,9 @@ class Property(models.Model):
     propertyType = models.ForeignKey(PropertyType, on_delete = models.CASCADE)
     price = models.IntegerField()
     SES = models.CharField(max_length = 1)
-    addressID = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    #addressID = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
 
 class Images(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
-    image = models.ImageField(null = True, blank = True, upload_to= "property/images")
+    image = models.ImageField(null = True, blank = True, upload_to= stablishImagePath)
 

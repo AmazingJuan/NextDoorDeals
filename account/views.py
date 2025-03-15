@@ -19,7 +19,6 @@ def createUser(request):
         regularForm = AccountForm(request.POST)
         regularForm.is_valid()
         regularForm = regularForm.cleaned_data
-        print(regularForm.values())
         personForm = NaturalForm(request.POST)
         personForm.is_valid()
         personForm = personForm.cleaned_data
@@ -45,7 +44,6 @@ def createUser(request):
 
 
 def signup(request): 
-    print(request.path)
     if request.method == "POST":
         return createUser(request)
     else:

@@ -1,5 +1,5 @@
 from django import forms
-from .utilities import getSES, getType
+from .utilities import getSES, getTypes
 
 #CODIGO EXTRAIDO DE LA DOCUMENTACIÓN DE DJANGO: https://docs.djangoproject.com/en/5.0/topics/http/file-uploads/#uploading-multiple-files
 
@@ -30,9 +30,9 @@ class PublishForm(forms.Form):
     SES = forms.ChoiceField(choices=getSES, widget = forms.Select(), 
                             label = "SES: "
                             )
-    """type = forms.ChoiceField(choices=getType, widget = forms.Select(), 
+    type = forms.ChoiceField(choices=getTypes, widget = forms.Select(), 
                             label = "SES: "
-                            )"""
+                            )
     price = forms.IntegerField(label = "Price: ")
     pictures = MultipleFileField()
     
