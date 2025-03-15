@@ -31,7 +31,7 @@ class PublishForm(forms.Form):
                             label = "SES: "
                             )
     type = forms.ChoiceField(choices=getTypes, widget = forms.Select(), 
-                            label = "SES: "
+                            label = "TYPE: "
                             )
     price = forms.IntegerField(label = "Price: ")
     pictures = MultipleFileField()

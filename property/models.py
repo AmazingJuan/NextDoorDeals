@@ -53,5 +53,5 @@ class Property(models.Model):
 
 class Images(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
-    image = models.ImageField(null = True, blank = True, upload_to= stablishImagePath)
+    image = models.ImageField(null = True, blank = True, upload_to= "property/images/")
 

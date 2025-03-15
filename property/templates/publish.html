@@ -7,7 +7,9 @@
 
 {% block content %}
 <body>
-
+    {% for msg in messages %}
+        {{ msg }}
+    {% endfor %}
     <form method = "post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ publishForm | crispy}}
