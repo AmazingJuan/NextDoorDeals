@@ -2,16 +2,16 @@
 
 Greetings,
 To run this code please follow the following instructions for it to run with no problems :D
-This instructions are specified for Windows and linux. 
+-- This instructions are specified for Windows and linux. 
 
 ## Prerequisites: 
 
   Please, ensure you have the following installed on your system:
 
   1. Python 3.10 or higher
-      If not, enter this link and follow the given instructions until downloaded: https://www.python.org/downloads/
+     -- If not, enter this link and follow the given instructions until downloaded: https://www.python.org/downloads/
   2. Winrar (Recommended)
-       If not, enter this link and follow the given instructions until downloaded: https://winrar.es/descargas
+      -- If not, enter this link and follow the given instructions until downloaded: https://winrar.es/descargas
 
 ## Steps 
 
