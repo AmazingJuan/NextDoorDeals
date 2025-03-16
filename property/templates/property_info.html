@@ -309,7 +309,7 @@
                         </h3>
                         
                         <div class="description-box">
-                            <h4 class="fw-bold mb-4">Descripción</h4>
+                            <h4 class="fw-bold mb-4">Description</h4>
                             <p class="lead text-dark lh-lg mb-0">
                                 {{ property.description }}
                             </p>
@@ -320,30 +320,30 @@
                         <div class="col-md-6">
                             <div class="detail-card">
                                 <i class="bi bi-geo-alt-fill detail-icon"></i>
-                                <h5 class="fw-bold mb-2">Ubicación</h5>
+                                <h5 class="fw-bold mb-2">Location</h5>
                                 <p class="text-muted mb-0 fs-5">{{ property.district.name }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="detail-card">
                                 <i class="bi bi-calendar-check-fill detail-icon"></i>
-                                <h5 class="fw-bold mb-2">Fecha de Publicación</h5>
+                                <h5 class="fw-bold mb-2">Publication date</h5>
                                 <p class="text-muted mb-0 fs-5">{{ property.created_at|date:"d M, Y" }}</p>
                             </div>
                         </div>
                     </div>
 
                     <a href="{% url 'appointment' id=property.id %}" class="action-button mt-5">
-                        <i class="bi bi-calendar2-check me-2"></i>Agendar una cita
+                        <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
                     </a>
                     
                     {% if request.user.is_authenticated %}
                         <a href="{% url 'makeFavourite' id=property.id %}" class="action-button favorite mt-3">
                             <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
                             {% if is_fav %}
-                                Quitar de favoritos
+                                Delete from favourites
                             {% else %}
-                                Agregar a favoritos
+                                Add to favourites
                             {% endif %}
                         </a>
                     {% endif %}
