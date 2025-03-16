@@ -315,6 +315,7 @@
                                             {% endfor %}
                                         </select>
                                     </div>
+                                        {% if request.user.is_authenticated %}
                                         <div class = "mb-4">
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" 
@@ -328,6 +329,7 @@
                                                 </label>
                                             </div>    
                                         </div>
+                                        {% endif %}
                                     </div>                                
                                 </div>
                             </div>
