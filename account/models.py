@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 # Create your models here.
 class UserType(models.Model): 
     idUserType = models.IntegerField(blank = False, primary_key=True)
@@ -15,7 +16,6 @@ class Account(models.Model):
     phone = models.IntegerField()
     userType = models.ForeignKey(UserType, on_delete = models.CASCADE)
     role = models.ForeignKey(Role, on_delete = models.CASCADE)
-    
 
 class PersonAccount(models.Model):
     associatedAccount = models.OneToOneField(Account, on_delete = models.CASCADE, blank = False, primary_key=True)

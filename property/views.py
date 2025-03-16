@@ -64,6 +64,14 @@ def home(request):
 
     propertyPresence = properties.exists()  # Mejor alternativa a count() > 0
 
+    properties = Property.objects.all()  # Obtiene todas las propiedades por defecto
+
+    if request.user.is_authenticated and request.GET.get("favourite"):  # Si el usuario está autenticado y activó el filtro
+        account = request.user.account
+        favourite_properties = Favourites.objects.filter(associatedAccount=account).values_list('property', flat=True)
+        properties = properties.filter(id__in=favourite_properties)  # Filtra solo las propiedades favoritas
+
+
     return render(request, 'home.html', {
         'searchTerm': searchTerm,
         'propertys': properties,
