@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Account, UserType
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from .forms import AccountForm, NaturalForm, BussinesForm, loginForm
 from .utilities import getRole
@@ -22,21 +22,28 @@ def createUser(request):
         personForm = NaturalForm(request.POST)
         personForm.is_valid()
         personForm = personForm.cleaned_data
+
+        bussinesForm = BussinesForm(request.POST)
+        bussinesForm.is_valid()
+        bussinesForm = bussinesForm.cleaned_data
+
         user = User.objects.create_user(username = regularForm["username"], password = regularForm["password"], email = regularForm["email"])
         if(regularForm["userType"] == 'persona'):
             userType = 1
         else:
             userType = 2
-        cuenta = Account(user = user, phone = regularForm["phone"], userType = UserType.objects.get(idUserType=userType))
+        role = Role.objects.get(idRole = int(regularForm["role"]) - 1)
+
+        cuenta = Account(user = user, phone = regularForm["phone"], userType = UserType.objects.get(idUserType=userType), role = role)
         cuenta.save()
 
-        role = int(personForm["role"]) - 1
         if(regularForm["userType"] == 'persona'):
 
-            persona = PersonAccount(associatedAccount = cuenta, firstName = personForm["firstName"], lastName = personForm["lastName"], role = Role.objects.get(idRole = role) )
+            persona = PersonAccount(associatedAccount = cuenta, firstName = personForm["firstName"], lastName = personForm["lastName"])
             persona.save()
         else:
-            userType = 2
+            negocio = BussinessAccount(associatedAccount = cuenta, nitBussinessAccount = bussinesForm["nit"], nameBussiness = bussinesForm["name"])
+            negocio.save()
         login(request, user)
         return redirect('SUsuccess')
 
@@ -50,6 +57,7 @@ def signup(request):
         naturalForm = NaturalForm()
         accountForm = AccountForm()
         bussinesForm = BussinesForm()
+        print(bussinesForm)
         return render(request, 'signup.html', {"userType": accountForm, "naturalForm" : naturalForm, "roles": getRole(), "requestPath":request.path, "bussinesForm":bussinesForm})
 
 
@@ -69,8 +77,15 @@ def loginUser(request):
                     messages.error(request, "Invalid username or password. Please try again.")
     else:
         form = loginForm()
+        
         form.label_suffix = "" 
     return render(request, 'login.html', {'loginForm':form})
+
+def logout_logic(request):
+    logout(request)
+    return redirect('home')
+def view_profile(request, id):
+     ...
 
          
         

@@ -1,10 +1,5 @@
 from django.db import models
-
-def stablishImagePath(instance, image):
-    print("instancia: ", instance)
-    id = instance.id
-    print(id)
-    print(image)
+from account.models import Account
 
 
 # Create your models here.
@@ -19,7 +14,6 @@ class Province(models.Model):
     name = models.CharField(max_length = 50)
     
 class City(models.Model):
-    provinID = models.ForeignKey(Province, on_delete=models.CASCADE)
     name = models.CharField(max_length = 50)
     
 class District(models.Model):
@@ -49,11 +43,17 @@ class Property(models.Model):
     propertyType = models.ForeignKey(PropertyType, on_delete = models.CASCADE)
     price = models.IntegerField()
     SES = models.CharField(max_length = 1)
-    #addressID = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    associatedAccount = models.ForeignKey(Account, on_delete = models.CASCADE)
 
 class Images(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="imagenes")
     image = models.ImageField(null = True, blank = True, upload_to= "property/images/")
+
+class Favourites(models.Model):
+    associatedAccount = models.ForeignKey(Account, on_delete = models.CASCADE, related_name= 'favouriteAccs')
+    property = models.ForeignKey(Property, on_delete = models.CASCADE)
+    class Meta:
+        unique_together = ('associatedAccount', 'property') 
 
 class Appointment(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)

@@ -5,6 +5,7 @@ function next(userType){
     let userTypeSelector = document.getElementById("userType")
     
     selectValidator(userTypeSelector, userType)
+    validateRole()
 
     let validity = form.checkValidity()
     if(validity){
@@ -27,47 +28,24 @@ function selectValidator(element, value){
     }
 }
 
-function validateRole(userType){
-    if(userType == "persona"){
-        element = document.getElementById("id_role")    
-    }
-    else{
-        element = document.getElementById("id_role")
-    }
+function validateRole(){
+    element = document.getElementById("id_role")
     value = element.value
     selectValidator(element, value)
 }
 
 function toggleRequiredPersona(isRequired){
-    console.log(isRequired)
-    if(isRequired){
-        console.log("estoy aki")
-        document.getElementById('id_firstName').required = true;
-        document.getElementById('id_lastName').required = true;
-        document.getElementById('id_role').required = true;
-    }
-    else{
-        document.getElementById('id_firstName').required = false;
-        document.getElementById('id_lastName').required = false;
-        document.getElementById('id_role').required = false;
-    }
+    document.getElementById('id_firstName').required = isRequired;
+    document.getElementById('id_lastName').required = isRequired;
+    document.getElementById('id_role').required = isRequired;
 }
 
 function toggleRequiredBussines(isRequired){
-    if(isRequired){
-        document.getElementById('id_firstName').required = true;
-        document.getElementById('id_lastName').required = true;
-        document.getElementById('id_role').required = true;
-    }
-    else{
-        document.getElementById('id_firstName').required = false;
-        document.getElementById('id_lastName').required = false;
-        document.getElementById('id_role').required = false;
-    }
+    document.getElementById('id_nit').required = isRequired;
+    document.getElementById('id_name').required = isRequired;
 }
 
 function changeVisibility(tipo) {
-    console.log(tipo)
     let formPersona = document.getElementById("personForm")
     let formBussines = document.getElementById("businessForm")
     if(tipo == "persona"){
@@ -75,9 +53,10 @@ function changeVisibility(tipo) {
         toggleRequiredPersona(true)
         bussinesVisibility = "none"
     }
-    else if(tipo == "business"){
+    else if(tipo == "negocio"){
+        console.log("estoy aka")
         personaVisbility = "none"
-        toggleRequiredPersona(false)
+        toggleRequiredBussines(true)
         bussinesVisibility = "block"
     }
     else{
