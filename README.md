@@ -1,17 +1,17 @@
 ### NextDoorDeals
 
-Greetings, -- \n
-To run this code please follow the following instructions for it to run with no problems :D \n
+Greetings, -- 
+To run this code please follow the following instructions for it to run with no problems :D 
 -- This instructions are specified for Windows and linux. 
 
 ## Prerequisites: 
 
   Please, ensure you have the following installed on your system:
 
-  1. Python 3.10 or higher\n 
-     -- If not, enter this link and follow the given instructions until downloaded: https://www.python.org/downloads/ \n
-  2. Winrar (Recommended)\n
-      -- If not, enter this link and follow the given instructions until downloaded: https://winrar.es/descargas \n
+  1. Python 3.10 or higher
+     -- If not, enter this link and follow the given instructions until downloaded: https://www.python.org/downloads/ 
+  2. Winrar (Recommended)
+      -- If not, enter this link and follow the given instructions until downloaded: https://winrar.es/descargas 
 
 ## Steps 
 
@@ -28,14 +28,7 @@ To run this code please follow the following instructions for it to run with no 
   11. Write this exact instruction --> pip install -r requirements.txt <--. This will downlad the neccesary libraries for the code to run. Press enter. Wait for it to finish. 
   12. Write this exact instruction --> python manage.py runserver <--. Press enter. (If linux --> python3 manage.py runserver)
   13. Go to your favourite browser and enter this link: http://localhost:8000/
-  14. If everything went well, you will see the NextDoorDeals page. Enjoy.
-
-
-      
-      
-     
-     
-
+  14. If everything went well, you will see the NextDoorDeals page. Enjoy. 
 
     
 
