@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+<title>NextDoorDeals | Find Your Perfect Property</title>
+<meta name="description" content="Search and discover properties that match your needs on NextDoorDeals">
+{% endblock %}
+
+{% block extra_css %}
+    :root {
+        --card-transition: 0.3s ease;
+        --card-hover-y: -5px;
+        --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        --image-height: 250px;
+        --form-focus-color: var(--primary-color);
+        --form-focus-shadow: 0 0 0 3px rgba(43, 52, 153, 0.15);
+    }
+
+    /* Search Form Styles */
+    .search-form {
+        position: relative;
+        z-index: 1;
+    }
+
+    .search-card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        transition: var(--card-transition);
+    }
+
+    .search-card:hover {
+        box-shadow: var(--card-shadow);
+    }
+
+    .search-header {
+        background: linear-gradient(135deg, var(--primary-color), #3a45b4);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        padding: 1.5rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--form-focus-color);
+        box-shadow: var(--form-focus-shadow);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
+
+    /* Property Card Styles */
+    .property-card {
+        height: 100%;
+        transition: transform var(--card-transition), box-shadow var(--card-transition);
+        overflow: hidden;
+    }
+
+    .property-card:hover {
+        transform: translateY(var(--card-hover-y));
+        box-shadow: var(--card-shadow);
+    }
+
+    .property-image-wrapper {
+        position: relative;
+        padding-top: 66.67%; /* 3:2 Aspect ratio */
+        overflow: hidden;
+    }
+
+    .property-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--card-transition);
+    }
+
+    .property-card:hover .property-image {
+        transform: scale(1.05);
+    }
+
+    .property-details {
+        padding: 1.25rem;
+    }
+
+    .property-title {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .property-badge {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+    }
+
+    .property-price {
+        font-size: 1.25rem;
+        color: #198754;
+    }
+
+    .location-button {
+        margin-top: 1rem;
+        width: 100%;
+        transition: all var(--card-transition);
+    }
+
+    .location-button:hover {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    /* Accordion Styles */
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(43, 52, 153, 0.05);
+        color: var(--primary-color);
+    }
+
+    .accordion-button:focus {
+        box-shadow: var(--form-focus-shadow);
+        border-color: var(--form-focus-color);
+    }
+
+    /* Alert Styles */
+    .search-alert {
+        border-left: 4px solid var(--primary-color);
+        background-color: rgba(43, 52, 153, 0.05);
+    }
+
+    .no-results-alert {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 2rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .property-image-wrapper {
+            padding-top: 75%; /* 4:3 Aspect ratio for mobile */
+        }
+    }
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <!-- Search Form -->
+    <div class="search-form mb-5">
+        <div class="search-card card">
+            <div class="search-header">
+                <h1 class="text-white h3 mb-0">
+                    <i class="bi bi-search me-2"></i>Find Your Perfect Property
+                </h1>
+            </div>
+            <div class="card-body p-4">
+                <form action="" method="GET" class="needs-validation" novalidate>
+                    <!-- Search Input -->
+                    <div class="mb-4">
+                        <label for="searchProperty" class="form-label fw-semibold">Search Properties</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">
+                                <i class="bi bi-house-door"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="searchProperty" 
+                                   name="searchProperty" 
+                                   value="{{ request.GET.searchProperty }}"
+                                   placeholder="Enter property name, location, or keywords"
+                                   aria-label="Search properties">
+                        </div>
+                    </div>
+
+                    <!-- Advanced Filters -->
+                    <div class="accordion" id="filterAccordion">
+                        <div class="accordion-item border-0 shadow-sm">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#filtersCollapse"
+                                        aria-expanded="false"
+                                        aria-controls="filtersCollapse">
+                                    <i class="bi bi-funnel me-2"></i>Advanced Filters
+                                </button>
+                            </h2>
+                            <div id="filtersCollapse" 
+                                 class="accordion-collapse collapse" 
+                                 data-bs-parent="#filterAccordion">
+                                <div class="accordion-body p-4">
+                                    <!-- Price Range -->
+                                    <div class="row g-4 mb-4">
+                                        <div class="col-12">
+                                            <label class="form-label fw-semibold">Price Range</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       name="minPrice" 
+                                                       placeholder="Minimum Price" 
+                                                       value="{{ request.GET.minPrice }}"
+                                                       aria-label="Minimum price">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       name="maxPrice" 
+                                                       placeholder="Maximum Price" 
+                                                       value="{{ request.GET.maxPrice }}"
+                                                       aria-label="Maximum price">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- SES Controls -->
+                                    <div class="mb-4">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" 
+                                                   type="checkbox" 
+                                                   id="useRangeSES" 
+                                                   name="useRangeSES"
+                                                   {% if request.GET.useRangeSES %}checked{% endif %}
+                                                   aria-label="Toggle SES range">
+                                            <label class="form-check-label fw-semibold" for="useRangeSES">
+                                                Use SES Range
+                                            </label>
+                                        </div>
+
+                                        <!-- Single SES -->
+                                        <div class="row mt-3" 
+                                             id="singleSESContainer" 
+                                             {% if request.GET.useRangeSES %}style="display: none;"{% endif %}>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold" for="singleSES">SES Level</label>
+                                                <select name="singleSES" 
+                                                        id="singleSES" 
+                                                        class="form-select"
+                                                        aria-label="Select SES level">
+                                                    <option value="">Select Level</option>
+                                                    {% for i in "123456" %}
+                                                    <option value="{{ i }}" 
+                                                            {% if request.GET.singleSES == i %}selected{% endif %}>
+                                                        Level {{ i }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- SES Range -->
+                                        <div class="row mt-3" 
+                                             id="rangeSESContainer" 
+                                             {% if not request.GET.useRangeSES %}style="display: none;"{% endif %}>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold" for="minSES">Minimum SES</label>
+                                                <select name="minSES" 
+                                                        id="minSES" 
+                                                        class="form-select"
+                                                        aria-label="Select minimum SES level">
+                                                    <option value="">Select Level</option>
+                                                    {% for i in "123456" %}
+                                                    <option value="{{ i }}" 
+                                                            {% if request.GET.minSES == i %}selected{% endif %}>
+                                                        Level {{ i }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-semibold" for="maxSES">Maximum SES</label>
+                                                <select name="maxSES" 
+                                                        id="maxSES" 
+                                                        class="form-select"
+                                                        aria-label="Select maximum SES level">
+                                                    <option value="">Select Level</option>
+                                                    {% for i in "123456" %}
+                                                    <option value="{{ i }}" 
+                                                            {% if request.GET.maxSES == i %}selected{% endif %}>
+                                                        Level {{ i }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- District Selector -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold" for="district">District</label>
+                                        <select name="district" 
+                                                id="district" 
+                                                class="form-select"
+                                                aria-label="Select district">
+                                            <option value="">All Districts</option>
+                                            {% for district in districts %}
+                                            <option value="{{ district.id }}" 
+                                                    {% if district.id|stringformat:"s" == request.GET.district %}selected{% endif %}>
+                                                {{ district.name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                        {% if sessionActive %}
+                                        <div class = "mb-4">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       id="favourite" 
+                                                       name="favourite"
+                                                       {% if request.GET.favourite %}checked{% endif %}
+                                                       aria-label="Toggle SES range">
+                                                <label class="form-check-label fw-semibold" for="favourite">
+                                                    Show only favourites
+                                                </label>
+                                            </div>    
+                                        </div>
+                                        {% endif %}
+                                    </div>                                
+                                </div>
+                            </div>
+                        </div>
+
+
+                    <!-- Search Button -->
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-search me-2"></i>Search Properties
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results Info -->
+    {% if searchTerm is not None %}
+    <div class="search-alert alert mb-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-info-circle fs-4 me-3"></i>
+            <div>
+                <h2 class="h5 mb-1">Search Results</h2>
+                <p class="mb-0 text-muted">Showing properties matching: "{{ searchTerm }}"</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Property Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+        {% if propertyPresence %}
+            {% for property in propertys %}
+            <div class="col">
+                <article class="property-card card h-100 border-0 shadow-hover">
+                    <a href="{% url 'property_info' id=property.id %}" class="text-decoration-none text-reset">
+                        <div class="property-image-wrapper ratio ratio-16x9">
+                            <img src="{{ property.imagenes.first.image.url }}" 
+                                 class="property-image img-fluid rounded-top" 
+                                 alt="{{ property.title }}"
+                                 loading="lazy">
+                        </div>
+                        
+                        <div class="card-body pt-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h3 class="property-title h5 mb-0 text-truncate">{{ property.title }}</h3>
+                                <span class="property-price badge bg-dark fs-6">${{ property.price|intcomma }}</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="property-type badge bg-primary bg-opacity-10 text-primary">
+                                    {{ types|getTypeID:property.propertyType.id }}
+                                </span>
+                            </div>
+    
+                            {% if property.location %}
+                            <div class="mb-3">
+                                <a href="{{ property.location }}" 
+                                   class="btn btn-location w-100 d-flex align-items-center justify-content-center" 
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    <i class="bi bi-geo-alt me-2"></i>
+                                    <span>View on Map</span>
+                                </a>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="text-muted small pt-2 border-top">
+                                <i class="bi bi-person-circle me-1"></i>
+                                Listed by {{ property.associatedAccount.user }}
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="no-results text-center py-5 px-3 bg-light rounded-3">
+                    <i class="bi bi-house-exclamation display-5 text-warning mb-4"></i>
+                    <h2 class="h3 mb-3">No Matching Properties Found</h2>
+                    <p class="text-muted mb-4">
+                        Adjust your search filters or explore our featured listings
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="{% static 'js/disable.js' %}"></script>
+{% endblock %}
+
+{% endblock content %}

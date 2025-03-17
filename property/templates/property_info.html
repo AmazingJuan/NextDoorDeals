@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load static %}
+{% load humanize %}
+{% block title %}
+    <title>{{ property.title }} - Luxury Real Estate</title>
+{% endblock %}
+
+{% block extra_css %}
+        /* Modern gradient backgrounds with luxury feel */
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        .bg-gradient-secondary {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* Luxury card design */
+        .property-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+        
+        .property-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Premium image gallery */
+        .gallery-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%);
+        }
+
+        .gallery-image {
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: zoom-in;
+            height: 700px;
+            width: 100%;
+            object-fit: cover;
+            filter: brightness(1.02) contrast(1.02);
+        }
+
+        .gallery-container:hover .gallery-image {
+            transform: scale(1.03);
+        }
+
+        /* Elegant navigation buttons */
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.98);
+            border: none;
+            border-radius: 50%;
+            width: 4.5rem;
+            height: 4.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-button:hover {
+            background: white;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-button.prev { left: 2rem; }
+        .nav-button.next { right: 2rem; }
+
+        /* Luxurious property details */
+        .detail-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.12);
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(15, 23, 42, 0.15);
+        }
+
+        .detail-icon {
+            font-size: 2.75rem;
+            color: #0f172a;
+            margin-bottom: 1.25rem;
+            transition: all 0.4s ease;
+        }
+
+        .detail-card:hover .detail-icon {
+            transform: scale(1.15);
+            color: #1e293b;
+        }
+
+        .description-box {
+            border-left: 8px solid #0f172a;
+            background: rgba(248, 250, 252, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            margin: 2.5rem 0;
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .description-box:hover {
+            border-left-width: 12px;
+            background: rgba(248, 250, 252, 1);
+            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.12);
+            transform: scale(1.01);
+        }
+
+        /* Premium badges */
+        .feature-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 1.25rem 2.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            letter-spacing: 0.025em;
+        }
+
+        .feature-badge:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 25px -3px rgba(0, 0, 0, 0.25);
+        }
+
+        .badge-price {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            color: white;
+        }
+
+        .badge-ses {
+            background: linear-gradient(135deg, #854d0e 0%, #a16207 100%);
+            color: white;
+        }
+
+        /* Luxury header section */
+        .property-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 3rem 2.5rem;
+            border-radius: 2rem 2rem 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .property-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.08;
+        }
+
+        /* Elegant image counter */
+        .image-counter {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        /* Action buttons */
+        .action-button {
+            display: inline-block;
+            padding: 1.25rem 2.5rem;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            letter-spacing: 0.025em;
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            text-decoration: none;
+        }
+
+        .action-button.favorite {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .action-button.favorite:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+        }
+
+        /* Responsive typography */
+        @media (max-width: 768px) {
+            .property-header h1 {
+                font-size: 2rem;
+            }
+            
+            .gallery-image {
+                height: 400px;
+            }
+            
+            .nav-button {
+                width: 3.5rem;
+                height: 3.5rem;
+            }
+        }
+{% endblock %}
+
+{% block content %}
+<div class="container py-8">
+    <div class="row g-5 justify-content-center">
+        <!-- Galería de Imágenes -->
+        <div class="col-12 col-lg-8">
+            <div class="gallery-container">
+                <img src="{{ property.imagenes.first.image.url }}" 
+                     id="property-image" 
+                     class="gallery-image" 
+                     alt="{{ property.title }}">
+                
+                <button type="button" 
+                        class="nav-button prev" 
+                        onclick="previousImage()" 
+                        id="btn-previous" 
+                        style="display:none">
+                    <i class="bi bi-chevron-left fs-4"></i>
+                </button>
+                
+                <button type="button" 
+                        class="nav-button next" 
+                        onclick="nextImage()" 
+                        id="btn-next">
+                    <i class="bi bi-chevron-right fs-4"></i>
+                </button>
+
+                <div class="image-counter">
+                    <span id="current-image">1</span> / <span>{{ property.imagenes.count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="property-card">
+                <div class="property-header">
+                    <h1 class="display-5 fw-bold text-white mb-3">{{ property.title }}</h1>
+                    <p class="fs-5 text-blue-100 mb-0 opacity-90">
+                        <i class="bi bi-geo-alt-fill me-2"></i>
+                        {{ property.district.name }}
+                    </p>
+                </div>
+                
+                <div class="p-5">
+                    <div class="d-flex flex-wrap gap-4 mb-5">
+                        <div class="feature-badge badge-price">
+                            <i class="bi bi-tag-fill me-3"></i>${{ property.price|intcomma }}
+                        </div>
+                        <div class="feature-badge badge-ses">
+                            <i class="bi bi-star-fill me-3"></i>SES {{ property.SES }}
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="fw-bold text-primary mb-4">
+                            <i class="bi bi-house-door-fill me-3"></i>{{ pType }}
+                        </h3>
+                        
+                        <div class="description-box">
+                            <h4 class="fw-bold mb-4">Description</h4>
+                            <p class="lead text-dark lh-lg mb-0">
+                                {{ property.description }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="detail-card">
+                                <i class="bi bi-geo-alt-fill detail-icon"></i>
+                                <h5 class="fw-bold mb-2">Location</h5>
+                                <p class="text-muted mb-0 fs-5">{{ property.district.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-card">
+                                <i class="bi bi-calendar-check-fill detail-icon"></i>
+                                <h5 class="fw-bold mb-2">Publication date</h5>
+                                <p class="text-muted mb-0 fs-5">{{ property.created_at|date:"d M, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    {% if sessionActive %}
+                        <a href="{% url 'appointment' id=property.id %}" class="action-button mt-5">
+                            <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
+                        </a>
+                        <a href="{% url 'makeFavourite' id=property.id %}" class="action-button favorite mt-3">
+                            <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
+                            {% if is_fav %}
+                                Delete from favourites
+                            {% else %}
+                                Add to favourites
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var images = [
+        {% for image in property.imagenes.all %}
+            "{{ image.image.url }}",
+        {% endfor %}
+    ];
+</script>
+<script src="{% static 'js/property_details.js' %}"></script>
+{% endblock %}
