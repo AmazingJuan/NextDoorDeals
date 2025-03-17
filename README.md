@@ -13,7 +13,7 @@ To run this code please follow the following instructions for it to run with no 
   2. Winrar (Recommended)
       -- If not, enter this link and follow the given instructions until downloaded: https://winrar.es/descargas 
 
-## Steps 
+## Steps:
 
   1. Enter this link: https://github.com/AmazingJuan/NextDoorDeals
   2. Click on the green button so called "code"
