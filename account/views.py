@@ -10,6 +10,8 @@ from .models import Account, BussinessAccount, PersonAccount, UserType, Role
 from django.contrib import messages
 # Create your views here.
 
+def checkSession(user):
+    return (user and user.is_authenticated and hasattr(User.objects.get(username=user.username), 'account'))
 
 def signupSuccess(request):
      

@@ -333,11 +333,11 @@
                         </div>
                     </div>
 
-                    <a href="{% url 'appointment' id=property.id %}" class="action-button mt-5">
-                        <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
-                    </a>
                     
-                    {% if request.user.is_authenticated %}
+                    {% if sessionActive %}
+                        <a href="{% url 'appointment' id=property.id %}" class="action-button mt-5">
+                            <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
+                        </a>
                         <a href="{% url 'makeFavourite' id=property.id %}" class="action-button favorite mt-3">
                             <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
                             {% if is_fav %}
