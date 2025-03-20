@@ -6,25 +6,18 @@ from django.contrib import messages
 # Create your views here.
 
 def filterPrice(minAttr, maxAttr, property):
-    print(minAttr)
     if minAttr:
-        print("im here")
         minAttr = float(minAttr)
         property = property.filter(price__gte = minAttr)
     if maxAttr:
         maxAttr = float(maxAttr)
-        print(maxAttr)
         if minAttr and minAttr <= maxAttr:
             property = property.filter(price__lte = maxAttr)
         elif not minAttr:
-            print("im here23")
             property = property.filter(price__lte = maxAttr)
-    print(property)
     return property
 
 def filterSES(minAttr, maxAttr, property):
-    print(minAttr)
-    print(maxAttr)
     if minAttr:
         minAttr = int(minAttr)
         property = property.filter(SES__gte = minAttr)
@@ -35,7 +28,6 @@ def filterSES(minAttr, maxAttr, property):
             property = property.filter(SES__lte = maxAttr)
         elif not minAttr:
             property = property.filter(SES__lte = maxAttr)
-        print(property)
     return property
 
 def filterDistrict(district, properties):
@@ -55,7 +47,6 @@ def home(request):
     properties = Property.objects.all()
     properties = filterPrice(minPrice, maxPrice, properties)
     if not isChecked:
-        print("aca aca")
         minSES = singleSES
         maxSES = singleSES
     properties = filterSES(minSES, maxSES, properties) 
@@ -72,7 +63,6 @@ def home(request):
 
     sessionActive = checkSession(request.user)
 
-    print(request.GET.get("favourite"))
     if sessionActive and request.GET.get("favourite"):  # Si el usuario está autenticado y activó el filtro
         account = request.user.account
         favourite_properties = Favourites.objects.filter(associatedAccount=account).values_list('property', flat=True)
@@ -92,9 +82,7 @@ def home(request):
 
 def publish(request):
     if request.method == "POST":
-        print("aca")
         publishForm = PublishForm(request.POST, request.FILES)
-        print(publishForm, publishForm.is_valid())
         if publishForm.is_valid():
             data = publishForm.cleaned_data
             title = data["title"]
@@ -102,9 +90,7 @@ def publish(request):
             description = data["description"]
             SES = data["SES"]
             district = data["district"]
-            print("acacacaca", district)
             coordinates = Coordinates.objects.get(id = 1)
-            print(coordinates)
             location = Location(district = District.objects.get(id = int(district) - 1), coordinates = coordinates)
             location.save()
             price = data["price"]
@@ -115,10 +101,7 @@ def publish(request):
                 Images.objects.create(property = newProperty, image = i)
             
             publishForm = PublishForm()
-            print("aca")
             messages.success(request, "Property published succesfully")
-        else:
-            print(publishForm.errors)
     else:
         publishForm = PublishForm()
     return render(request, 'publish.html', {'publishForm':publishForm, 'sessionActive':checkSession(request.user)})

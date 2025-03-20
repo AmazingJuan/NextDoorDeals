@@ -59,7 +59,6 @@ def signup(request):
         naturalForm = NaturalForm()
         accountForm = AccountForm()
         bussinesForm = BussinesForm()
-        print(bussinesForm)
         return render(request, 'signup.html', {"userType": accountForm, "naturalForm" : naturalForm, "roles": getRole(), "requestPath":request.path, "bussinesForm":bussinesForm})
 
 
