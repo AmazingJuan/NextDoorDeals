@@ -311,7 +311,7 @@
                                             {% for district in districts %}
                                             <option value="{{ district.id }}" 
                                                     {% if district.id|stringformat:"s" == request.GET.district %}selected{% endif %}>
-                                                {{ district.name }}
+                                                {{ district.name }} - {{ district.city.name }}
                                             </option>
                                             {% endfor %}
                                         </select>
@@ -387,7 +387,7 @@
                                 </span>
                             </div>
     
-                            {% if property.location %}
+                            {% if False %}
                             <div class="mb-3">
                                 <a href="{{ property.location }}" 
                                    class="btn btn-location w-100 d-flex align-items-center justify-content-center" 

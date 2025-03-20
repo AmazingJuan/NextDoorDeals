@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Property, City, District, Images, PropertyType, Favourites
+from .models import Property, City, District, Images, PropertyType, Favourites, Location, Coordinates
 from .forms import PublishForm
 from account.views import checkSession
 from django.contrib import messages
@@ -39,7 +39,7 @@ def filterSES(minAttr, maxAttr, property):
     return property
 
 def filterDistrict(district, properties):
-    return properties.filter(addressID__neigID__dID = district)
+    return properties.filter(location__district = district)
     
 
 def home(request):
@@ -101,8 +101,14 @@ def publish(request):
             type = data["type"]
             description = data["description"]
             SES = data["SES"]
+            district = data["district"]
+            print("acacacaca", district)
+            coordinates = Coordinates.objects.get(id = 1)
+            print(coordinates)
+            location = Location(district = District.objects.get(id = int(district) - 1), coordinates = coordinates)
+            location.save()
             price = data["price"]
-            newProperty = Property(associatedAccount = request.user.account, title = title, description = description, SES = SES, price = price, propertyType = PropertyType.objects.get(id = int(type)-1))
+            newProperty = Property(associatedAccount = request.user.account, title = title, description = description, SES = SES, price = price, propertyType = PropertyType.objects.get(id = int(type)-1), location = location)
             newProperty.save()
             images = data["pictures"]
             for i in images:

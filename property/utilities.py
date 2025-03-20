@@ -1,4 +1,4 @@
-from .models import PropertyType
+from .models import PropertyType, District
 
 def getSES():
     SES = [["1", "Please select your SES status"]]
@@ -12,3 +12,8 @@ def getTypes():
         types.append([str(i.id+1), i.name])
     return types
 
+def getDistricts():
+    types = [["1", "Please select where's your property located at"]]
+    for i in District.objects.all():
+        types.append([str(i.id+1), i.name + " - " + i.city.name])
+    return types

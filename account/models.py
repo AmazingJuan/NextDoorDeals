@@ -12,7 +12,7 @@ class Role(models.Model):
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete =models.CASCADE, primary_key= True, related_name='account')
-    profilePicture = models.ImageField(null = True)
+    profilePicture = models.ImageField(null = True, blank = True)
     phone = models.IntegerField()
     userType = models.ForeignKey(UserType, on_delete = models.CASCADE)
     role = models.ForeignKey(Role, on_delete = models.CASCADE)
