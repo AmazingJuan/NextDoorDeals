@@ -1,35 +1,79 @@
-# NextDoorDeals
+# NextDoorDeals - Installation Guide
 
-Greetings, -- 
-To run this code please follow the following instructions for it to run with no problems :D 
--- This instructions are specified for Windows and linux. 
+Greetings! 😊
 
-## Prerequisites: 
+Follow these steps to run **NextDoorDeals** smoothly on **Windows** or **Linux**.
 
-  Please, ensure you have the following installed on your system:
+## Prerequisites
 
-  1. Python 3.10 or higher
-     -- If not, enter this link and follow the given instructions until downloaded: https://www.python.org/downloads/ 
-  2. Winrar (Recommended)
-      -- If not, enter this link and follow the given instructions until downloaded: https://winrar.es/descargas 
+Before starting, ensure you have the following installed on your system:
 
-## Steps:
+- **Python 3.10 or higher**  
+  If not, download and install it from [here](https://www.python.org/downloads/).
 
-  1. Enter this link: https://github.com/AmazingJuan/NextDoorDeals
-  2. Click on the green button so called "code"
-  3. Click on the option "Download Zip", wait until download is finished
-  4. Search the downloaded .rar in your documents
-  5. Press right click on the .rar and select extract here. It should extract a file called NextDoorDeals
-  6. (Optional, recommended) Create an empty file (Name it NDD) in your desktop and drag the new file in there. Enter the NDD file. Then the NextDoorDeals.
-  7. Go to the direction of the file (select the arrow facing downwards next to the reload icon). And press CNTRL + C. 
-  8. Go to the windows search bar and search for "CMD". Enter to the first option.
-  9. In this terminal, write "cd" and afterwards press CNTRL + V. The direction in your computer of the NextDoorDeals file should be pasted. E.g. cd C:\Users\maria\Desktop\NDD\NextDoorDeals
-  10. Press enter
-  11. Write this exact instruction --> pip install -r requirements.txt <--. This will downlad the neccesary libraries for the code to run. Press enter. Wait for it to finish. 
-  12. Write this exact instruction --> python manage.py runserver <--. Press enter. (If linux --> python3 manage.py runserver)
-  13. Go to your favourite browser and enter this link: http://localhost:8000/
-  14. If everything went well, you will see the NextDoorDeals page. Enjoy. 
+## Installation Steps
 
-    
+1. **Download the Project**
+   - Go to the [NextDoorDeals GitHub repository](https://github.com/AmazingJuan/NextDoorDeals).
+   - Click the green **"Code"** button.
+   - Select **"Download ZIP"** and wait for the download to finish.
+   - Locate the downloaded `.zip` file in your downloads folder.
+   - Extract the contents of the ZIP into a folder (e.g., `NextDoorDeals`).
 
+2. **Set Up the Project Directory**
+   - (Optional but recommended) Create an empty folder named `NDD` on your desktop and move the extracted `NextDoorDeals` folder inside it.
+   - Navigate to the `NextDoorDeals` folder.
+   - Copy the full path of the folder:
+     - **Windows**: Click the address bar in File Explorer to highlight the path, then press `CTRL + C` to copy.
+     - **Linux**: Right-click inside the folder and select **"Copy as Path"** (or use `pwd` in a terminal inside the folder).
 
+3. **Open the Command Line**
+   - Open the terminal:
+     - **Windows**: Search for **"CMD"** in the start menu and open it.
+     - **Linux**: Open the **Terminal**.
+   - Type the following command and paste the copied path:
+     ```sh
+     cd <PASTED_PATH>
+     ```
+     Example:
+     ```sh
+     cd C:\Users\maria\Desktop\NDD\NextDoorDeals
+     ```
+     Then press **Enter**.
+
+4. **Set Up a Virtual Environment (Recommended)**
+   To keep dependencies isolated, create a virtual environment before installing the requirements:
+   - Run the following command:
+     ```sh
+     python -m venv venv
+     ```
+     (For Linux, use `python3` instead of `python`)
+   - Activate the virtual environment:
+     - **Windows**:
+       ```sh
+       .\venv\Scripts\activate
+       ```
+     - **Linux/macOS**:
+       ```sh
+       source venv/bin/activate
+       ```
+
+5. **Install Dependencies**
+   - Run the following command to install the required libraries:
+     ```sh
+     pip install -r requirements.txt
+     ```
+
+6. **Run the Server**
+   - Start the Django development server:
+     ```sh
+     python manage.py runserver
+     ```
+     (For Linux, use `python3 manage.py runserver`)
+
+7. **Open the Web Application**
+   - Open your favorite browser and go to:
+     ```
+     http://localhost:8000/
+     ```
+   - If everything went well, you should see the **NextDoorDeals** homepage. Enjoy! 🚀
