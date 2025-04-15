@@ -107,15 +107,17 @@ def publish(request):
     return render(request, 'publish.html', {'publishForm':publishForm, 'sessionActive':checkSession(request.user)})
 
 def view_property(request, id):
-    property = Property.objects.get(id = id)
-    type = property.propertyType.name
-    sessionActive = checkSession(request.user)
-    if sessionActive:
-        is_fav = len(Favourites.objects.filter(property = property, associatedAccount = request.user.account)) != 0
-    else:
-        is_fav = None
-    return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive})
-
+    try:
+        property = Property.objects.get(id = id)
+        type = property.propertyType.name
+        sessionActive = checkSession(request.user)
+        if sessionActive:
+            is_fav = len(Favourites.objects.filter(property = property, associatedAccount = request.user.account)) != 0
+        else:
+            is_fav = None
+        return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive})
+    except:
+        return redirect('error')
 def favourite(request, id):
     account = request.user.account
     property = Property.objects.get(id = id)
@@ -130,3 +132,6 @@ def favourite(request, id):
 
 def schedule_appointment(request, id):
     ...
+
+def error404(request):
+    return render(request, 'error.html')

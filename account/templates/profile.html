@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+<!--
+{% block title %}
+
+<title>NextDoorDeals | {{ profile_user.username }}'s Profile</title>
+<meta name="description" content="View {{ profile_user.username }}'s profile on NextDoorDeals">
+
+{% endblock %}
+
+{% block extra_css %}
+    :root {
+        --form-max-width: 750px;
+        --card-border-radius: 1rem;
+        --transition-base: 0.3s ease;
+        --primary-gradient: linear-gradient(135deg, var(--primary-color), #3a45b4);
+        --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .profile-container {
+        min-height: calc(100vh - var(--navbar-height) - 2rem);
+        padding: 2rem 1rem;
+    }
+
+    .profile-card {
+        width: 100%;
+        max-width: var(--form-max-width);
+        border: none;
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+
+    .profile-header {
+        background: var(--primary-gradient);
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-white);
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .profile-avatar-icon {
+        font-size: 3.5rem;
+    }
+
+    .profile-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .profile-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 0.5rem;
+    }
+
+    .profile-body {
+        padding: 2rem;
+    }
+
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        transition: transform var(--transition-base);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .profile-section {
+        margin-bottom: 2rem;
+        background: #fff;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+    }
+
+    .section-title i {
+        margin-right: 0.5rem;
+    }
+
+    .listing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .listing-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: transform var(--transition-base);
+    }
+
+    .listing-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .listing-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .listing-info {
+        padding: 1rem;
+    }
+
+    .listing-title {
+        font-weight: 600;
+        margin: 0;
+        color: #1e293b;
+    }
+
+    .listing-price {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+
+    .rating-stars {
+        color: #fbbf24;
+        font-size: 1.25rem;
+    }
+
+    .review-list {
+        margin-top: 1rem;
+    }
+
+    .review-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .review-item:last-child {
+        border-bottom: none;
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .review-author {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .review-date {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    @media (max-width: 576px) {
+        .profile-header {
+            padding: 1.5rem;
+        }
+
+        .profile-body {
+            padding: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+        }
+
+        .profile-avatar-icon {
+            font-size: 3rem;
+        }
+
+        .listing-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+{% endblock %}
+
+{% block content %}
+<div class="profile-container d-flex align-items-center justify-content-center">
+    <div class="profile-card card">
+        <div class="profile-header">
+            <!--
+            <div class="profile-avatar">
+                {% if profile_user.profile.avatar %}
+                    <img src="{{ profile_user.profile.avatar.url }}" alt="Profile picture" class="img-fluid">
+                {% else %}
+                    <i class="bi bi-person-circle profile-avatar-icon" aria-hidden="true"></i>
+                {% endif %}
+            </div>
+            <h1 class="profile-title">{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+            <p class="profile-subtitle">Member since {{ profile_user.date_joined|date:"F Y" }}</p>
+            
+        </div>
+        <div class="profile-body">
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-number">{{ profile_user.listings.count }}</div>
+                    <div class="stat-label">Active Listings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ profile_user.sales.count }}</div>
+                    <div class="stat-label">Items Sold</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">
+                        {{ profile_user.rating|default:"0.0" }}
+                        <span class="rating-stars">
+                            {% with ''|center:profile_user.rating|default:0 as range %}
+                            {% for _ in range %}★{% endfor %}
+                            {% endwith %}
+                        </span>
+                    </div>
+                    <div class="stat-label">Rating</div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
+                    About
+                </h2>
+                <p>{{ profile_user.profile.bio|default:"No bio available"|linebreaks }}</p>
+                {% if profile_user.profile.location %}
+                    <p><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> {{ profile_user.profile.location }}</p>
+                {% endif %}
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <i class="bi bi-tag-fill" aria-hidden="true"></i>
+                    Active Listings
+                </h2>
+                {% if profile_user.listings.all %}
+                    <div class="listing-grid">
+                        {% for listing in profile_user.listings.all %}
+                            <div class="listing-card">
+                                {% if listing.image %}
+                                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="listing-image">
+                                {% else %}
+                                    <div class="listing-image bg-light d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="listing-info">
+                                    <h3 class="listing-title">{{ listing.title }}</h3>
+                                    <p class="listing-price">${{ listing.price }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No active listings</p>
+                {% endif %}
+            </div>
+
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <i class="bi bi-star-fill" aria-hidden="true"></i>
+                    Reviews
+                </h2>
+                {% if profile_user.reviews.all %}
+                    <div class="review-list">
+                        {% for review in profile_user.reviews.all %}
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <span class="review-author">{{ review.author.username }}</span>
+                                    <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="rating-stars">
+                                    {% with ''|center:review.rating as range %}
+                                    {% for _ in range %}★{% endfor %}
+                                    {% endwith %}
+                                </div>
+                                <p class="mt-2 mb-0">{{ review.comment }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No reviews yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+-->

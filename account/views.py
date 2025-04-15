@@ -85,8 +85,18 @@ def loginUser(request):
 def logout_logic(request):
     logout(request)
     return redirect('home')
-def view_profile(request, id):
-     ...
+
+
+def view_profile(request, username):
+    try:
+        profile_user = Account.objects.get(user__username__iexact=username)
+        return render(request, 'profile.html', {'profile_user':profile_user})
+    except:
+        return redirect('error')
+
+
+
+    
 
          
         

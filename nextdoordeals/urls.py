@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
     path('', include('property.urls')),
+    path('error/', propertyViews.error404, name='error')
 
 ]
 

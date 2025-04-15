@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>NextDoorDeals | Page Not Found</title>
+<meta name="description" content="The page you're looking for could not be found">
+{% endblock %}
+
+{% block extra_css %}
+    :root {
+        --form-max-width: 450px;
+        --card-border-radius: 1rem;
+        --transition-base: 0.3s ease;
+        --primary-gradient: linear-gradient(135deg, var(--primary-color), #3a45b4);
+        --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .error-container {
+        min-height: calc(100vh - var(--navbar-height) - 2rem);
+        padding: 2rem 1rem;
+    }
+
+    .error-card {
+        width: 100%;
+        max-width: var(--form-max-width);
+        border: none;
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+
+    .error-header {
+        background: var(--primary-gradient);
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-white);
+    }
+
+    .error-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .error-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .error-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        margin-top: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .error-body {
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .error-message {
+        color: #64748b;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    .home-button {
+        background: var(--primary-gradient);
+        border: none;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all var(--transition-base);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .home-button:hover,
+    .home-button:focus {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(43, 52, 153, 0.25);
+    }
+
+    .error-illustration {
+        max-width: 300px;
+        margin: 0 auto 2rem;
+        opacity: 0.9;
+    }
+
+    @media (max-width: 576px) {
+        .error-header {
+            padding: 1.5rem;
+        }
+
+        .error-body {
+            padding: 1.5rem;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+        }
+
+        .error-title {
+            font-size: 2rem;
+        }
+
+        .error-illustration {
+            max-width: 250px;
+        }
+    }
+{% endblock %}
+
+{% block content %}
+<div class="error-container d-flex align-items-center justify-content-center">
+    <div class="error-card card">
+        <div class="error-header">
+            <i class="bi bi-exclamation-diamond error-icon" aria-hidden="true"></i>
+            <h1 class="error-title">404</h1>
+            <p class="error-subtitle">Page Not Found</p>
+        </div>
+
+        <div class="error-body">
+            <img src="https://illustrations.popsy.co/white/falling.svg" 
+                 alt="404 illustration" 
+                 class="error-illustration">
+            
+            <p class="error-message">
+                Oops! The page you're looking for seems to have wandered off. 
+                Don't worry, you can always head back home and start fresh.
+            </p>
+
+            <a href="{% url 'home' %}" 
+               class="btn btn-primary home-button"
+               aria-label="Return to homepage">
+                <i class="bi bi-house-fill" aria-hidden="true"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
