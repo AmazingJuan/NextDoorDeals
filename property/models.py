@@ -31,7 +31,7 @@ class Property(models.Model):
     propertyType = models.ForeignKey(PropertyType, on_delete = models.CASCADE)
     price = models.IntegerField()
     SES = models.CharField(max_length = 1)
-    associatedAccount = models.ForeignKey(Account, on_delete = models.CASCADE)
+    associatedAccount = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='propertys')
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     creationDate = models.DateTimeField(auto_now_add=True)
 
@@ -47,3 +47,8 @@ class Favourites(models.Model):
 
 class Appointment(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
+
+class Visit(models.Model):
+    visited_user = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='visits')
+    date = models.DateTimeField()
+

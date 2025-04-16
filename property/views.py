@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Property, City, District, Images, PropertyType, Favourites, Location, Coordinates
+from .models import Property, City, District, Images, PropertyType, Favourites, Location, Coordinates, Visit
 from .forms import PublishForm
 from account.views import checkSession
 from django.contrib import messages
@@ -107,17 +107,18 @@ def publish(request):
     return render(request, 'publish.html', {'publishForm':publishForm, 'sessionActive':checkSession(request.user)})
 
 def view_property(request, id):
-    try:
-        property = Property.objects.get(id = id)
-        type = property.propertyType.name
-        sessionActive = checkSession(request.user)
-        if sessionActive:
-            is_fav = len(Favourites.objects.filter(property = property, associatedAccount = request.user.account)) != 0
-        else:
-            is_fav = None
-        return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive})
-    except:
-        return redirect('error')
+    #try:
+    property = Property.objects.get(id = id)
+    type = property.propertyType.name
+    sessionActive = checkSession(request.user)
+    Visit.objects.create(visited_user = property.associatedAccount)
+    if sessionActive:
+        is_fav = len(Favourites.objects.filter(property = property, associatedAccount = request.user.account)) != 0
+    else:
+        is_fav = None
+    return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive})
+"""    except:
+        return redirect('error')"""
 def favourite(request, id):
     account = request.user.account
     property = Property.objects.get(id = id)

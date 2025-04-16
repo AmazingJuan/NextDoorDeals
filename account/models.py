@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 # Create your models here.
 class UserType(models.Model): 
@@ -13,9 +15,11 @@ class Role(models.Model):
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete =models.CASCADE, primary_key= True, related_name='account')
     profilePicture = models.ImageField(null = True, blank = True)
+    rating = models.FloatField()
     phone = models.IntegerField()
     userType = models.ForeignKey(UserType, on_delete = models.CASCADE)
     role = models.ForeignKey(Role, on_delete = models.CASCADE)
+    creationDate = models.DateTimeField(auto_now_add=True)
 
 class PersonAccount(models.Model):
     associatedAccount = models.OneToOneField(Account, on_delete = models.CASCADE, blank = False, primary_key=True)

@@ -1,10 +1,7 @@
 {% extends 'base.html' %}
-<!--
 {% block title %}
-
 <title>NextDoorDeals | {{ profile_user.username }}'s Profile</title>
 <meta name="description" content="View {{ profile_user.username }}'s profile on NextDoorDeals">
-
 {% endblock %}
 
 {% block extra_css %}
@@ -195,6 +192,55 @@
         font-size: 0.875rem;
     }
 
+    /* Chart Styles */
+    .chart-item {
+        display: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .chart-item.active {
+        display: block;
+    }
+
+    .btn-group .btn {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-group .btn::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.5);
+        transition: width 0.3s ease;
+    }
+
+    .btn-group .btn.active::after {
+        width: 100%;
+    }
+
+    .chart-container {
+        min-height: 600px; /* Aumentado de 400px a 600px */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem; /* Añadido padding para más espacio */
+    }
+
+    .chart-container img {
+        max-width: 900px; /* Añadido un max-width específico */
+        width: 100%;
+        height: auto;
+    }
+
+    .charts-wrapper {
+        max-width: 1000px; /* Aumentado el ancho máximo del wrapper */
+        margin: 0 auto;
+    }
+
     @media (max-width: 576px) {
         .profile-header {
             padding: 1.5rem;
@@ -216,6 +262,11 @@
         .listing-grid {
             grid-template-columns: 1fr;
         }
+
+        .chart-container {
+            min-height: 400px; /* Altura más pequeña en móviles */
+            padding: 1rem;
+        }
     }
 {% endblock %}
 
@@ -223,108 +274,137 @@
 <div class="profile-container d-flex align-items-center justify-content-center">
     <div class="profile-card card">
         <div class="profile-header">
-            <!--
             <div class="profile-avatar">
-                {% if profile_user.profile.avatar %}
+                {% if profile_user.profilePicture %}
                     <img src="{{ profile_user.profile.avatar.url }}" alt="Profile picture" class="img-fluid">
                 {% else %}
                     <i class="bi bi-person-circle profile-avatar-icon" aria-hidden="true"></i>
                 {% endif %}
             </div>
-            <h1 class="profile-title">{{ profile_user.get_full_name|default:profile_user.username }}</h1>
-            <p class="profile-subtitle">Member since {{ profile_user.date_joined|date:"F Y" }}</p>
+            <h1 class="profile-title">hola</h1>
+            <p class="profile-subtitle">Member since {{ profile_user.creationDate|date:"F Y" }}</p>
             
         </div>
         <div class="profile-body">
             <div class="profile-stats">
                 <div class="stat-card">
-                    <div class="stat-number">{{ profile_user.listings.count }}</div>
-                    <div class="stat-label">Active Listings</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ profile_user.sales.count }}</div>
-                    <div class="stat-label">Items Sold</div>
-                </div>
-                <div class="stat-card">
                     <div class="stat-number">
                         {{ profile_user.rating|default:"0.0" }}
                         <span class="rating-stars">
-                            {% with ''|center:profile_user.rating|default:0 as range %}
-                            {% for _ in range %}★{% endfor %}
+                            {% with rating=profile_user.rating %}
+                                {% with full_stars=rating|floatformat:0 %}
+                                    {% with remainder=rating|floatformat:1|stringformat:"s"|slice:"-1" %}
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= full_stars %}
+                                                ★
+                                            {% elif forloop.counter == full_stars|add:"1" and remainder|add:"0" >= "5" %}
+                                                ⯨
+                                            {% else %}
+                                                ☆
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                {% endwith %}
                             {% endwith %}
                         </span>
                     </div>
                     <div class="stat-label">Rating</div>
                 </div>
             </div>
-
-            <div class="profile-section">
-                <h2 class="section-title">
-                    <i class="bi bi-person-lines-fill" aria-hidden="true"></i>
-                    About
-                </h2>
-                <p>{{ profile_user.profile.bio|default:"No bio available"|linebreaks }}</p>
-                {% if profile_user.profile.location %}
-                    <p><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> {{ profile_user.profile.location }}</p>
-                {% endif %}
-            </div>
-
+        {% if profile_user.role.nameRole == 'Seller' %}
             <div class="profile-section">
                 <h2 class="section-title">
                     <i class="bi bi-tag-fill" aria-hidden="true"></i>
-                    Active Listings
+                    {% if is_same_user %}
+                        Your Active Listings
+                    {% else %}
+                        Active Listings
+                    {% endif %}
                 </h2>
-                {% if profile_user.listings.all %}
-                    <div class="listing-grid">
-                        {% for listing in profile_user.listings.all %}
-                            <div class="listing-card">
-                                {% if listing.image %}
-                                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="listing-image">
-                                {% else %}
-                                    <div class="listing-image bg-light d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
-                                    </div>
+            
+                {% if profile_user.propertys.all %}
+                    <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for listing in profile_user.propertys.all %}
+                                {% if listing.imagenes.all %}
+                                    {% with first_image=listing.imagenes.first %}
+                                        <div class="carousel-item {% if forloop.first %} active {% endif %}">
+                                            <a href="{% url 'property_info' listing.id %}">
+                                                <img src="{{ first_image.image.url }}" class="d-block w-100" alt="{{ listing.title }}">
+                                            </a>
+                                        </div>
+                                    {% endwith %}
                                 {% endif %}
-                                <div class="listing-info">
-                                    <h3 class="listing-title">{{ listing.title }}</h3>
-                                    <p class="listing-price">${{ listing.price }}</p>
-                                </div>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
                     </div>
                 {% else %}
                     <p class="text-muted">No active listings</p>
                 {% endif %}
             </div>
-
+        {% if is_same_user %}
             <div class="profile-section">
                 <h2 class="section-title">
-                    <i class="bi bi-star-fill" aria-hidden="true"></i>
-                    Reviews
+                    <i class="bi bi-bar-chart" aria-hidden="true"></i>
+                    Visit Analytics Section
                 </h2>
-                {% if profile_user.reviews.all %}
-                    <div class="review-list">
-                        {% for review in profile_user.reviews.all %}
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <span class="review-author">{{ review.author.username }}</span>
-                                    <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
-                                </div>
-                                <div class="rating-stars">
-                                    {% with ''|center:review.rating as range %}
-                                    {% for _ in range %}★{% endfor %}
-                                    {% endwith %}
-                                </div>
-                                <p class="mt-2 mb-0">{{ review.comment }}</p>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted">No reviews yet</p>
-                {% endif %}
+
+                <div id="yearly-chart" class="chart-item active">
+                    <img src="data:image/png;base64,{{ graphic_year }}" 
+                            class="img-fluid" 
+                            alt="Yearly Analysis Chart">
+                </div>
+                
+                <div id="monthly-chart" class="chart-item">
+                    <img src="data:image/png;base64,{{ graphic_month }}" 
+                            class="img-fluid" 
+                            alt="Monthly Trends Chart">
+                </div>
+                
+                <div id="weekly-chart" class="chart-item">
+                    <img src="data:image/png;base64,{{ graphic_weekday }}" 
+                            class="img-fluid" 
+                            alt="Weekly Pattern Chart">
+                </div>
+
+                <div class="btn-group mb-4" role="group" aria-label="Chart selector">
+                    <button type="button" class="btn btn-outline-primary active" data-chart="yearly" onclick="switchChart('yearly')">
+                        <i class="bi bi-calendar3"></i> Yearly
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-chart="monthly" onclick="switchChart('monthly')">
+                        <i class="bi bi-calendar-month"></i> Monthly
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-chart="weekly" onclick="switchChart('weekly')">
+                        <i class="bi bi-calendar-week"></i> Weekly
+                    </button>
+                </div>
             </div>
-        </div>
+        {% endif %}
+        {% endif %}
     </div>
 </div>
+
+<script>
+    function switchChart(chartId) {
+        // Remove active class from all buttons and charts
+        document.querySelectorAll('.btn-group .btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelectorAll('.chart-item').forEach(chart => {
+            chart.classList.remove('active');
+        });
+        
+        // Add active class to selected button and chart
+        document.querySelector(`[data-chart="${chartId}"]`).classList.add('active');
+        document.getElementById(`${chartId}-chart`).classList.add('active');
+    }
+</script>
 {% endblock %}
--->

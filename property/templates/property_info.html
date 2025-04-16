@@ -256,27 +256,25 @@
     <div class="row g-5 justify-content-center">
         <!-- Galería de Imágenes -->
         <div class="col-12 col-lg-8">
-            <div class="gallery-container">
-                <img src="{{ property.imagenes.first.image.url }}" 
-                     id="property-image" 
-                     class="gallery-image" 
-                     alt="{{ property.title }}">
+            <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in property.imagenes.all %}
+                    <div class="carousel-item {% if forloop.first %} active {% endif %}">
+                        <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ property.title }}">
+                    </div>
+                    {% endfor %}
+                </div>
                 
-                <button type="button" 
-                        class="nav-button prev" 
-                        onclick="previousImage()" 
-                        id="btn-previous" 
-                        style="display:none">
-                    <i class="bi bi-chevron-left fs-4"></i>
+                <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
                 </button>
                 
-                <button type="button" 
-                        class="nav-button next" 
-                        onclick="nextImage()" 
-                        id="btn-next" style="display:none">
-                    <i class="bi bi-chevron-right fs-4"></i>
+                <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
                 </button>
-
+        
                 <div class="image-counter">
                     <span id="current-image">1</span> / <span>{{ property.imagenes.count }}</span>
                 </div>
@@ -354,15 +352,23 @@
 </div>
 
 <script>
-    var images = [
-        {% for image in property.imagenes.all %}
-            "{{ image.image.url }}",
-        {% endfor %}
-    ]
-    current_id = 0
-    if (images.length != 1){
-        document.getElementById("btn-next").style.display = "block";
-    }
+    // Número total de imágenes
+    const totalImages = {{ property.imagenes.count }};
+    const currentImageElement = document.getElementById('current-image');
+    
+    // Función para actualizar el contador de la imagen actual
+    const updateImageCounter = () => {
+        const activeItem = document.querySelector('#propertyCarousel .carousel-item.active');
+        const items = document.querySelectorAll('#propertyCarousel .carousel-item');
+        const currentIndex = Array.from(items).indexOf(activeItem) + 1; // +1 porque los índices empiezan desde 0
+        currentImageElement.textContent = currentIndex;
+    };
+
+    // Actualiza el contador cuando el carrusel se desplace
+    document.querySelector('#propertyCarousel').addEventListener('slid.bs.carousel', updateImageCounter);
+
+    // Inicializa el contador en la primera imagen
+    updateImageCounter();
 </script>
 <script src="{% static 'js/property_details.js' %}"></script>
 {% endblock %}
