@@ -386,7 +386,7 @@
                                     {{ types|getTypeID:property.propertyType.id }}
                                 </span>
                             </div>
-    
+                        </a>
                             {% if False %}
                             <div class="mb-3">
                                 <a href="{{ property.location }}" 
@@ -398,13 +398,13 @@
                                 </a>
                             </div>
                             {% endif %}
-                            
+                        <a href="{% url 'view_profile' username=property.associatedAccount.user.username %}" class="text-decoration-none text-reset">
                             <div class="text-muted small pt-2 border-top">
                                 <i class="bi bi-person-circle me-1"></i>
                                 Listed by {{ property.associatedAccount.user }}
                             </div>
+                        </a>
                         </div>
-                    </a>
                 </article>
             </div>
             {% endfor %}

@@ -3,7 +3,7 @@
 {% load static %}
 {% load humanize %}
 {% block title %}
-    <title>{{ property.title }} - Luxury Real Estate</title>
+    <title>{{ property.title }} - NextDoorDeals</title>
 {% endblock %}
 
 {% block extra_css %}
@@ -249,6 +249,191 @@
                 height: 3.5rem;
             }
         }
+
+        /* Estilos para la sección de reseñas */
+        .review-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .review-card:hover {
+            transform: translateY(-7px) scale(1.01);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(15, 23, 42, 0.15);
+        }
+
+        .review-header {
+            padding: 2rem 2rem 1rem;
+            position: relative;
+        }
+
+        .review-body {
+            padding: 1rem 2rem 2rem;
+            flex-grow: 1;
+        }
+
+        .avatar-container {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .rating {
+            font-size: 1.25rem;
+            color: #a16207;
+        }
+
+        .rating i {
+            margin-right: 0.25rem;
+        }
+
+        .rating i.filled {
+            color: #f59e0b;
+        }
+
+        .review-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #334155;
+        }
+
+        /* Formulario de reseñas */
+        .review-form-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            padding: 3rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .review-form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(15, 23, 42, 0.15);
+        }
+
+        .rating-selector {
+            display: flex;
+            align-items: center;
+        }
+
+        .stars {
+            display: flex;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .rating-star {
+            color: #cbd5e1;
+            transition: all 0.3s ease;
+            margin-right: 0.25rem;
+        }
+
+        .rating-star:hover, 
+        .rating-star.selected {
+            color: #f59e0b;
+            transform: scale(1.15);
+        }
+
+        .rating-text {
+            font-size: 1rem;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+
+        .luxury-input {
+            border: none;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            font-size: 1.1rem;
+            resize: none;
+        }
+
+        .luxury-input:focus {
+            outline: none;
+            border-color: #0f172a;
+            background: rgba(248, 250, 252, 1);
+            box-shadow: 0 15px 25px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .luxury-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .review-submit {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        /* Estado vacío y prompt de inicio de sesión */
+        .empty-reviews, .login-prompt-card {
+            background: rgba(248, 250, 252, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            padding: 4rem 2rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-reviews:hover, .login-prompt-card:hover {
+            background: rgba(248, 250, 252, 1);
+            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.12);
+            transform: scale(1.02);
+        }
+
+        .detail-icon {
+            font-size: 3.5rem;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .review-form-card, .login-prompt-card {
+                padding: 2rem;
+            }
+            
+            .stars {
+                font-size: 1.75rem;
+            }
+        }
 {% endblock %}
 
 {% block content %}
@@ -256,43 +441,48 @@
     <div class="row g-5 justify-content-center">
         <!-- Galería de Imágenes -->
         <div class="col-12 col-lg-8">
-            <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    {% for image in property.imagenes.all %}
-                    <div class="carousel-item {% if forloop.first %} active {% endif %}">
-                        <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ property.title }}">
+            <div class="gallery-container position-relative mb-4">
+                <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in property.imagenes.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.image.url }}" class="gallery-image" alt="{{ property.title }}">
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
-                
-                <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                
-                <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-        
-                <div class="image-counter">
-                    <span id="current-image">1</span> / <span>{{ property.imagenes.count }}</span>
+                    <!-- Botones de navegación luxury -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    <div class="image-counter">
+                        <span id="current-image">1</span> / <span>{{ property.imagenes.count }}</span>
+                    </div>
                 </div>
             </div>
         </div>
 
+
+        <!-- Información de la propiedad -->
         <div class="col-12 col-lg-6">
-            <div class="property-card">
-                <div class="property-header">
-                    <h1 class="display-5 fw-bold text-white mb-3">{{ property.title }}</h1>
+            <div class="property-card h-100 d-flex flex-column justify-content-between">
+                <!-- Cabecera elegante con fondo y efecto -->
+                <div class="property-header position-relative">
+                    <h1 class="display-5 fw-bold text-white mb-2">{{ property.title }}</h1>
                     <p class="fs-5 text-white mb-0 opacity-90">
                         <i class="bi bi-geo-alt-fill me-2"></i>
                         {{ property.location.district.name }} - {{ property.location.district.city.name }}
                     </p>
                 </div>
-                
-                <div class="p-5">
-                    <div class="d-flex flex-wrap gap-4 mb-5">
+        
+                <!-- Cuerpo del card con mejor separación -->
+                <div class="p-5 d-flex flex-column gap-4 flex-grow-1">
+                    <!-- Badges de precio y SES alineados y con aire -->
+                    <div class="d-flex flex-wrap gap-4 mb-3 justify-content-start">
                         <div class="feature-badge badge-price">
                             <i class="bi bi-tag-fill me-3"></i>${{ property.price|intcomma }}
                         </div>
@@ -300,75 +490,263 @@
                             <i class="bi bi-star-fill me-3"></i>SES {{ property.SES }}
                         </div>
                     </div>
-
-                    <div class="mb-5">
-                        <h3 class="fw-bold text-primary mb-4">
+        
+                    <!-- Tipo de propiedad y descripción -->
+                    <div>
+                        <h3 class="fw-bold text-primary mb-3">
                             <i class="bi bi-house-door-fill me-3"></i>{{ pType }}
                         </h3>
-                        
-                        <div class="description-box">
-                            <h4 class="fw-bold mb-4">Description</h4>
-                            <p class="lead text-dark lh-lg mb-0">
-                                {{ property.description }}
-                            </p>
+                        <div class="description-box mt-2">
+                            <h4 class="fw-bold mb-3">Description</h4>
+                            <p class="lead text-dark lh-lg mb-0">{{ property.description }}</p>
                         </div>
                     </div>
-
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="detail-card">
+        
+                    <!-- Detalles en dos columnas, bien espaciados -->
+                    <div class="row g-4 mt-2">
+                        <div class="col-12 col-md-6">
+                            <div class="detail-card h-100">
                                 <i class="bi bi-geo-alt-fill detail-icon"></i>
-                                <h5 class="fw-bold mb-2">Location</h5>
+                                <h5 class="fw-bold mb-2">Ubication</h5>
                                 <p class="text-muted mb-0 fs-5">{{ property.district.name }}</p>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="detail-card">
+                        <div class="col-12 col-md-6">
+                            <div class="detail-card h-100">
                                 <i class="bi bi-calendar-check-fill detail-icon"></i>
-                                <h5 class="fw-bold mb-2">Publication date</h5>
+                                <h5 class="fw-bold mb-2">Listing date</h5>
                                 <p class="text-muted mb-0 fs-5">{{ property.creationDate|date:"d M, Y" }}</p>
                             </div>
                         </div>
                     </div>
-
-                    
+    
+                    <!-- Botones de acción bien separados y con ancho fijo en desktop -->
                     {% if sessionActive %}
-                        <a href="{% url 'appointment' id=property.id %}" class="action-button mt-5">
-                            <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
-                        </a>
-                        <a href="{% url 'makeFavourite' id=property.id %}" class="action-button favorite mt-3">
-                            <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
-                            {% if is_fav %}
-                                Delete from favourites
-                            {% else %}
-                                Add to favourites
-                            {% endif %}
-                        </a>
+                        <div class="d-flex flex-column flex-md-row gap-3 mt-4">
+                            <a href="{% url 'appointment' id=property.id %}" class="action-button flex-fill">
+                                <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
+                            </a>
+                            <form method="post" class="flex-fill">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="favourite">
+                                <button type="submit" class="action-button favorite flex-fill">
+                                    <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
+                                    {% if is_fav %}
+                                        Remove from favorites
+                                    {% else %}
+                                        Add to favorite
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
                     {% endif %}
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- Sección de Reseñas -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="fw-bold text-center mb-5 display-5">Thoughts about this property</h2>
+            </div>
+        </div>
+        <div class="row g-4 mb-5 justify-content-center">
+            {% if property.reviews.all %}
+                {% for review in property.reviews.all %}
+                <div class="col-12 col-md-6 col-lg-5 d-flex">
+                    <div class="review-card flex-fill">
+                        <div class="review-header">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-container">
+                                <a href = "{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
+                                    {% if review.user.profilePicture %}
+                                        <img src="{{ review.user.profilePicture.url }}" alt="{{ review.user.username }}" class="avatar-image">
+                                    {% else %}
+                                        <div class="avatar-placeholder">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                    {% endif %}
+                                                                    </a>
+                                </div>
+                                <div class="ms-3">
+                                    <a href = "{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
+                                    <h5 class="fw-bold mb-1">
+                                        {% if review.reviewer.userType.nameUserType == 'Natural Person' %}
+                                        {{ review.reviewer.personAccount.firstName }} {{ review.reviewer.personAccount.lastName }}
+                                        {% else %}
+                                        {{review.reviewer.bussinessAccount.nameBussiness}}
+                                        {% endif %}
+                                        </h5>
+                                    <p class="text-muted small mb-0">{{ review.created_at|date:"d M, Y" }}</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-body">
+                            <div class="rating mb-3">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="bi bi-star-fill filled"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="review-text">{{ review.comment }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="empty-reviews">
+                        <i class="bi bi-chat-square-text detail-icon"></i>
+                        <h4 class="fw-bold mb-3">There's no reviews yet</h4>
+                        <p class="lead text-muted">Be the first one and review this property.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Formulario para agregar reseñas -->
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+                {% if sessionActive %}
+                <div class="review-form-card mt-3">
+                    <h3 class="fw-bold mb-4 text-center">Share your experience</h3>
+                    <form method="post" action="" id="reviewForm">
+                        {% csrf_token %}
+                        <div class="form-group mb-4">
+                            <input type="hidden" name="action" value="review">
+                            <label class="fw-bold mb-2">Your rating</label>
+                            <div class="rating-selector align-items-center">
+                                <input type="hidden" name="rating" id="selected-rating" value="0">
+                                <div class="stars me-3">
+                                    <i class="bi bi-star rating-star" data-value="1"></i>
+                                    <i class="bi bi-star rating-star" data-value="2"></i>
+                                    <i class="bi bi-star rating-star" data-value="3"></i>
+                                    <i class="bi bi-star rating-star" data-value="4"></i>
+                                    <i class="bi bi-star rating-star" data-value="5"></i>
+                                </div>
+                                <span class="rating-text ms-2">Select a rating</span>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="review-comment" class="fw-bold mb-2">Your comment</label>
+                            <textarea id="review-comment" name="comment" class="form-control luxury-input" rows="5" placeholder="Comparte tu experiencia..." required></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="action-button review-submit px-5" id="submit-review">
+                                <i class="bi bi-send-fill me-2"></i>Send review
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="login-prompt-card mt-3">
+                    <i class="bi bi-shield-lock detail-icon"></i>
+                    <h4 class="fw-bold mb-2">You must sign in in order to review a property</h4>
+                    <p class="lead text-muted mb-4">Share your opinion with others signing in into your account.</p>
+                    <a href="{% url 'login' %}" class="action-button px-5">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
 </div>
 
 <script>
     // Número total de imágenes
     const totalImages = {{ property.imagenes.count }};
     const currentImageElement = document.getElementById('current-image');
-    
-    // Función para actualizar el contador de la imagen actual
     const updateImageCounter = () => {
         const activeItem = document.querySelector('#propertyCarousel .carousel-item.active');
         const items = document.querySelectorAll('#propertyCarousel .carousel-item');
-        const currentIndex = Array.from(items).indexOf(activeItem) + 1; // +1 porque los índices empiezan desde 0
+        const currentIndex = Array.from(items).indexOf(activeItem) + 1;
         currentImageElement.textContent = currentIndex;
     };
-
-    // Actualiza el contador cuando el carrusel se desplace
     document.querySelector('#propertyCarousel').addEventListener('slid.bs.carousel', updateImageCounter);
-
-    // Inicializa el contador en la primera imagen
     updateImageCounter();
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingStars = document.querySelectorAll('.rating-star');
+        const ratingInput = document.getElementById('selected-rating');
+        const ratingText = document.querySelector('.rating-text');
+        const ratingTexts = {
+            0: 'Select a rating',
+            1: 'Disgusting',
+            2: 'Could be better',
+            3: 'Good enough',
+            4: 'Pretty good',
+            5: 'Good asf'
+        };
+        function updateStars(rating) {
+            ratingStars.forEach(star => {
+                const starValue = parseInt(star.getAttribute('data-value'));
+                if (starValue <= rating) {
+                    star.classList.add('selected');
+                    star.classList.remove('bi-star');
+                    star.classList.add('bi-star-fill');
+                } else {
+                    star.classList.remove('selected');
+                    star.classList.remove('bi-star-fill');
+                    star.classList.add('bi-star');
+                }
+            });
+            ratingText.textContent = ratingTexts[rating];
+            ratingInput.value = rating;
+        }
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-value'));
+                updateStars(rating);
+            });
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.getAttribute('data-value'));
+                ratingStars.forEach(s => {
+                    const value = parseInt(s.getAttribute('data-value'));
+                    if (value <= rating) {
+                        s.classList.remove('bi-star');
+                        s.classList.add('bi-star-fill');
+                    } else {
+                        s.classList.remove('bi-star-fill');
+                        s.classList.add('bi-star');
+                    }
+                });
+                ratingText.textContent = ratingTexts[rating];
+            });
+        });
+        const starsContainer = document.querySelector('.stars');
+        starsContainer.addEventListener('mouseleave', function() {
+            const currentRating = parseInt(ratingInput.value);
+            updateStars(currentRating);
+        });
+        const reviewForm = document.getElementById('reviewForm');
+        reviewForm.addEventListener('submit', function(e) {
+            const rating = parseInt(ratingInput.value);
+            const comment = document.getElementById('review-comment').value.trim();
+            if (rating === 0) {
+                e.preventDefault();
+                ratingText.textContent = 'Por favor selecciona una calificación';
+                ratingText.style.color = '#ef4444';
+                setTimeout(() => {
+                    ratingText.style.color = '';
+                    ratingText.textContent = ratingTexts[0];
+                }, 3000);
+            }
+            if (comment === '') {
+                e.preventDefault();
+                const textarea = document.getElementById('review-comment');
+                textarea.style.borderColor = '#ef4444';
+                setTimeout(() => {
+                    textarea.style.borderColor = '';
+                }, 3000);
+            }
+        });
+    });
+</script>
+
 <script src="{% static 'js/property_details.js' %}"></script>
 {% endblock %}

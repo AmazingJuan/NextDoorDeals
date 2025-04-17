@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load mathfilters %}
+
 {% block title %}
 <title>NextDoorDeals | {{ profile_user.username }}'s Profile</title>
 <meta name="description" content="View {{ profile_user.username }}'s profile on NextDoorDeals">
@@ -11,6 +13,29 @@
         --transition-base: 0.3s ease;
         --primary-gradient: linear-gradient(135deg, var(--primary-color), #3a45b4);
         --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .star-rating {
+        direction: rtl;
+        unicode-bidi: bidi-override;
+    }
+    .star-rating input[type="radio"] {
+        display: none;
+    }
+    .star-rating label {
+        font-size: 2.5rem;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.2s;
+        margin: 0 0.1em;
+    }
+    .star-rating input[type="radio"]:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #ffc107;
+    }
+    .star-rating input[type="radio"]:focus ~ label {
+        outline: 1px solid #333;
     }
 
     .profile-container {
@@ -131,6 +156,15 @@
         transition: transform var(--transition-base);
     }
 
+    .chart-img-large {
+        max-width: 100%;
+        max-height: 600px;
+        width: auto;
+        height: auto;
+        display: inline-block;
+        object-fit: contain;
+    }
+
     .listing-card:hover {
         transform: translateY(-2px);
     }
@@ -222,18 +256,44 @@
         width: 100%;
     }
 
+    /* Estilos actualizados para la sección de estadísticas */
+    .analytics-section {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
     .chart-container {
-        min-height: 600px; /* Aumentado de 400px a 600px */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .chart-image-wrapper {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 2rem;
+        min-height: 500px;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem; /* Añadido padding para más espacio */
     }
 
-    .chart-container img {
-        max-width: 900px; /* Añadido un max-width específico */
-        width: 100%;
+    .chart-img-large {
+        max-width: 100%;
+        max-height: 600px;
+        width: auto;
         height: auto;
+        object-fit: contain;
+        border-radius: 0.5rem;
+    }
+
+    .chart-switcher {
+        width: 100%;
+        margin-top: 1rem;
     }
 
     .charts-wrapper {
@@ -263,148 +323,303 @@
             grid-template-columns: 1fr;
         }
 
-        .chart-container {
-            min-height: 400px; /* Altura más pequeña en móviles */
-            padding: 1rem;
+        .chart-image-wrapper {
+            min-height: 350px;
+        }
+        
+        .chart-img-large {
+            max-height: 400px;
         }
     }
 {% endblock %}
 
 {% block content %}
-<div class="profile-container d-flex align-items-center justify-content-center">
-    <div class="profile-card card">
-        <div class="profile-header">
-            <div class="profile-avatar">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card profile-card shadow-lg p-4">
+        <div class="profile-header bg-primary bg-gradient rounded-4 p-4 mb-4">
+            <div class="text-center mb-3">
                 {% if profile_user.profilePicture %}
-                    <img src="{{ profile_user.profile.avatar.url }}" alt="Profile picture" class="img-fluid">
+                    <img src="{{ profile_user.profile.avatar.url }}" 
+                         alt="Profile picture"
+                         class="img-fluid rounded-circle mx-auto d-block shadow"
+                         style="width: 140px; height: 140px; object-fit: cover;">
                 {% else %}
-                    <i class="bi bi-person-circle profile-avatar-icon" aria-hidden="true"></i>
+                    <span class="d-inline-block bg-white rounded-circle mx-auto" 
+                          style="width: 140px; height: 140px; line-height: 140px;">
+                        <i class="bi bi-person-circle fs-1 text-secondary align-middle"></i>
+                    </span>
                 {% endif %}
             </div>
-            <h1 class="profile-title">hola</h1>
-            <p class="profile-subtitle">Member since {{ profile_user.creationDate|date:"F Y" }}</p>
-            
-        </div>
-        <div class="profile-body">
-            <div class="profile-stats">
-                <div class="stat-card">
-                    <div class="stat-number">
-                        {{ profile_user.rating|default:"0.0" }}
-                        <span class="rating-stars">
-                            {% with rating=profile_user.rating %}
-                                {% with full_stars=rating|floatformat:0 %}
-                                    {% with remainder=rating|floatformat:1|stringformat:"s"|slice:"-1" %}
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= full_stars %}
-                                                ★
-                                            {% elif forloop.counter == full_stars|add:"1" and remainder|add:"0" >= "5" %}
-                                                ⯨
-                                            {% else %}
-                                                ☆
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endwith %}
-                                {% endwith %}
-                            {% endwith %}
-                        </span>
-                    </div>
-                    <div class="stat-label">Rating</div>
-                </div>
-            </div>
-        {% if profile_user.role.nameRole == 'Seller' %}
-            <div class="profile-section">
-                <h2 class="section-title">
-                    <i class="bi bi-tag-fill" aria-hidden="true"></i>
-                    {% if is_same_user %}
-                        Your Active Listings
+            <h1 class="profile-title fw-bold mb-2 text-white text-center">
+                {% if profile_user.userType.nameUserType == 'Natural Person' %}
+                    {{ profile_user.personAccount.firstName }} {{ profile_user.personAccount.lastName }}
+                {% else %}
+                    {{ profile_user.bussinessAccount.nameBussiness }}
+                {% endif %}
+            </h1>
+            <div class="text-center">
+                <span class="badge 
+                    {% if profile_user.userType.nameUserType == 'Natural Person' %}
+                        bg-info text-dark
                     {% else %}
-                        Active Listings
+                        bg-warning text-dark
                     {% endif %}
-                </h2>
-            
-                {% if profile_user.propertys.all %}
-                    <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            {% for listing in profile_user.propertys.all %}
-                                {% if listing.imagenes.all %}
-                                    {% with first_image=listing.imagenes.first %}
-                                        <div class="carousel-item {% if forloop.first %} active {% endif %}">
-                                            <a href="{% url 'property_info' listing.id %}">
-                                                <img src="{{ first_image.image.url }}" class="d-block w-100" alt="{{ listing.title }}">
-                                            </a>
-                                        </div>
-                                    {% endwith %}
-                                {% endif %}
-                            {% endfor %}
+                    px-3 py-2 fs-6 rounded-pill">
+                    {% if profile_user.userType.nameUserType == 'Natural Person' %}
+                        Natural Person
+                    {% else %}
+                        Business
+                    {% endif %}
+                </span>
+            </div>
+            <p class="profile-subtitle text-white-50 mt-2 mb-0 text-center">
+                <i class="bi bi-calendar-check me-2"></i>
+                Member since {{ profile_user.creationDate|date:"F Y" }}
+            </p>
+        </div>
+
+        <!-- Cuerpo del perfil -->
+        <div class="profile-body p-4 p-lg-5">
+            <!-- Sección de calificación -->
+            <div class="rating-section mb-5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="current-rating">
+                        <span class="display-4 fw-bold text-primary me-3">
+                            {{ profile_user.rating|default:"0.0"|floatformat:2 }}
+                        </span>
+                        <div class="stars-container d-inline-block">
+                            {% with rating=profile_user.rating %}
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= rating %}
+                                        <i class="bi bi-star-fill fs-1 text-warning"></i>
+                                    {% elif forloop.counter < rating|add:0.5 %}
+                                        <i class="bi bi-star-half fs-1 text-warning"></i>
+                                    {% else %}
+                                        <i class="bi bi-star fs-1 text-warning"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endwith %}
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                        <div class="rating-count mt-2">
+                            <span class="text-muted">
+                                {{ profile_user.rating_count }} {{ profile_user.rating_count|pluralize:"rating,ratings" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {% if not is_same_user and request.user.is_authenticated%}
+                    <div class="rating-control">
+                        <div class="dropdown">
+                            <button class="btn btn-warning btn-lg px-4 py-3 rounded-pill" 
+                                    type="button" 
+                                    data-bs-toggle="dropdown"
+                                    data-bs-auto-close="outside">
+                                <i class="bi bi-star-fill me-2"></i>
+                                Calificar usuario
+                            </button>
+                    
+                            <div class="dropdown-menu dropdown-menu-end p-4 shadow-lg" style="min-width: 400px;">
+                                <form method="post" class="rating-form">
+                                    {% csrf_token %}
+                                    
+                                    <h4 class="mb-4 text-center fw-bold">Calificar a {{ profile_user.personAccount.firstName }}</h4>
+                    
+                                    {# Mostrar mensajes de error (si los hay) #}
+                                    {% if error_message %}
+                                        <div class="alert alert-danger">{{ error_message }}</div>
+                                    {% endif %}
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-success">{{ message }}</div>
+                                        {% endfor %}
+                                    {% endif %}
+                    
+                                    <div class="star-rating-wrapper mb-4">
+                                        <div class="star-rating d-flex justify-content-center">
+                                            {% for star in "54321" %}
+                                            <input type="radio" id="star{{ star }}" name="rating" value="{{ star }}" required />
+                                            <label for="star{{ star }}" title="{{ star }} estrellas">&#9733;</label>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="text-center mt-3">
+                                            <output class="fw-bold fs-2 text-primary" id="ratingValue">0</output>
+                                            <span class="fs-4 text-muted">/5</span>
+                                        </div>
+                                    </div>
+                    
+                                    <button type="submit" 
+                                            class="btn btn-primary w-100 py-3 fs-5 fw-bold">
+                                        <i class="bi bi-send-check me-2"></i>
+                                        Enviar calificación
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sección de propiedades -->
+            {% if profile_user.propertys.all %}
+            <section class="properties-section mb-5">
+                <h2 class="h3 fw-bold mb-4">
+                    <i class="bi bi-house-heart me-2"></i>
+                    Propiedades activas
+                </h2>
+                
+                <div id="propertiesCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner rounded-4 overflow-hidden shadow-sm">
+                        {% for listing in profile_user.propertys.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <a href="{% url 'property_info' listing.id %}" class="property-link">
+                                    <img src="{{ listing.imagenes.first.image.url }}" 
+                                         class="d-block w-100 property-image" 
+                                         alt="{{ listing.title }}"
+                                         style="height: 400px; object-fit: cover;">
+                                    <div class="carousel-caption bg-dark bg-opacity-75 p-3">
+                                        <h5 class="mb-1">{{ listing.title }}</h5>
+                                        <p class="mb-0 small">{{ listing.description|truncatechars:100 }}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="carousel-controls">
+                        <button class="carousel-control-prev" type="button" data-bs-target="#propertiesCarousel" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
+                            <span class="visually-hidden">Anterior</span>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                        <button class="carousel-control-next" type="button" data-bs-target="#propertiesCarousel" data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
+                            <span class="visually-hidden">Siguiente</span>
                         </button>
                     </div>
-                {% else %}
-                    <p class="text-muted">No active listings</p>
-                {% endif %}
-            </div>
-        {% if is_same_user %}
-            <div class="profile-section">
-                <h2 class="section-title">
-                    <i class="bi bi-bar-chart" aria-hidden="true"></i>
-                    Visit Analytics Section
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- SECCIÓN DE ESTADÍSTICAS REESTRUCTURADA -->
+            {% if is_same_user %}
+            <section class="analytics-section mb-5">
+                <h2 class="h3 fw-bold mb-4">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Estadísticas de Usuario
                 </h2>
-
-                <div id="yearly-chart" class="chart-item active">
-                    <img src="data:image/png;base64,{{ graphic_year }}" 
-                            class="img-fluid" 
-                            alt="Yearly Analysis Chart">
+                
+                <div class="chart-container bg-light rounded-4 shadow-sm">
+                    <!-- Contenedor dedicado solo para la imagen en una fila propia -->
+                    <div class="chart-image-wrapper">
+                        <img id="active-chart-img"
+                             src="data:image/png;base64,{{ graphic_year }}"
+                             class="img-fluid rounded-3 chart-img-large"
+                             alt="Estadísticas anuales">
+                    </div>
+                    
+                    <!-- Botones en una fila separada -->
+                    <div class="chart-switcher btn-group w-100" role="group">
+                        <button type="button"
+                                class="btn btn-outline-primary active"
+                                data-chart="yearly"
+                                onclick="switchChart('yearly')">
+                            <i class="bi bi-calendar3 me-2"></i> Anual
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                data-chart="monthly"
+                                onclick="switchChart('monthly')">
+                            <i class="bi bi-calendar-month me-2"></i> Mensual
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                data-chart="weekly"
+                                onclick="switchChart('weekly')">
+                            <i class="bi bi-calendar-week me-2"></i> Semanal
+                        </button>
+                    </div>
                 </div>
                 
-                <div id="monthly-chart" class="chart-item">
-                    <img src="data:image/png;base64,{{ graphic_month }}" 
-                            class="img-fluid" 
-                            alt="Monthly Trends Chart">
-                </div>
+                <script>
+                const chartSources = {
+                    yearly: "data:image/png;base64,{{ graphic_year }}",
+                    monthly: "data:image/png;base64,{{ graphic_month }}",
+                    weekly: "data:image/png;base64,{{ graphic_weekday }}"
+                };
                 
-                <div id="weekly-chart" class="chart-item">
-                    <img src="data:image/png;base64,{{ graphic_weekday }}" 
-                            class="img-fluid" 
-                            alt="Weekly Pattern Chart">
-                </div>
-
-                <div class="btn-group mb-4" role="group" aria-label="Chart selector">
-                    <button type="button" class="btn btn-outline-primary active" data-chart="yearly" onclick="switchChart('yearly')">
-                        <i class="bi bi-calendar3"></i> Yearly
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" data-chart="monthly" onclick="switchChart('monthly')">
-                        <i class="bi bi-calendar-month"></i> Monthly
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" data-chart="weekly" onclick="switchChart('weekly')">
-                        <i class="bi bi-calendar-week"></i> Weekly
-                    </button>
-                </div>
-            </div>
-        {% endif %}
-        {% endif %}
+                const chartAlts = {
+                    yearly: "Estadísticas anuales",
+                    monthly: "Estadísticas mensuales",
+                    weekly: "Estadísticas semanales"
+                };
+                
+                function switchChart(type) {
+                    // Cambia la imagen
+                    const img = document.getElementById('active-chart-img');
+                    img.src = chartSources[type];
+                    img.alt = chartAlts[type];
+                
+                    // Actualiza los botones activos
+                    document.querySelectorAll('.chart-switcher button').forEach(btn => {
+                        btn.classList.toggle('active', btn.getAttribute('data-chart') === type);
+                    });
+                }
+                </script>
+            </section>
+            {% endif %}
+        </div>
     </div>
 </div>
 
-<script>
-    function switchChart(chartId) {
-        // Remove active class from all buttons and charts
-        document.querySelectorAll('.btn-group .btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.querySelectorAll('.chart-item').forEach(chart => {
-            chart.classList.remove('active');
-        });
-        
-        // Add active class to selected button and chart
-        document.querySelector(`[data-chart="${chartId}"]`).classList.add('active');
-        document.getElementById(`${chartId}-chart`).classList.add('active');
+<style>
+    .profile-header {
+        padding: 6rem 2rem 2rem;
     }
+    
+    .avatar-container {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .profile-avatar {
+        width: 100%;
+        height: 100%;
+        border: 4px solid white;
+        background: var(--bs-light);
+    }
+    
+    .rating-form .star-label {
+        transition: all 0.2s ease;
+    }
+    
+    .rating-form input:checked ~ .star-label,
+    .rating-form .star-label:hover {
+        color: #ffc107 !important;
+        transform: scale(1.2);
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            padding-top: 8rem;
+        }
+        
+        .rating-section {
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .property-image {
+            height: 250px !important;
+        }
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.star-rating input[type="radio"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            document.getElementById('ratingValue').textContent = this.value;
+        });
+    });
 </script>
+
 {% endblock %}

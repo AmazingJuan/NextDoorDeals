@@ -87,9 +87,7 @@ def loginUser(request):
     return render(request, 'login.html', {'loginForm':form})
 
 def logout_logic(request):
-    print("hola")
     logout(request)
-
     return redirect('home')
 
 def generate_bar_chart(data_dict, title, xlabel, ylabel):
@@ -173,18 +171,28 @@ def statistic_images(user):
 
 
 def view_profile(request, username):
-    try:
-        profile_user = Account.objects.get(user__username__iexact=username)
-        print(request.user.username == profile_user.user.username)
-        if request.user.username == profile_user.user.username:
-            is_same_user = True
-            graph1, graph2, graph3 = statistic_images(profile_user)
+    profile_user = Account.objects.get(user__username__iexact=username)
+    if request.POST:
+        if profile_user.rating_count == 0:
+            profile_user.rating = request.POST.get('rating')
         else:
-            is_same_user = False
-            graph1 = None
-            graph2 = None
-            graph3 = None
-        return render(request, 'profile.html', {'profile_user':profile_user, 'is_same_user': is_same_user, 'graphic_year':graph1, 'graphic_month':graph2, 'graphic_weekday':graph3})
+            profile_user.rating = (profile_user.rating*profile_user.rating_count + int(request.POST.get('rating')))/(profile_user.rating_count + 1)
+        profile_user.rating_count = profile_user.rating_count+1 
+        profile_user.save()
+        request.POST = None
+    sessionActive = checkSession(request.user)
+    print(request.user.username == profile_user.user.username)
+    if request.user.username == profile_user.user.username:
+        is_same_user = True
+        graph1, graph2, graph3 = statistic_images(profile_user)
+    else:
+        is_same_user = False
+        graph1 = None
+        graph2 = None
+        graph3 = None
+    return render(request, 'profile.html', {'profile_user':profile_user, 'is_same_user': is_same_user, 'graphic_year':graph1, 'graphic_month':graph2, 'graphic_weekday':graph3, 'sessionActive':sessionActive})
+    try:
+        ...
     except:
         return redirect('error')
     

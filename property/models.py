@@ -50,5 +50,13 @@ class Appointment(models.Model):
 
 class Visit(models.Model):
     visited_user = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='visits')
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
+
+class Review(models.Model):
+    reviewer = models.ForeignKey(Account, on_delete=models.CASCADE)
+    reviewed_property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='reviews')
+    comment = models.CharField(max_length=280, blank=True, null=True)
+    rating = models.IntegerField()
+    date = models.DateTimeField(auto_now_add=True)
+
 

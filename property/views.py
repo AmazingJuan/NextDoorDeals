@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Property, City, District, Images, PropertyType, Favourites, Location, Coordinates, Visit
+from .models import Property, City, District, Images, PropertyType, Favourites, Location, Coordinates, Visit, Review
 from .forms import PublishForm
 from account.views import checkSession
 from django.contrib import messages
@@ -107,32 +107,53 @@ def publish(request):
     return render(request, 'publish.html', {'publishForm':publishForm, 'sessionActive':checkSession(request.user)})
 
 def view_property(request, id):
-    #try:
+
+    print(Review.objects.all())
+    if request.POST:
+        action = request.POST.get('action')
+        if action == 'favourite':
+            favourite(request, id)
+        else:
+            add_review(request, id)
+        request.POST = None
     property = Property.objects.get(id = id)
     type = property.propertyType.name
     sessionActive = checkSession(request.user)
     Visit.objects.create(visited_user = property.associatedAccount)
+
     if sessionActive:
         is_fav = len(Favourites.objects.filter(property = property, associatedAccount = request.user.account)) != 0
     else:
         is_fav = None
     return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive})
-"""    except:
-        return redirect('error')"""
+    try:
+        ...
+    except:
+        return redirect('error')
+
 def favourite(request, id):
     account = request.user.account
     property = Property.objects.get(id = id)
-    favourites = Favourites.objects.filter(associatedAccount = account, property = property)
-    if len(favourites) == 1:
-        objects = favourites[0]
-        objects.delete()
-    else:
+    try:
+        favourites = Favourites.objects.get(associatedAccount = account, property = property)
+        favourites.delete()
+    except:
         Favourites.objects.create(associatedAccount = account, property = property)
+        
     
     return redirect('property_info', id = id)
 
 def schedule_appointment(request, id):
     ...
 
-def error404(request):
+def error(request):
     return render(request, 'error.html')
+
+def add_review(request, id):
+    account = request.user.account
+    property = Property.objects.get(id = id)
+    if request.POST:
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        Review.objects.create(reviewer = account, reviewed_property = property, comment = comment, rating = rating )
+    return redirect('property_info', id = id)
