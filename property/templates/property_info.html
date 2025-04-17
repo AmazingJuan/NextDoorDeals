@@ -523,9 +523,10 @@
                     <!-- Botones de acción bien separados y con ancho fijo en desktop -->
                     {% if sessionActive %}
                         <div class="d-flex flex-column flex-md-row gap-3 mt-4">
-                            <a href="{% url 'appointment' id=property.id %}" class="action-button flex-fill">
+                            <a href="#" id="appointment-btn" class="action-button flex-fill" data-property-id="{{ property.id }}">
                                 <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
                             </a>
+                            <input type="text" id="appointment-date" style="display:none;">
                             <form method="post" class="flex-fill">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="favourite">
@@ -747,6 +748,10 @@
         });
     });
 </script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
 <script src="{% static 'js/property_details.js' %}"></script>
 {% endblock %}

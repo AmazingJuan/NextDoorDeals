@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'property' , 'account', 'crispy_forms', "crispy_bootstrap5", 'django.contrib.humanize', 'mathfilters'
+    'property' , 'account', 'crispy_forms', "crispy_bootstrap5", 'django.contrib.humanize', 'mathfilters', 'django_flatpickr',
 
 ]
 
