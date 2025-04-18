@@ -2,6 +2,7 @@ from django import forms
 from .utilities import getUserType
 from .utilities import getRole
 from django_flatpickr.widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
+from django_flatpickr.schemas import FlatpickrOptions
 import datetime
 
 class AccountForm(forms.Form):
@@ -33,9 +34,9 @@ class loginForm(forms.Form):
 class DateForm(forms.Form):
     fecha = forms.DateField(
         widget=DatePickerInput(
-            options={
-                "minDate": datetime.date.today().strftime('%Y-%m-%d'),
-            }
+            options=FlatpickrOptions(
+                minDate=datetime.date.today().strftime('%Y-%m-%d')
+            )
         )
     )
 
