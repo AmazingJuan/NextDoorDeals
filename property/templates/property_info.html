@@ -529,10 +529,12 @@
                 <div class="mt-4 d-flex flex-column flex-md-row gap-4">
                   <!-- Dropdown para agendar cita usando Bootstrap -->
                   <div class="dropdown flex-fill" style="min-width: 220px;">
+                    {% if property.associatedAccount != request.user.account and request.user.account.role.nameRole == 'Buyer' %}
                     <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" id="dropdownAppointment"
                             data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
                     </button>
+                    {% endif %}
                     <div class="dropdown-menu p-4 shadow-lg rounded" aria-labelledby="dropdownAppointment">
                       <form method="post" id="appointmentForm" autocomplete="off">
                         <input type="hidden" name="action" value="appointment">
