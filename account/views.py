@@ -1,9 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Account, BussinessAccount, PersonAccount, UserType, Role
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.shortcuts import redirect
-from .forms import AccountForm, NaturalForm, BussinesForm, loginForm, EditUserForm, CustomPasswordChangeForm
+from .forms import AccountForm, NaturalForm, BussinesForm, loginForm, EditAccountForm
 from .utilities import getRole
 from property.models import Appointment, AppointmentStatus
 from django.contrib import messages
@@ -12,6 +11,7 @@ import base64
 import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt 
+
  
 
 def checkSession(user):
@@ -197,37 +197,27 @@ def view_profile(request, username):
 
 
 def edit_profile(request, username):
-    if not request.user.is_authenticated or request.user.username != username:
-        return redirect('login')
-
-    user = request.user
-    sessionActive = checkSession(user)
-
+    # Verificar que el usuario existe
+    user_to_edit = get_object_or_404(User, username= username)
+    
+    # Verificar permisos (solo el mismo usuario puede editar)
+    if request.user != user_to_edit:
+        messages.error(request, "You are not allowed to edit this profile")
+        return redirect('view_profile', username=username)
+    
     if request.method == 'POST':
-        user_form = EditUserForm(request.POST, instance=user)
-        password_form = CustomPasswordChangeForm(user, request.POST)
-
-        if user_form.is_valid() and password_form.is_valid():
-            new_username = user_form.cleaned_data.get('username')
-
-            if User.objects.filter(username=new_username).exists() and new_username != user.username:
-                user_form.add_error('username', 'This username is already taken.')
-            else:
-                user_form.save()
-                user = password_form.save()
-                update_session_auth_hash(request, user)
-                messages.success(request, 'Profile updated successfully!')
-                return redirect('view_profile', username=user.username)
-        else:
-            messages.error(request, 'Please correct the errors below.')
+        form = EditAccountForm(request.POST, instance=user_to_edit, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil actualizado correctamente!')
+            # Redirigir al perfil del usuario editado
+            return redirect('view_profile', username=user_to_edit.username)
     else:
-        user_form = EditUserForm(instance=user)
-        password_form = CustomPasswordChangeForm(user)
-
+        form = EditAccountForm(instance=user_to_edit, user=request.user)
+    
     return render(request, 'editProfile.html', {
-        'user_form': user_form,
-        'password_form': password_form,
-        'sessionActive': sessionActive
+        'form': form,
+        'profile_user': user_to_edit.account  # Asumiendo que tienes un modelo Account relacionado
     })
 
 def retrieve_appointments(account):
