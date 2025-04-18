@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from property.views import error
-from account.views import logout_logic, loginUser
+from account.views import logout_logic, loginUser, show_appointments
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -29,6 +29,7 @@ urlpatterns = [
     path('error/', error, name='error'),
     path('logout/', logout_logic, name = 'logout'),
     path('login/', loginUser, name = 'login'),
+    path('appointments/', show_appointments, name = 'appointments'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

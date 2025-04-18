@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Appointments | {{ current_account.user.username }}</title>
+{% endblock %}
+
+{% block extra_css %}
+    /* Reset básico para evitar inconsistencias */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --color-primary: #22315a;
+        --color-secondary: #3a3a3a;
+        --color-pending: #ffc107;
+        --color-approved: #198754;
+        --color-rejected: #dc3545;
+        --bg-light: #f8f9fa;
+        --shadow: 0 4px 16px rgba(0,0,0,0.08);
+        --radius: 1.2rem;
+        --font-main: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    }
+
+    body {
+        font-family: var(--font-main);
+        background: var(--bg-light);
+        color: var(--color-secondary);
+    }
+
+    .container {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 2.5rem 1rem;
+    }
+
+    h1 {
+        color: var(--color-primary);
+        border-bottom: 2px solid var(--color-primary);
+        padding-bottom: 0.4rem;
+        margin-bottom: 2rem;
+        font-size: 2.1rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .appointments-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 2rem;
+    }
+
+    .appointment-card {
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.2s, transform 0.2s;
+        position: relative;
+        min-height: 280px;
+    }
+    .appointment-card:hover {
+        box-shadow: 0 8px 32px rgba(34,49,90,0.12);
+        transform: translateY(-4px) scale(1.01);
+    }
+
+    .status-indicator {
+        height: 5px;
+        width: 100%;
+        border-radius: var(--radius) var(--radius) 0 0;
+        position: absolute;
+        top: 0; left: 0;
+    }
+    .status-pending .status-indicator { background: var(--color-pending);}
+    .status-approved .status-indicator { background: var(--color-approved);}
+    .status-rejected .status-indicator { background: var(--color-rejected);}
+
+    .card-content {
+        padding: 1.5rem 1.4rem 1.2rem 1.4rem;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        z-index: 1;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.1rem;
+    }
+
+    .card-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        max-width: 70%;
+        word-break: break-word;
+    }
+
+    .appointment-status {
+        font-weight: 600;
+        padding: 0.35rem 1.1rem;
+        border-radius: 1.3rem;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #e9ecef;
+        color: #495057;
+    }
+    .status-pending .appointment-status { background: var(--color-pending); color: #7d5a00; }
+    .status-approved .appointment-status { background: var(--color-approved); color: #fff; }
+    .status-rejected .appointment-status { background: var(--color-rejected); color: #fff; }
+
+    .appointment-details {
+        margin-bottom: 1.2rem;
+    }
+    .detail-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.6rem;
+        color: #444;
+        font-size: 1rem;
+        gap: 0.7rem;
+    }
+    .detail-item:last-child { margin-bottom: 0; }
+
+    .card-divider {
+        height: 1px;
+        background: #e0e0e0;
+        margin: 1rem 0;
+        border: none;
+    }
+
+    .card-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1.1rem;
+        margin-top: 1.1rem;
+    }
+
+    .btn-action {
+        font-weight: 600;
+        border-radius: 1.5rem;
+        padding: 0.6rem 1.5rem;
+        border: none;
+        cursor: pointer;
+        transition: background 0.18s, box-shadow 0.18s;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #e9ecef;
+        color: #22315a;
+    }
+    .btn-accept {
+        background: var(--color-approved);
+        color: #fff;
+    }
+    .btn-accept:hover {
+        background: #157347;
+    }
+    .btn-reject {
+        background: var(--color-rejected);
+        color: #fff;
+    }
+    .btn-reject:hover {
+        background: #b02a37;
+    }
+
+    .response-msg {
+        text-align: center;
+        padding: 0.7rem 1rem;
+        background: #f1f3f5;
+        border-radius: 0.7rem;
+        color: #495057;
+        font-size: 0.97rem;
+        margin-top: 0.7rem;
+    }
+
+    .no-appointments {
+        background: #fff;
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+        color: #888;
+    }
+    .no-appointments i {
+        font-size: 3.2rem;
+        color: #adb5bd;
+        margin-bottom: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .appointments-grid { grid-template-columns: 1fr; }
+        .container { padding: 1.2rem 0.5rem; }
+    }
+
+    .serious-link {
+        color: #22315a;
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+        transition: color 0.18s, border-bottom 0.18s, background 0.18s;
+        padding: 0 2px;
+        border-radius: 3px;
+    }
+    
+    .serious-link:hover, .serious-link:focus {
+        color: #17408b;
+        border-bottom: 2px solid #17408b;
+        background: #f0f4fa;
+        outline: none;
+        text-decoration: none;
+    }
+    
+    .detail-item .serious-link {
+        font-size: 1.01em;
+        letter-spacing: 0.01em;
+    }
+    
+    @media (max-width: 600px) {
+        .serious-link {
+            font-size: 1em;
+            padding: 0 1px;
+        }
+    }
+    
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>
+        {% if current_account.role.nameRole == 'Seller' %}
+        <i class="bi bi-house-door"></i> Recieved appointments requests
+        {% else %}
+        <i class="bi bi-house-door"></i> Sent appointments requests
+        {% endif %}
+    </h1>
+    {% if appointments %}
+        <div class="appointments-grid">
+            {% for appointment in appointments %}
+            <div class="appointment-card status-{{ appointment.status.name|lower }}">
+                <div class="status-indicator"></div>
+                <div class="card-content">
+                    <div>
+                        <div class="card-header">
+                                <div class="card-title">
+                                    <i class="bi bi-house"></i>
+                                    <a href="{% url 'property_info' id=appointment.property.id %}" class="serious-link card-title-link">
+                                    {{ appointment.property.title }}
+                                    </a>
+                                </div>
+                            <span class="appointment-status">
+                                {% if appointment.status.name == 'Waiting for approval' %}
+                                    <i class="bi bi-hourglass-split"></i>Pending
+                                {% elif appointment.status.name == 'Approved' %}
+                                    <i class="bi bi-check-circle"></i>Approved
+                                {% elif appointment.status.name == 'Rejected' %}
+                                    <i class="bi bi-x-circle"></i>Rejected
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="appointment-details">
+                            <div class="detail-item">
+                                <i class="bi bi-calendar-date"></i>
+                                <span>{{ appointment.date|date:"d M Y" }}</span>
+                            </div>
+                            {% if appointment.time %}
+                            <div class="detail-item">
+                                <i class="bi bi-clock"></i>
+                                <span>{{ appointment.time }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="detail-item">
+                                <i class="bi bi-person"></i>
+                                <span>
+                                    Requester: 
+                                    <a href="{% url 'view_profile' username=appointment.requester.user.username %}" class="serious-link">
+                                        {% if appointment.requester.userType.nameUserType == 'Natural Person' %}
+                                            {{ appointment.requester.personAccount.firstName }} {{ appointment.requester.personAccount.lastName }}
+                                        {% else %}
+                                            {{ appointment.requester.bussinessAccount.nameBussiness }}
+                                        {% endif %}
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="card-divider">
+                    {% if appointment.status.name == 'Waiting for approval' and appointment.property.associatedAccount == current_account %}
+                    <div class="card-actions">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                            <button type="submit" name="action" value="approve" class="btn-action btn-accept">
+                                <i class="bi bi-check-circle"></i> Approve
+                            </button>
+                        </form>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                            <button type="submit" name="action" value="reject" class="btn-action btn-reject">
+                                <i class="bi bi-x-circle"></i> Reject
+                            </button>
+                        </form>
+                    </div>
+                    {% elif appointment.status.name == 'Waiting for approval' %}
+                        <div class="response-msg">
+                            Waiting for property's owner decision.
+                        </div>
+                    {% elif appointment.status.name == 'Approved' %}
+                        <div class="response-msg">
+                            <i class="bi bi-check-all"></i> Appointment request approved
+                        </div>
+                    {% elif appointment.status.name == 'Rejected' %}
+                        <div class="response-msg">
+                            <i class="bi bi-x-lg"></i> Appointment request rejected
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}        
+        </div>
+    {% else %}
+        <div class="no-appointments">
+            <i class="bi bi-calendar-x"></i>
+            {% if current_account.role.nameRole == 'Seller' %}
+                <h4 class="mb-3">You got no requested appointments</h4>
+                <p class="text-muted">Cuando recibas nuevas solicitudes de visita, aparecerán en esta sección.</p>
+            {% else %}
+                <h4 class="mb-3">You got no requested appointments</h4>
+                <p class="text-muted">Cuando recibas nuevas solicitudes de visita, aparecerán en esta sección.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

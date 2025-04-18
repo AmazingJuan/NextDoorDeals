@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
-from .models import Account, UserType
-from django.http import HttpResponse
+from .models import Account, BussinessAccount, PersonAccount, UserType, Role
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from .forms import AccountForm, NaturalForm, BussinesForm, loginForm
 from .utilities import getRole
-from .models import Account, BussinessAccount, PersonAccount, UserType, Role
+from property.models import Appointment, AppointmentStatus
 from django.contrib import messages
 import io
 import base64
@@ -181,7 +180,6 @@ def view_profile(request, username):
         profile_user.save()
         request.POST = None
     sessionActive = checkSession(request.user)
-    print(request.user.username == profile_user.user.username)
     if request.user.username == profile_user.user.username:
         is_same_user = True
         graph1, graph2, graph3 = statistic_images(profile_user)
@@ -195,6 +193,39 @@ def view_profile(request, username):
         ...
     except:
         return redirect('error')
+
+def retrieve_appointments(account):
+    if account.role.nameRole == 'Seller':
+        appointments = Appointment.objects.filter(property__associatedAccount = account)
+    else:
+        appointments = Appointment.objects.filter(requester = account)
+    return appointments
+
+def update_appointment_status(action, appointment):
+    if action == 'approve':
+        appointment.status = AppointmentStatus.objects.get(name = 'Approved')
+        for i in Appointment.objects.filter(date = appointment.date):
+            if i != appointment:
+                i.status = AppointmentStatus.objects.get(name = 'Rejected')
+                i.save()
+    else:
+        appointment.status = AppointmentStatus.objects.get(name = 'Rejected')
+    appointment.save()
+
+def show_appointments(request):
+    if request.POST:
+        appointment = Appointment.objects.get(id = int(request.POST.get('appointment_id')))
+        update_appointment_status(request.POST.get('action'), appointment)
+        return redirect('appointments')
+    else:
+        associatedAccount = request.user.account
+        appointments = retrieve_appointments(associatedAccount)
+        return render(request, 'appointments.html', {"appointments": appointments, "current_account":associatedAccount, "sessionActive":checkSession(request.user)})
+    try:
+        ...
+    except:
+        ...
+
     
 
 

@@ -469,81 +469,104 @@
 
         <!-- Información de la propiedad -->
         <div class="col-12 col-lg-6">
-            <div class="property-card h-100 d-flex flex-column justify-content-between">
-                <!-- Cabecera elegante con fondo y efecto -->
-                <div class="property-header position-relative">
-                    <h1 class="display-5 fw-bold text-white mb-2">{{ property.title }}</h1>
-                    <p class="fs-5 text-white mb-0 opacity-90">
-                        <i class="bi bi-geo-alt-fill me-2"></i>
-                        {{ property.location.district.name }} - {{ property.location.district.city.name }}
-                    </p>
+            <div class="card property-card h-100 d-flex flex-column justify-content-between shadow-sm">
+              <!-- Cabecera elegante con fondo degradado -->
+              <header class="card-header bg-dark text-white position-relative p-4">
+                <h1 class="display-5 fw-bold mb-2">{{ property.title }}</h1>
+                <p class="fs-5 mb-0 opacity-90">
+                  <i class="bi bi-geo-alt-fill me-2"></i>
+                  {{ property.location.district.name }} - {{ property.location.district.city.name }}
+                </p>
+              </header>
+          
+              <!-- Cuerpo del card -->
+              <div class="card-body p-5 d-flex flex-column gap-4 flex-grow-1">
+                <!-- Badges de precio y SES -->
+                <div class="d-flex flex-wrap gap-4 mb-3">
+                  <span class="badge bg-success text-light fs-5">
+                    <i class="bi bi-tag-fill me-2"></i>${{ property.price|intcomma }}
+                  </span>
+                  <span class="badge bg-warning text-dark fs-5">
+                    <i class="bi bi-star-fill me-2"></i>SES {{ property.SES }}
+                  </span>
                 </div>
-        
-                <!-- Cuerpo del card con mejor separación -->
-                <div class="p-5 d-flex flex-column gap-4 flex-grow-1">
-                    <!-- Badges de precio y SES alineados y con aire -->
-                    <div class="d-flex flex-wrap gap-4 mb-3 justify-content-start">
-                        <div class="feature-badge badge-price">
-                            <i class="bi bi-tag-fill me-3"></i>${{ property.price|intcomma }}
-                        </div>
-                        <div class="feature-badge badge-ses">
-                            <i class="bi bi-star-fill me-3"></i>SES {{ property.SES }}
-                        </div>
+          
+                <!-- Información de la propiedad y descripción -->
+                <section>
+                  <h3 class="fw-bold text-primary mb-3">
+                    <i class="bi bi-house-door-fill me-3"></i>{{ pType }}
+                  </h3>
+                  <div class="description-box mt-2">
+                    <h4 class="fw-bold mb-3">Descripción</h4>
+                    <p class="lead text-dark lh-lg mb-0">{{ property.description }}</p>
+                  </div>
+                </section>
+          
+                <!-- Detalles en dos columnas -->
+                <div class="row g-4 mt-2">
+                  <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-start">
+                      <i class="bi bi-geo-alt-fill fs-3 me-2 text-muted"></i>
+                      <div>
+                        <h5 class="fw-bold mb-1">Ubicación</h5>
+                        <p class="text-muted fs-5 mb-0">{{ property.district.name }}</p>
+                      </div>
                     </div>
-        
-                    <!-- Tipo de propiedad y descripción -->
-                    <div>
-                        <h3 class="fw-bold text-primary mb-3">
-                            <i class="bi bi-house-door-fill me-3"></i>{{ pType }}
-                        </h3>
-                        <div class="description-box mt-2">
-                            <h4 class="fw-bold mb-3">Description</h4>
-                            <p class="lead text-dark lh-lg mb-0">{{ property.description }}</p>
-                        </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-start">
+                      <i class="bi bi-calendar-check-fill fs-3 me-2 text-muted"></i>
+                      <div>
+                        <h5 class="fw-bold mb-1">Fecha de publicación</h5>
+                        <p class="text-muted fs-5 mb-0">{{ property.creationDate|date:"d M, Y" }}</p>
+                      </div>
                     </div>
-        
-                    <!-- Detalles en dos columnas, bien espaciados -->
-                    <div class="row g-4 mt-2">
-                        <div class="col-12 col-md-6">
-                            <div class="detail-card h-100">
-                                <i class="bi bi-geo-alt-fill detail-icon"></i>
-                                <h5 class="fw-bold mb-2">Ubication</h5>
-                                <p class="text-muted mb-0 fs-5">{{ property.district.name }}</p>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="detail-card h-100">
-                                <i class="bi bi-calendar-check-fill detail-icon"></i>
-                                <h5 class="fw-bold mb-2">Listing date</h5>
-                                <p class="text-muted mb-0 fs-5">{{ property.creationDate|date:"d M, Y" }}</p>
-                            </div>
-                        </div>
-                    </div>
-    
-                    <!-- Botones de acción bien separados y con ancho fijo en desktop -->
-                    {% if sessionActive %}
-                        <div class="d-flex flex-column flex-md-row gap-3 mt-4">
-                            <a href="#" id="appointment-btn" class="action-button flex-fill" data-property-id="{{ property.id }}">
-                                <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
-                            </a>
-                            <input type="text" id="appointment-date" style="display:none;">
-                            <form method="post" class="flex-fill">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="favourite">
-                                <button type="submit" class="action-button favorite flex-fill">
-                                    <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
-                                    {% if is_fav %}
-                                        Remove from favorites
-                                    {% else %}
-                                        Add to favorite
-                                    {% endif %}
-                                </button>
-                            </form>
-                        </div>
-                    {% endif %}
+                  </div>
                 </div>
+          
+                <!-- Botones de acción -->
+                {% if sessionActive %}
+                <div class="mt-4 d-flex flex-column flex-md-row gap-4">
+                  <!-- Dropdown para agendar cita usando Bootstrap -->
+                  <div class="dropdown flex-fill" style="min-width: 220px;">
+                    <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" id="dropdownAppointment"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
+                    </button>
+                    <div class="dropdown-menu p-4 shadow-lg rounded" aria-labelledby="dropdownAppointment">
+                      <form method="post" id="appointmentForm" autocomplete="off">
+                        <input type="hidden" name="action" value="appointment">
+                        {% csrf_token %}
+                        {{ date_form.media }}
+                        <div class="mb-3">
+                          {{ date_form.date.label_tag }}
+                          {{ date_form.date }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" style="font-size: 1.15rem;">
+                          <i class="bi bi-calendar-check me-2"></i>Confirm date
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+          
+                  <!-- Botón para agregar a favoritos -->
+                  <form method="post" class="flex-fill">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="favourite">
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                      <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
+                      {% if is_fav %}
+                        Remove from favorites
+                      {% else %}
+                        Add to favorites
+                      {% endif %}
+                    </button>
+                  </form>
+                </div>
+                {% endif %}
+              </div>
             </div>
-        </div>
+          </div>
 
         <!-- Sección de Reseñas -->
         <div class="row mt-5">
@@ -749,9 +772,38 @@
     });
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script>
+    // Obtén el botón y el dropdown
+    const appointmentBtn = document.getElementById('appointment-btn');
+    const appointmentDropdown = document.getElementById('appointment-dropdown');
+  
+    // Maneja el clic en el botón
+    appointmentBtn.addEventListener('click', function(event) {
+      // Previene el cierre inmediato del dropdown
+      event.stopPropagation();
+  
+      // Cambia el estado del dropdown
+      const isExpanded = appointmentBtn.getAttribute('aria-expanded') === 'true';
+      
+      if (isExpanded) {
+        appointmentDropdown.style.display = 'none'; // Cerrar el dropdown
+        appointmentBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        appointmentDropdown.style.display = 'block'; // Mostrar el dropdown
+        appointmentBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  
+    // Cierra el dropdown si se hace clic fuera de él
+    document.addEventListener('click', function(event) {
+      if (!appointmentBtn.contains(event.target) && !appointmentDropdown.contains(event.target)) {
+        appointmentDropdown.style.display = 'none';
+        appointmentBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  </script>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script src="{% static 'js/property_details.js' %}"></script>
 {% endblock %}

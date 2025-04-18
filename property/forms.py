@@ -1,5 +1,9 @@
 from django import forms
 from .utilities import getSES, getTypes, getDistricts
+from django_flatpickr.widgets import DatePickerInput
+from django_flatpickr.schemas import FlatpickrOptions
+import datetime
+
 
 #CODIGO EXTRAIDO DE LA DOCUMENTACIÓN DE DJANGO: https://docs.djangoproject.com/en/5.0/topics/http/file-uploads/#uploading-multiple-files
 
@@ -39,5 +43,17 @@ class PublishForm(forms.Form):
                             )
     pictures = MultipleFileField()
     
+#Para seleccionar las fechas
+class DateForm(forms.Form):
+    def __init__(self, *args, disabled_dates=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        options = FlatpickrOptions(
+            minDate=datetime.date.today().strftime('%Y-%m-%d'),
+            disable=[
+                d.strftime('%Y-%m-%d') if isinstance(d, datetime.date) else d 
+                for d in (disabled_dates or [])
+            ]
+        )
+        self.fields['date'].widget = DatePickerInput(options=options)
 
-    
+    date = forms.DateField()

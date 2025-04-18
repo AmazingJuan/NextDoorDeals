@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Property, City, District, Images, PropertyType, Favourites, Location, Coordinates, Visit, Review
-from .forms import PublishForm
+from .models import Property, City, District, Images, PropertyType, Favourites, Location, Coordinates, Visit, Review, Appointment, AppointmentStatus
+from .forms import PublishForm, DateForm
 from account.views import checkSession
 from django.contrib import messages
 # Create your views here.
@@ -106,26 +106,56 @@ def publish(request):
         publishForm = PublishForm()
     return render(request, 'publish.html', {'publishForm':publishForm, 'sessionActive':checkSession(request.user)})
 
-def view_property(request, id):
+def get_disabled_dates(property):
+    appointments = property.appointments.filter(status__name = 'Approved')
+    disabled_dates = []
+    for appointment in appointments:
+        disabled_dates.append(appointment.date)
+    if len(disabled_dates) > 0:
+        return disabled_dates
+    else:
+        return None
 
-    print(Review.objects.all())
-    if request.POST:
-        action = request.POST.get('action')
-        if action == 'favourite':
-            favourite(request, id)
-        else:
-            add_review(request, id)
-        request.POST = None
+def request_appointment(property, date, account):
+    Appointment.objects.create(property = property, requester = account, date = date)
+
+
+
+def view_property(request, id):
     property = Property.objects.get(id = id)
     type = property.propertyType.name
     sessionActive = checkSession(request.user)
+    if sessionActive and request.user != property.associatedAccount:
+        disabled_dates = get_disabled_dates(property)
+        needs_date_form = True
+    else:
+        disabled_dates = None
+        needs_date_form = False
+    
+    if needs_date_form:
+        date_form = DateForm(disabled_dates=disabled_dates)
+    else:
+        date_form = None
+
     Visit.objects.create(visited_user = property.associatedAccount)
 
     if sessionActive:
         is_fav = len(Favourites.objects.filter(property = property, associatedAccount = request.user.account)) != 0
     else:
         is_fav = None
-    return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive})
+
+
+    if request.POST:
+        action = request.POST.get('action')
+        if action == 'favourite':
+            favourite(request, id)
+        elif action == 'review':
+            add_review(request, id)
+        elif len(Appointment.objects.filter(property = property, date = request.POST.get('date'))) == 0:
+            request_appointment(property, request.POST.get('date'), request.user.account)
+        return redirect('property_info', id = id)
+    else:
+        return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive, 'date_form':date_form})
     try:
         ...
     except:

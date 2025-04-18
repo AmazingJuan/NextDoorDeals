@@ -15,8 +15,8 @@ class Role(models.Model):
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete =models.CASCADE, primary_key= True, related_name='account')
     profilePicture = models.ImageField(null = True, blank = True)
-    rating = models.FloatField()
-    rating_count = models.IntegerField()
+    rating = models.FloatField(default = 0)
+    rating_count = models.IntegerField(default = 0)
     phone = models.IntegerField()
     userType = models.ForeignKey(UserType, on_delete = models.CASCADE)
     role = models.ForeignKey(Role, on_delete = models.CASCADE)
