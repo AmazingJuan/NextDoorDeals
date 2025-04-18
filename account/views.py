@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import Account, BussinessAccount, PersonAccount, UserType, Role
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.shortcuts import redirect
-from .forms import AccountForm, NaturalForm, BussinesForm, loginForm
+from .forms import AccountForm, NaturalForm, BussinesForm, loginForm, EditUserForm, CustomPasswordChangeForm
 from .utilities import getRole
 from property.models import Appointment, AppointmentStatus
 from django.contrib import messages
@@ -11,7 +11,8 @@ import io
 import base64
 import seaborn as sns
 import matplotlib
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt 
+ 
 
 def checkSession(user):
     return (user and user.is_authenticated and hasattr(User.objects.get(username=user.username), 'account'))
@@ -193,6 +194,41 @@ def view_profile(request, username):
         ...
     except:
         return redirect('error')
+
+
+def edit_profile(request, username):
+    if not request.user.is_authenticated or request.user.username != username:
+        return redirect('login')
+
+    user = request.user
+    sessionActive = checkSession(user)
+
+    if request.method == 'POST':
+        user_form = EditUserForm(request.POST, instance=user)
+        password_form = CustomPasswordChangeForm(user, request.POST)
+
+        if user_form.is_valid() and password_form.is_valid():
+            new_username = user_form.cleaned_data.get('username')
+
+            if User.objects.filter(username=new_username).exists() and new_username != user.username:
+                user_form.add_error('username', 'This username is already taken.')
+            else:
+                user_form.save()
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('view_profile', username=user.username)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        user_form = EditUserForm(instance=user)
+        password_form = CustomPasswordChangeForm(user)
+
+    return render(request, 'editProfile.html', {
+        'user_form': user_form,
+        'password_form': password_form,
+        'sessionActive': sessionActive
+    })
 
 def retrieve_appointments(account):
     if account.role.nameRole == 'Seller':
