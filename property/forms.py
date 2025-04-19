@@ -3,6 +3,7 @@ from .utilities import getSES, getTypes, getDistricts
 from django_flatpickr.widgets import DatePickerInput
 from django_flatpickr.schemas import FlatpickrOptions
 import datetime
+from .models import District, PropertyType
 
 
 #CODIGO EXTRAIDO DE LA DOCUMENTACIÓN DE DJANGO: https://docs.djangoproject.com/en/5.0/topics/http/file-uploads/#uploading-multiple-files
@@ -57,3 +58,43 @@ class DateForm(forms.Form):
         self.fields['date'].widget = DatePickerInput(options=options)
 
     date = forms.DateField()
+
+
+
+class EditPropertyForm(forms.Form):
+    title = forms.CharField(
+        label="Property Title:",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter title'})
+    )
+
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 5, 'cols': 40, 'class': 'form-control', 'placeholder': 'Enter description'}),
+        label="Description:"
+    )
+
+    propertyType = forms.ChoiceField(
+        choices=[(pt.id, pt.name) for pt in PropertyType.objects.all()],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label="Property Type:"
+    )
+
+    SES = forms.ChoiceField(
+        choices=[(ses, ses) for ses in ['1', '2', '3', '4', '5', '6']],  # Modificar según los valores que tengas
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label="SES:"
+    )
+
+    location = forms.ChoiceField(
+        choices=[(district.id, district.name) for district in District.objects.all()],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label="District:"
+    )
+
+    image = MultipleFileField(
+        label="Update Property Images",
+        required=False  # No es obligatorio subir nuevas imágenes
+    )
+    price = forms.IntegerField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter price'}),
+        label="Price:"
+    )

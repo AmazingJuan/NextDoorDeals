@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Property, City, District, Images, PropertyType, Favourites, Location, Coordinates, Visit, Review, Appointment, AppointmentStatus
-from .forms import PublishForm, DateForm
+from .forms import PublishForm, DateForm, EditPropertyForm
 from account.views import checkSession
 from django.contrib import messages
 # Create your views here.
@@ -160,6 +160,61 @@ def view_property(request, id):
         ...
     except:
         return redirect('error')
+
+
+#EDITAR LA PROPERTY 
+def editProperty(request, id):
+    property = Property.objects.get(id=id)
+    sessionActive = checkSession(request.user)
+
+    # Verificamos que la sesión esté activa y que el usuario sea el dueño
+    if sessionActive and request.user != property.associatedAccount:
+
+        if request.method == 'POST':
+            form = EditPropertyForm(request.POST, request.FILES)
+            if form.is_valid():
+                # Actualizamos los campos de la propiedad
+                property.title = form.cleaned_data['title']
+                property.description = form.cleaned_data['description']
+                property.propertyType = PropertyType.objects.get(id=form.cleaned_data['propertyType'])
+                property.SES = form.cleaned_data['SES']
+                property.price = form.cleaned_data['price']
+
+                # Se actualiza la localización si es necesario
+                district = District.objects.get(id=form.cleaned_data['location'])
+                location = property.location
+                location.district = district
+                location.save()
+
+                property.save()
+
+                # Guardar las nuevas imágenes si se suben
+                for image in form.cleaned_data['image']:
+                    Images.objects.create(property=property, image=image)
+
+                return redirect('property_info', id=property.id)  # o donde muestres la propiedad
+        else:
+            # Cargar datos iniciales del formulario
+            initial_data = {
+                'title': property.title,
+                'description': property.description,
+                'propertyType': property.propertyType.id,
+                'SES': property.SES,
+                'location': property.location.district.id,
+                'price': property.price,
+            }
+            form = EditPropertyForm(initial=initial_data)
+    else:
+        print("No puedes editar esto bro")
+        return redirect('home')  # o alguna otra vista a la que quieras redirigir
+
+    context = {
+        'form': form,
+        'property': property,
+    }
+
+    return render(request, 'editProperty.html', context)
+
 
 def favourite(request, id):
     account = request.user.account
