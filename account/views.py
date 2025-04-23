@@ -3,6 +3,7 @@ from .models import Account, BussinessAccount, PersonAccount, UserType, Role
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from .forms import AccountForm, NaturalForm, BussinesForm, loginForm, EditAccountForm
+from django.core.exceptions import ValidationError
 from .utilities import getRole
 from property.models import Appointment, AppointmentStatus
 from django.contrib import messages
@@ -169,17 +170,49 @@ def statistic_images(user):
 
     return graphic_by_year, graphic_by_month, graphic_by_weekday,
 
+def edit_profile(request, username, wanna_save):
+    user_to_edit = request.user
+    sessionActive = checkSession(request.user)
+    if request.user != user_to_edit:
+        print("entre aki no se pq")
+        messages.error(request, "You are not allowed to edit this profile")
+        return redirect('view_profile', username=username)
+    
+    if wanna_save:
+        form = EditAccountForm(request.POST or None, user=request.user)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Profile edited succesfully')
+            return redirect('view_profile', username=user_to_edit.username)
+    else:
+        form = EditAccountForm(user=request.user)
+    
+    return render(request, 'editProfile.html', {
+        'form': form,
+        'profile_user': user_to_edit.account, "sessionActive":sessionActive
+    })
+
 
 def view_profile(request, username):
     profile_user = Account.objects.get(user__username__iexact=username)
     if request.POST:
-        if profile_user.rating_count == 0:
-            profile_user.rating = request.POST.get('rating')
+        if request.POST.get("action") == "rate":
+            if profile_user.rating_count == 0:
+                profile_user.rating = request.POST.get('rating')
+            else:
+                profile_user.rating = (profile_user.rating*profile_user.rating_count + int(request.POST.get('rating')))/(profile_user.rating_count + 1)
+            profile_user.rating_count = profile_user.rating_count+1 
+            profile_user.save()
+            request.POST = None
         else:
-            profile_user.rating = (profile_user.rating*profile_user.rating_count + int(request.POST.get('rating')))/(profile_user.rating_count + 1)
-        profile_user.rating_count = profile_user.rating_count+1 
-        profile_user.save()
-        request.POST = None
+            if request.POST.get("action") == "edit_profile":
+                wanna_save = False
+            else:
+                wanna_save = True
+            return edit_profile(request, username, wanna_save)
+        
+
     sessionActive = checkSession(request.user)
     if request.user.username == profile_user.user.username:
         is_same_user = True
@@ -196,29 +229,7 @@ def view_profile(request, username):
         return redirect('error')
 
 
-def edit_profile(request, username):
-    # Verificar que el usuario existe
-    user_to_edit = get_object_or_404(User, username= username)
-    
-    # Verificar permisos (solo el mismo usuario puede editar)
-    if request.user != user_to_edit:
-        messages.error(request, "You are not allowed to edit this profile")
-        return redirect('view_profile', username=username)
-    
-    if request.method == 'POST':
-        form = EditAccountForm(request.POST, instance=user_to_edit, user=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Perfil actualizado correctamente!')
-            # Redirigir al perfil del usuario editado
-            return redirect('view_profile', username=user_to_edit.username)
-    else:
-        form = EditAccountForm(instance=user_to_edit, user=request.user)
-    
-    return render(request, 'editProfile.html', {
-        'form': form,
-        'profile_user': user_to_edit.account  # Asumiendo que tienes un modelo Account relacionado
-    })
+
 
 def retrieve_appointments(account):
     if account.role.nameRole == 'Seller':

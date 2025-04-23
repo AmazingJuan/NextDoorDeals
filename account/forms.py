@@ -31,38 +31,20 @@ class loginForm(forms.Form):
     username = forms.CharField(label = "Username: ")
     password = forms.CharField(label = "Password: ", widget = forms.PasswordInput)
 
-class EditAccountForm(forms.ModelForm):
-
-    current_password = forms.CharField(
-        label="Actual Password",
-        widget=forms.PasswordInput,
-        required=False
-    )
-    new_password1 = forms.CharField(
-        label="New Password",
-        widget=forms.PasswordInput,
-        required=False
-    )
-    new_password2 = forms.CharField(
-        label="Confirm New Password",
-        widget=forms.PasswordInput,
-        required=False
-    )
-
-    class Meta:
-        model = User
-        fields = ['username']
-        help_texts = {'username': None}
+class EditAccountForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        self.user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
 
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        if User.objects.exclude(pk=self.user.pk).filter(username=username).exists():
-            raise ValidationError("Este nombre de usuario ya está en uso.")
-        return username
+        self.account = self.user.account
+
+        if self.account:
+            if self.account.userType.nameUserType == "Natural Person":
+                self.fields['first_name'].initial = self.account.personAccount.firstName
+                self.fields['last_name'].initial = self.account.personAccount.lastName
+            else:
+                self.fields['business_name'].initial = self.account.bussinessAccount.nameBussiness
 
     def clean(self):
         cleaned_data = super().clean()
@@ -70,28 +52,57 @@ class EditAccountForm(forms.ModelForm):
         new_password1 = cleaned_data.get('new_password1')
         new_password2 = cleaned_data.get('new_password2')
 
-        # Validación para cambio de contraseña
         if any([current_password, new_password1, new_password2]):
             if not all([current_password, new_password1, new_password2]):
-                raise ValidationError("Debes completar todos los campos de contraseña para cambiarla.")
+                self.add_error('current_password', "You must complete all password fields to change it.")
             
-            if not self.user.check_password(current_password):
-                self.add_error('current_password', "La contraseña actual es incorrecta.")
+            elif current_password and not self.user.check_password(current_password):
+                self.add_error('current_password', "The current password is incorrect.")
             
-            if new_password1 != new_password2:
-                self.add_error('new_password2', "Las nuevas contraseñas no coinciden.")
+            elif new_password1 and new_password2 and new_password1 != new_password2:
+                self.add_error('new_password2', "The new passwords do not match.")
 
         return cleaned_data
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        
-        # Actualizar contraseña si se proporcionó
-        if self.cleaned_data['new_password1']:
-            user.set_password(self.cleaned_data['new_password1'])
-        
-        if commit:
-            user.save()
-        
-        return user
- 
+    def save(self):
+        new_password = self.cleaned_data.get('new_password1')
+        if new_password:
+            self.user.set_password(new_password)
+        self.user.save()
+
+        if self.account:
+            if self.account.userType.nameUserType == "Natural Person":
+                np = self.account.personAccount
+                np.firstName = self.cleaned_data.get('first_name', '')
+                np.lastName = self.cleaned_data.get('last_name', '')
+                np.save()
+
+            else:
+                bp = self.account.bussinessAccount
+                bp.nameBussiness = self.cleaned_data.get('business_name', '')
+                bp.save()
+
+        return self.user
+
+    
+    current_password = forms.CharField(
+        label="Contraseña actual",
+        widget=forms.PasswordInput,
+        required=False
+    )
+    new_password1 = forms.CharField(
+        label="Nueva contraseña",
+        widget=forms.PasswordInput,
+        required=False
+    )
+    new_password2 = forms.CharField(
+        label="Confirmar nueva contraseña",
+        widget=forms.PasswordInput,
+        required=False
+    )
+
+    first_name = forms.CharField(label="Nombre", required=False)
+    last_name = forms.CharField(label="Apellido", required=False)
+
+    business_name = forms.CharField(label="Nombre del negocio", required=False)
+
