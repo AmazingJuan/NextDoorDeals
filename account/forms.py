@@ -86,23 +86,23 @@ class EditAccountForm(forms.Form):
 
     
     current_password = forms.CharField(
-        label="Contraseña actual",
+        label="Actual password",
         widget=forms.PasswordInput,
         required=False
     )
     new_password1 = forms.CharField(
-        label="Nueva contraseña",
+        label="New password",
         widget=forms.PasswordInput,
         required=False
     )
     new_password2 = forms.CharField(
-        label="Confirmar nueva contraseña",
+        label="Confirm new password",
         widget=forms.PasswordInput,
         required=False
     )
 
-    first_name = forms.CharField(label="Nombre", required=False)
-    last_name = forms.CharField(label="Apellido", required=False)
+    first_name = forms.CharField(label="Name", required=False)
+    last_name = forms.CharField(label="Last name", required=False)
 
-    business_name = forms.CharField(label="Nombre del negocio", required=False)
+    business_name = forms.CharField(label="Bussiness Name", required=False)
 

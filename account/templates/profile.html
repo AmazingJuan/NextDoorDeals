@@ -53,7 +53,7 @@
     }
 
     .profile-header {
-        background: var(--primary-gradient);
+        background: var(--primary-gradient: linear-gradient(135deg, #4b6cb7, #1F5D94););;
         padding: 2rem;
         text-align: center;
         color: var(--text-white);
@@ -331,6 +331,11 @@
             max-height: 400px;
         }
     }
+
+    .custom-badge {
+        background-color: #2f8ee0;
+        color: white;
+    }
 {% endblock %}
 
 {% block content %}
@@ -350,7 +355,7 @@
         </div>
         {% endif %}
 
-        <div class="profile-header bg-primary bg-gradient rounded-4 p-4 mb-4">
+        <div class="profile-header rounded-4 p-4 mb-4" style="background-color: #1f5d94;">
             <div class="text-center mb-3">
                 {% if profile_user.profilePicture %}
                     <img src="{{ profile_user.profile.avatar.url }}" 
@@ -373,18 +378,18 @@
             </h1>
             <div class="text-center">
                 <span class="badge 
-                    {% if profile_user.userType.nameUserType == 'Natural Person' %}
-                        bg-info text-dark
-                    {% else %}
-                        bg-warning text-dark
-                    {% endif %}
-                    px-3 py-2 fs-6 rounded-pill">
-                    {% if profile_user.userType.nameUserType == 'Natural Person' %}
-                        Natural Person
-                    {% else %}
-                        Business
-                    {% endif %}
-                </span>
+                        {% if profile_user.userType.nameUserType == 'Natural Person' %}
+                            bg-info text-dark
+                        {% else %}
+                            bg-warning text-dark
+                        {% endif %}
+                        px-3 py-2 fs-6 rounded-pill custom-badge">
+                {% if profile_user.userType.nameUserType == 'Natural Person' %}
+                    Natural Person
+                {% else %}
+                    Business
+                {% endif %}
+            </span>
             </div>
             <p class="profile-subtitle text-white-50 mt-2 mb-0 text-center">
                 <i class="bi bi-calendar-check me-2"></i>
@@ -395,7 +400,7 @@
             <form method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="edit_profile">
-                <button type="submit" class="btn text-white rounded-pill px-4 py-2 shadow-sm d-inline-flex align-items-center" style="background-color: #2b3499; border-color: #2b3499;">
+                <button type="submit" class="btn text-white rounded-pill px-4 py-2 shadow-sm d-inline-flex align-items-center" style="background-color: #11324f; border-color: #11324f;">
                     <i class="bi bi-pencil me-2"></i> Edit Profile
                 </button>
             </form>

@@ -107,7 +107,7 @@
 
         .detail-icon {
             font-size: 2.75rem;
-            color: #0f172a;
+            color: #2672bs;
             margin-bottom: 1.25rem;
             transition: all 0.4s ease;
         }
@@ -392,7 +392,7 @@
         }
 
         .luxury-input::placeholder {
-            color: #94a3b8;
+            color: #2672bs;
         }
 
         .review-submit {
@@ -434,6 +434,10 @@
                 font-size: 1.75rem;
             }
         }
+
+        .bg-custom-blue {
+            background-color: #184873 !important;
+        }
 {% endblock %}
 
 {% block content %}
@@ -471,7 +475,7 @@
         <div class="col-12 col-lg-6">
             <div class="card property-card h-100 d-flex flex-column justify-content-between shadow-sm">
               <!-- Cabecera elegante con fondo degradado -->
-              <header class="card-header bg-dark text-white position-relative p-4">
+              <header class="card-header bg-custom-blue text-white position-relative p-4">
                 <h1 class="display-5 fw-bold mb-2">{{ property.title }}</h1> 
 
 
@@ -672,12 +676,13 @@
                         </div>
                         <div class="form-group mb-4">
                             <label for="review-comment" class="fw-bold mb-2">Your comment</label>
-                            <textarea id="review-comment" name="comment" class="form-control luxury-input" rows="5" placeholder="Comparte tu experiencia..." required></textarea>
+                            <textarea id="review-comment" name="comment" class="form-control luxury-input" rows="5" placeholder="Share your experience..." required></textarea>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="action-button review-submit px-5" id="submit-review">
+                            <button type="submit" class="action-button review-submit px-5 text-white" id="submit-review" style="background-color: #11324f; border-color: #11324f;">
                                 <i class="bi bi-send-fill me-2"></i>Send review
                             </button>
+                            
                         </div>
                     </form>
                 </div>
