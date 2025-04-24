@@ -6,7 +6,6 @@ from .models import *
 admin.site.register(Property)
 admin.site.register(PropertyType)
 admin.site.register(City)
-admin.site.register(Province)
 admin.site.register(District)
 admin.site.register(Favourites)
 admin.site.register(Location)
