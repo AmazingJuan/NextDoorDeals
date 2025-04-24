@@ -3,9 +3,6 @@ from account.models import Account
 
 
 # Create your models here.
-
-class Province(models.Model):
-    name = models.CharField(max_length = 50)
     
 class City(models.Model):
     name = models.CharField(max_length = 50)
