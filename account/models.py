@@ -35,5 +35,3 @@ class BussinessAccount(models.Model):
     nameBussiness = models.CharField(max_length= 20)
 
     #aquí todos los atributos de la bussiness account
-
-
