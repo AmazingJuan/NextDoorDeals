@@ -4,6 +4,8 @@ from django_flatpickr.widgets import DatePickerInput
 from django_flatpickr.schemas import FlatpickrOptions
 import datetime
 from .models import District, PropertyType
+from django.contrib.gis import forms
+from mapwidgets.widgets import GoogleMapPointFieldWidget
 
 
 #CODIGO EXTRAIDO DE LA DOCUMENTACIÓN DE DJANGO: https://docs.djangoproject.com/en/5.0/topics/http/file-uploads/#uploading-multiple-files
@@ -43,6 +45,8 @@ class PublishForm(forms.Form):
                             label = "Type: "
                             )
     pictures = MultipleFileField()
+    location = forms.PointField(widget=GoogleMapPointFieldWidget)
+
     
 #Para seleccionar las fechas
 class DateForm(forms.Form):

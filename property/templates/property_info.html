@@ -442,8 +442,8 @@
 
 {% block content %}
 <div class="container py-8">
-    <div class="row g-5 justify-content-center">
-        <!-- Galería de Imágenes -->
+    <!-- Galería de Imágenes -->
+    <div class="row g-5 justify-content-center mb-5">
         <div class="col-12 col-lg-8">
             <div class="gallery-container position-relative mb-4">
                 <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -454,7 +454,6 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <!-- Botones de navegación luxury -->
                     <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
@@ -469,140 +468,148 @@
                 </div>
             </div>
         </div>
+    </div>
 
-
-        <!-- Información de la propiedad -->
+    <!-- Información de la propiedad -->
+    <div class="row g-5 justify-content-center mb-5">
         <div class="col-12 col-lg-6">
             <div class="card property-card h-100 d-flex flex-column justify-content-between shadow-sm">
-              <!-- Cabecera elegante con fondo degradado -->
-              <header class="card-header bg-custom-blue text-white position-relative p-4">
-                <h1 class="display-5 fw-bold mb-2">{{ property.title }}</h1> 
-
-
-                <!-- Aparece el botón Editar Propiedad solo para el dueño de la publicación -->
-                {% if property.associatedAccount == request.user.account %}
-                <div class="d-flex justify-content-end">
-                    <a href="{% url 'editProperty' property.id %}" 
-                        class="btn btn-outline-light btn-sm px-3 py-2 mt-2 shadow-sm" 
-                        style="border-radius: 1rem; font-weight: 500;">
-                        <i class="bi bi-pencil-square me-2"></i> Edit Property Information
-                    </a>
-                </div>
-                {% endif %}
-                <!-- Hasta aquí -->
-
-
-                <p class="fs-5 mb-0 opacity-90">
-                  <i class="bi bi-geo-alt-fill me-2"></i>
-                  {{ property.location.district.name }} - {{ property.location.district.city.name }}
-                </p>
-              </header>
-          
-              <!-- Cuerpo del card -->
-              <div class="card-body p-5 d-flex flex-column gap-4 flex-grow-1">
-                <!-- Badges de precio y SES -->
-                <div class="d-flex flex-wrap gap-4 mb-3">
-                  <span class="badge bg-success text-light fs-5">
-                    <i class="bi bi-tag-fill me-2"></i>${{ property.price|intcomma }}
-                  </span>
-                  <span class="badge bg-warning text-dark fs-5">
-                    <i class="bi bi-star-fill me-2"></i>SES {{ property.SES }}
-                  </span>
-                </div>
-          
-                <!-- Información de la propiedad y descripción -->
-                <section>
-                  <h3 class="fw-bold text-primary mb-3">
-                    <i class="bi bi-house-door-fill me-3"></i>{{ pType }}
-                  </h3>
-                  <div class="description-box mt-2">
-                    <h4 class="fw-bold mb-3">Description</h4>
-                    <p class="lead text-dark lh-lg mb-0">{{ property.description }}</p>
-                  </div>
-                </section>
-          
-                <!-- Detalles en dos columnas -->
-                <div class="row g-4 mt-2">
-                  <div class="col-12 col-md-6">
-                    <div class="d-flex align-items-start">
-                      <i class="bi bi-geo-alt-fill fs-3 me-2 text-muted"></i>
-                      <div>
-                        <h5 class="fw-bold mb-1">Location</h5>
-                        <p class="text-muted fs-5 mb-0">{{ property.district.name }}</p>
-                      </div>
+                <header class="card-header bg-custom-blue text-white position-relative p-4">
+                    <h1 class="display-5 fw-bold mb-2">{{ property.title }}</h1>
+                    {% if property.associatedAccount == request.user.account %}
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'editProperty' property.id %}" class="btn btn-outline-light btn-sm px-3 py-2 mt-2 shadow-sm" style="border-radius: 1rem; font-weight: 500;">
+                            <i class="bi bi-pencil-square me-2"></i> Edit Property Information
+                        </a>
                     </div>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <div class="d-flex align-items-start">
-                      <i class="bi bi-calendar-check-fill fs-3 me-2 text-muted"></i>
-                      <div>
-                        <h5 class="fw-bold mb-1">Publication date</h5>
-                        <p class="text-muted fs-5 mb-0">{{ property.creationDate|date:"d M, Y" }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-          
-                <!-- Botones de acción -->
-                {% if sessionActive %}
-                <div class="mt-4 d-flex flex-column flex-md-row gap-4">
-                  <!-- Dropdown para agendar cita usando Bootstrap -->
-                  <div class="dropdown flex-fill" style="min-width: 220px;">
-                    {% if property.associatedAccount != request.user.account and request.user.account.role.nameRole == 'Buyer' %}
-                    <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" id="dropdownAppointment"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
-                    </button>
                     {% endif %}
-                    <div class="dropdown-menu p-4 shadow-lg rounded" aria-labelledby="dropdownAppointment">
-                      <form method="post" id="appointmentForm" autocomplete="off">
-                        <input type="hidden" name="action" value="appointment">
-                        {% csrf_token %}
-                        {{ date_form.media }}
-                        <div class="mb-3">
-                          {{ date_form.date.label_tag }}
-                          {{ date_form.date }}
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100" style="font-size: 1.15rem;">
-                          <i class="bi bi-calendar-check me-2"></i>Confirm date
-                        </button>
-                      </form>
+                    <p class="fs-5 mb-0 opacity-90">
+                        <i class="bi bi-geo-alt-fill me-2"></i>
+                        {{ property.location.district.name }} - {{ property.location.district.city.name }}
+                    </p>
+                </header>
+                <div class="card-body p-5 d-flex flex-column gap-4 flex-grow-1">
+                    <div class="d-flex flex-wrap gap-4 mb-3 justify-content-between">
+                        <span class="badge bg-success text-light fs-5">
+                            <i class="bi bi-tag-fill me-2"></i>${{ property.price|intcomma }}
+                        </span>
+                        <span class="badge bg-warning text-dark fs-5">
+                            <i class="bi bi-star-fill me-2"></i>SES {{ property.SES }}
+                        </span>
                     </div>
-                  </div>
-          
-                  <!-- Botón para agregar a favoritos -->
-                  <form method="post" class="flex-fill">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="favourite">
-                    <button type="submit" class="btn btn-outline-danger w-100">
-                      <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
-                      {% if is_fav %}
-                        Remove from favorites
-                      {% else %}
-                        Add to favorites
-                      {% endif %}
-                    </button>
-                  </form>
+                    <section>
+                        <h3 class="fw-bold text-primary mb-3">
+                            <i class="bi bi-house-door-fill me-3"></i>{{ pType }}
+                        </h3>
+                        <div class="description-box mt-2">
+                            <h4 class="fw-bold mb-3">Description</h4>
+                            <p class="lead text-dark lh-lg mb-0">{{ property.description }}</p>
+                        </div>
+                    </section>
+                    <div class="row g-4 mt-2">
+                        <div class="col-12 col-md-6 mb-4 mb-md-0">
+                            <div class="d-flex align-items-start mb-2">
+                                <i class="bi bi-geo-alt-fill fs-3 me-2 text-muted"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Location</h5>
+                                </div>
+                            </div>
+                            <div id="property-map" style="width:100%; max-width:420px; height:260px; border-radius:1rem; box-shadow:0 4px 24px rgba(10,61,98,0.10);"></div>
+                            <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}"></script>
+                            <script>
+                                function initPropertyMap() {
+                                    const lat = {{ property.location.coordinates.latitude }};
+                                    const lng = {{ property.location.coordinates.longitude }};
+                                    const center = {lat: lat, lng: lng};
+                                    const map = new google.maps.Map(document.getElementById('property-map'), {
+                                        center: center,
+                                        zoom: 15,
+                                        mapTypeControl: false,
+                                        streetViewControl: false,
+                                        fullscreenControl: false,
+                                        styles: [
+                                            { featureType: "poi", stylers: [{ visibility: "off" }] },
+                                            { featureType: "transit", stylers: [{ visibility: "off" }] }
+                                        ]
+                                    });
+                                    new google.maps.Marker({
+                                        position: center,
+                                        map: map,
+                                        icon: {
+                                            url: "https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2_hdpi.png",
+                                            scaledSize: new google.maps.Size(38, 38)
+                                        }
+                                    });
+                                }
+                                window.addEventListener('DOMContentLoaded', initPropertyMap);
+                            </script>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-calendar-check-fill fs-3 me-2 text-muted"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1">Publication date</h5>
+                                    <p class="text-muted fs-5 mb-0">{{ property.creationDate|date:"d M, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if sessionActive %}
+                    <div class="mt-4 d-flex flex-column flex-md-row gap-4">
+                        <div class="dropdown flex-fill" style="min-width: 220px;">
+                            {% if property.associatedAccount != request.user.account and request.user.account.role.nameRole == 'Buyer' %}
+                            <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" id="dropdownAppointment" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
+                            </button>
+                            {% endif %}
+                            <div class="dropdown-menu p-4 shadow-lg rounded" aria-labelledby="dropdownAppointment">
+                                <form method="post" id="appointmentForm" autocomplete="off">
+                                    <input type="hidden" name="action" value="appointment">
+                                    {% csrf_token %}
+                                    {{ date_form.media }}
+                                    <div class="mb-3">
+                                        {{ date_form.date.label_tag }}
+                                        {{ date_form.date }}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100" style="font-size: 1.15rem;">
+                                        <i class="bi bi-calendar-check me-2"></i>Confirm date
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <form method="post" class="flex-fill">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="favourite">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
+                                {% if is_fav %}
+                                    Remove from favorites
+                                {% else %}
+                                    Add to favorites
+                                {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-
-        <!-- Sección de Reseñas -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <h2 class="fw-bold text-center mb-5 display-5">Thoughts about this property</h2>
             </div>
         </div>
-        <div class="row g-4 mb-5 justify-content-center">
-            {% if property.reviews.all %}
-                {% for review in property.reviews.all %}
-                <div class="col-12 col-md-6 col-lg-5 d-flex">
-                    <div class="review-card flex-fill">
-                        <div class="review-header">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-container">
+    </div>
+
+    <!-- Sección de Reseñas -->
+    <div class="row mt-5 mb-5">
+        <div class="col-12">
+            <h2 class="fw-bold text-center mb-5 display-5">Thoughts about this property</h2>
+        </div>
+    </div>
+    <div class="row g-4 mb-5 justify-content-center" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+        {% if property.reviews.all %}
+            {% for review in property.reviews.all %}
+            <div class="col d-flex">
+                <div class="review-card flex-fill">
+                    <div class="review-header">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-container">
                                 <a href = "{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
                                     {% if review.user.profilePicture %}
                                         <img src="{{ review.user.profilePicture.url }}" alt="{{ review.user.username }}" class="avatar-image">
@@ -611,95 +618,94 @@
                                             <i class="bi bi-person-fill"></i>
                                         </div>
                                     {% endif %}
-                                                                    </a>
-                                </div>
-                                <div class="ms-3">
-                                    <a href = "{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
+                                </a>
+                            </div>
+                            <div class="ms-3">
+                                <a href = "{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
                                     <h5 class="fw-bold mb-1">
                                         {% if review.reviewer.userType.nameUserType == 'Natural Person' %}
-                                        {{ review.reviewer.personAccount.firstName }} {{ review.reviewer.personAccount.lastName }}
+                                            {{ review.reviewer.personAccount.firstName }} {{ review.reviewer.personAccount.lastName }}
                                         {% else %}
-                                        {{review.reviewer.bussinessAccount.nameBussiness}}
+                                            {{review.reviewer.bussinessAccount.nameBussiness}}
                                         {% endif %}
-                                        </h5>
+                                    </h5>
                                     <p class="text-muted small mb-0">{{ review.created_at|date:"d M, Y" }}</p>
-                                    </a>
-                                </div>
+                                </a>
                             </div>
-                        </div>
-                        <div class="review-body">
-                            <div class="rating mb-3">
-                                {% for i in "12345" %}
-                                    {% if forloop.counter <= review.rating %}
-                                        <i class="bi bi-star-fill filled"></i>
-                                    {% else %}
-                                        <i class="bi bi-star"></i>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                            <p class="review-text">{{ review.comment }}</p>
                         </div>
                     </div>
+                    <div class="review-body">
+                        <div class="rating mb-3">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="bi bi-star-fill filled"></i>
+                                {% else %}
+                                    <i class="bi bi-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p class="review-text">{{ review.comment }}</p>
+                    </div>
                 </div>
-                {% endfor %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="empty-reviews">
+                    <i class="bi bi-chat-square-text detail-icon"></i>
+                    <h4 class="fw-bold mb-3">There's no reviews yet</h4>
+                    <p class="lead text-muted">Be the first one and review this property.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Formulario para agregar reseñas -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-12 col-md-10 col-lg-8">
+            {% if sessionActive %}
+            <div class="review-form-card mt-5">
+                <h3 class="fw-bold mb-4 text-center">Share your experience</h3>
+                <form method="post" action="" id="reviewForm">
+                    {% csrf_token %}
+                    <div class="form-group mb-4">
+                        <input type="hidden" name="action" value="review">
+                        <label class="fw-bold mb-2">Your rating</label>
+                        <div class="rating-selector align-items-center">
+                            <input type="hidden" name="rating" id="selected-rating" value="0">
+                            <div class="stars me-3">
+                                <i class="bi bi-star rating-star" data-value="1"></i>
+                                <i class="bi bi-star rating-star" data-value="2"></i>
+                                <i class="bi bi-star rating-star" data-value="3"></i>
+                                <i class="bi bi-star rating-star" data-value="4"></i>
+                                <i class="bi bi-star rating-star" data-value="5"></i>
+                            </div>
+                            <span class="rating-text ms-2">Select a rating</span>
+                        </div>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="review-comment" class="fw-bold mb-2">Your comment</label>
+                        <textarea id="review-comment" name="comment" class="form-control luxury-input" rows="5" placeholder="Share your experience..." required></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="action-button review-submit px-5 text-white" id="submit-review" style="background-color: #11324f; border-color: #11324f;">
+                            <i class="bi bi-send-fill me-2"></i>Send review
+                        </button>
+                    </div>
+                </form>
+            </div>
             {% else %}
-                <div class="col-12">
-                    <div class="empty-reviews">
-                        <i class="bi bi-chat-square-text detail-icon"></i>
-                        <h4 class="fw-bold mb-3">There's no reviews yet</h4>
-                        <p class="lead text-muted">Be the first one and review this property.</p>
-                    </div>
-                </div>
+            <div class="login-prompt-card mt-5">
+                <i class="bi bi-shield-lock detail-icon"></i>
+                <h4 class="fw-bold mb-2">You must sign in in order to review a property</h4>
+                <p class="lead text-muted mb-4">Share your opinion with others signing in into your account.</p>
+                <a href="{% url 'login' %}" class="action-button px-5">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </a>
+            </div>
             {% endif %}
         </div>
-
-        <!-- Formulario para agregar reseñas -->
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-10 col-lg-8">
-                {% if sessionActive %}
-                <div class="review-form-card mt-3">
-                    <h3 class="fw-bold mb-4 text-center">Share your experience</h3>
-                    <form method="post" action="" id="reviewForm">
-                        {% csrf_token %}
-                        <div class="form-group mb-4">
-                            <input type="hidden" name="action" value="review">
-                            <label class="fw-bold mb-2">Your rating</label>
-                            <div class="rating-selector align-items-center">
-                                <input type="hidden" name="rating" id="selected-rating" value="0">
-                                <div class="stars me-3">
-                                    <i class="bi bi-star rating-star" data-value="1"></i>
-                                    <i class="bi bi-star rating-star" data-value="2"></i>
-                                    <i class="bi bi-star rating-star" data-value="3"></i>
-                                    <i class="bi bi-star rating-star" data-value="4"></i>
-                                    <i class="bi bi-star rating-star" data-value="5"></i>
-                                </div>
-                                <span class="rating-text ms-2">Select a rating</span>
-                            </div>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="review-comment" class="fw-bold mb-2">Your comment</label>
-                            <textarea id="review-comment" name="comment" class="form-control luxury-input" rows="5" placeholder="Share your experience..." required></textarea>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="action-button review-submit px-5 text-white" id="submit-review" style="background-color: #11324f; border-color: #11324f;">
-                                <i class="bi bi-send-fill me-2"></i>Send review
-                            </button>
-                            
-                        </div>
-                    </form>
-                </div>
-                {% else %}
-                <div class="login-prompt-card mt-3">
-                    <i class="bi bi-shield-lock detail-icon"></i>
-                    <h4 class="fw-bold mb-2">You must sign in in order to review a property</h4>
-                    <p class="lead text-muted mb-4">Share your opinion with others signing in into your account.</p>
-                    <a href="{% url 'login' %}" class="action-button px-5">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+    </div>
 </div>
 
 <script>
@@ -793,40 +799,6 @@
         });
     });
 </script>
-
-<script>
-    // Obtén el botón y el dropdown
-    const appointmentBtn = document.getElementById('appointment-btn');
-    const appointmentDropdown = document.getElementById('appointment-dropdown');
-  
-    // Maneja el clic en el botón
-    appointmentBtn.addEventListener('click', function(event) {
-      // Previene el cierre inmediato del dropdown
-      event.stopPropagation();
-  
-      // Cambia el estado del dropdown
-      const isExpanded = appointmentBtn.getAttribute('aria-expanded') === 'true';
-      
-      if (isExpanded) {
-        appointmentDropdown.style.display = 'none'; // Cerrar el dropdown
-        appointmentBtn.setAttribute('aria-expanded', 'false');
-      } else {
-        appointmentDropdown.style.display = 'block'; // Mostrar el dropdown
-        appointmentBtn.setAttribute('aria-expanded', 'true');
-      }
-    });
-  
-    // Cierra el dropdown si se hace clic fuera de él
-    document.addEventListener('click', function(event) {
-      if (!appointmentBtn.contains(event.target) && !appointmentDropdown.contains(event.target)) {
-        appointmentDropdown.style.display = 'none';
-        appointmentBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-  </script>
-
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
 <script src="{% static 'js/property_details.js' %}"></script>
-
 {% endblock %}

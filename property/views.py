@@ -3,6 +3,7 @@ from .models import Property, City, District, Images, PropertyType, Favourites, 
 from .forms import PublishForm, DateForm, EditPropertyForm
 from account.views import checkSession
 from django.contrib import messages
+import os
 # Create your views here.
 
 def filterPrice(minAttr, maxAttr, property):
@@ -90,7 +91,8 @@ def publish(request):
             description = data["description"]
             SES = data["SES"]
             district = data["district"]
-            coordinates = Coordinates.objects.get(id = 1)
+            location = data["location"]
+            coordinates = Coordinates.objects.create(latitude = location.y, longitude = location.x)
             location = Location(district = District.objects.get(id = int(district) - 1), coordinates = coordinates)
             location.save()
             price = data["price"]
@@ -155,7 +157,7 @@ def view_property(request, id):
             request_appointment(property, request.POST.get('date'), request.user.account)
         return redirect('property_info', id = id)
     else:
-        return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive, 'date_form':date_form})
+        return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive, 'date_form':date_form, 'api_key':os.getenv('maps_api')})
     try:
         ...
     except:

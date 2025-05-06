@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os 
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'property' , 'account', 'crispy_forms', "crispy_bootstrap5", 'django.contrib.humanize', 'mathfilters', 'django_flatpickr',
+    'property' , 
+    'account', 
+    'crispy_forms', 
+    "crispy_bootstrap5", 
+    'django.contrib.humanize', 
+    'mathfilters', 
+    'django_flatpickr',
+    'mapwidgets',
 
 ]
 
@@ -120,7 +128,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ['account/static/', 'property/static/' ]
 
@@ -132,3 +140,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+GDAL_LIBRARY_PATH = "C:/Users/juanp/Downloads/release-1930-x64-gdal-3-10-0-mapserver-8-2-2/bin/gdal.dll"
+GEOS_LIBRARY_PATH = "C:/Users/juanp/Downloads/release-1930-x64-gdal-3-10-0-mapserver-8-2-2/bin/geos_c.dll"
+
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Cargar el archivo .env
+load_dotenv(dotenv_path=BASE_DIR / '.env')
+maps_api = os.getenv('maps_api')
+MAP_WIDGETS = {
+    "GoogleMap": {
+        "apiKey": maps_api,
+        "PointField": {
+            "interactive": {
+                "mapOptions": {
+                    "zoom": 15,
+                },
+                "mapCenterLocationName": "medellin, colombia",
+            }
+        },
+    }
+}

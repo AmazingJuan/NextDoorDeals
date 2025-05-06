@@ -166,12 +166,12 @@
             </div>
             
             <div class="card-body p-4 p-md-5">
-                <form method="post" 
-                enctype="multipart/form-data" 
-                id="publishForm">
+                <form method="post" enctype="multipart/form-data" id="publishForm">
                     {% csrf_token %}
-                    
+                    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
+                    {{ publishForm.media }}
                     <div class="row g-4">
+                        <!-- Información básica -->
                         <div class="col-12">
                             <div class="section-header d-flex align-items-center mb-3">
                                 <i class="bi bi-info-circle text-primary me-2" aria-hidden="true"></i>
@@ -186,18 +186,31 @@
                         <div class="col-md-6">
                             {{ publishForm.SES|as_crispy_field }}
                         </div>
-
+            
                         <div class="col-md-6">
                             {{ publishForm.type|as_crispy_field }}
                         </div>
-
+            
                         <div class="col-md-6">
                             {{ publishForm.price|as_crispy_field }}
                         </div>
                         <div class="col-md-6">
                             {{ publishForm.district|as_crispy_field }}
                         </div>
-
+            
+                        <!-- Ubicación: Google Maps -->
+                        <div class="col-12">
+                            <div class="section-header d-flex align-items-center mb-3 mt-4">
+                                <i class="bi bi-geo-alt text-primary me-2" aria-hidden="true"></i>
+                                <h2 class="h4 text-primary mb-0">Property Location</h2>
+                            </div>
+                            <div class="custom-map-container">
+                                <!-- Aquí está el widget de Google Maps para seleccionar ubicación -->
+                                {{ publishForm.location }}
+                            </div>
+                        </div>
+            
+                        <!-- Media Upload -->
                         <div class="col-12">
                             <div class="section-header d-flex align-items-center mb-3 mt-4">
                                 <i class="bi bi-images text-primary me-2" aria-hidden="true"></i>
@@ -224,5 +237,6 @@
             </div>
         </div>
     </div>
+
 
 {% endblock %}
