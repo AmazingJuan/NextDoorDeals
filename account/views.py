@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Account, BussinessAccount, PersonAccount, UserType, Role
+from .models import Account, BussinessAccount, PersonAccount, UserType, Role, Message
+from django.db.models import Q
+from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from .forms import AccountForm, NaturalForm, BussinesForm, loginForm, EditAccountForm
@@ -12,8 +14,10 @@ import base64
 import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt 
+import json
+from django.views.decorators.csrf import csrf_exempt
 
- 
+
 
 def checkSession(user):
     return (user and user.is_authenticated and hasattr(User.objects.get(username=user.username), 'account'))
@@ -172,7 +176,6 @@ def statistic_images(user):
 
 def edit_profile(request, username, wanna_save):
     user_to_edit = request.user
-    sessionActive = checkSession(request.user)
     if request.user != user_to_edit:
         print("entre aki no se pq")
         messages.error(request, "You are not allowed to edit this profile")
@@ -190,8 +193,7 @@ def edit_profile(request, username, wanna_save):
     
     return render(request, 'editProfile.html', {
         'form': form,
-        'profile_user': user_to_edit.account, "sessionActive":sessionActive
-    })
+        'profile_user': user_to_edit.account})
 
 
 def view_profile(request, username):
@@ -213,7 +215,6 @@ def view_profile(request, username):
             return edit_profile(request, username, wanna_save)
         
 
-    sessionActive = checkSession(request.user)
     if request.user.username == profile_user.user.username:
         is_same_user = True
         graph1, graph2, graph3 = statistic_images(profile_user)
@@ -222,13 +223,30 @@ def view_profile(request, username):
         graph1 = None
         graph2 = None
         graph3 = None
-    return render(request, 'profile.html', {'profile_user':profile_user, 'is_same_user': is_same_user, 'graphic_year':graph1, 'graphic_month':graph2, 'graphic_weekday':graph3, 'sessionActive':sessionActive})
+    print(request.user.account.role.nameRole == "Buyer")
+    return render(request, 'profile.html', {'profile_user':profile_user, 'is_same_user': is_same_user, 'graphic_year':graph1, 'graphic_month':graph2, 'graphic_weekday':graph3})
     try:
         ...
     except:
         return redirect('error')
 
 
+def get_contacts(request):
+    user = request.user.account
+
+    messages = Message.objects.filter(Q(sender=user) | Q(receiver=user)).order_by('-timestamp')
+
+    latest_messages = {}
+
+    for message in messages:
+        contact = message.receiver if message.sender == user else message.sender
+        if contact not in latest_messages:
+            latest_messages[contact] = message.timestamp  # Solo se guarda el primero (más reciente por orden)
+
+    # Ordenar contactos por el timestamp más reciente
+    contacts = sorted(latest_messages.keys(), key=lambda c: latest_messages[c], reverse=True)
+    print(contacts)
+    return contacts
 
 
 def retrieve_appointments(account):
@@ -257,18 +275,72 @@ def show_appointments(request):
     else:
         associatedAccount = request.user.account
         appointments = retrieve_appointments(associatedAccount)
-        return render(request, 'appointments.html', {"appointments": appointments, "current_account":associatedAccount, "sessionActive":checkSession(request.user)})
+        return render(request, 'appointments.html', {"appointments": appointments, "current_account":associatedAccount})
     try:
         ...
     except:
         ...
+ 
 
+def get_chat_history(request, username):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'No estás autenticado'}, status=401)
     
+    try:
+        user = request.user.account
+        chat_partner = Account.objects.get(user__username__iexact=username)
+    except Account.DoesNotExist:
+        return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
 
+    messages = Message.objects.filter(
+        (Q(sender=user) & Q(receiver=chat_partner)) | 
+        (Q(sender=chat_partner) & Q(receiver=user))
+    ).order_by('timestamp')
 
+    messages_data = [
+        {'sender': message.sender.user.username, 'content': message.content, 'timestamp': message.timestamp}
+        for message in messages
+    ]
 
+    return JsonResponse({'messages': messages_data})
+
+@csrf_exempt
+def send_message(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'No estás autenticado'}, status=401)
     
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            message_content = data.get('message')
+            reciever_username = data.get('receiver')
 
+            # Asegurarse de que el mensaje no esté vacío
+            if not message_content:
+                return JsonResponse({'error': 'El mensaje no puede estar vacío'}, status=400)
+            
+            user = request.user.account
+            chat_partner = Account.objects.get(user__username__iexact=reciever_username)
+            print(chat_partner)
+
+            # Crear el nuevo mensaje
+            message = Message.objects.create(
+                sender=user,
+                receiver=chat_partner,
+                content=message_content
+            )
+            
+            # Devolver el mensaje en la respuesta
+            message_data = {
+                'sender': message.sender.user.username,
+                'content': message.content,
+                'timestamp': message.timestamp
+            }
+
+            return JsonResponse({'message': message_data}, status=201)
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
          
         
         

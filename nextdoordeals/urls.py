@@ -20,8 +20,8 @@ from property.views import error
 from account.views import logout_logic, loginUser, show_appointments
 from django.conf.urls.static import static
 from django.conf import settings
-
-
+from account import consumers
+from account.views import send_message
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
@@ -30,6 +30,12 @@ urlpatterns = [
     path('logout/', logout_logic, name = 'logout'),
     path('login/', loginUser, name = 'login'),
     path('appointments/', show_appointments, name = 'appointments'),
+    path('send_message/', send_message, name='send_message'),
 ]
 
+
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+
+websocket_urlpatterns = [
+    path('ws/chat/<str:room_name>/', consumers.ChatConsumer.as_asgi()),
+]

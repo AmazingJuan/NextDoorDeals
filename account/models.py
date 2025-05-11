@@ -34,4 +34,12 @@ class BussinessAccount(models.Model):
     nitBussinessAccount = models.IntegerField(blank = True)
     nameBussiness = models.CharField(max_length= 20)
 
-    #aquí todos los atributos de la bussiness account
+
+class Message(models.Model):
+    sender = models.ForeignKey(Account, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(Account, related_name='received_messages', on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']

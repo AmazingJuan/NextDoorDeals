@@ -2,455 +2,706 @@
 {% load custom_filters %}
 {% load static %}
 {% load humanize %}
+
 {% block title %}
     <title>{{ property.title }} - NextDoorDeals</title>
+    <meta name="description" content="View details for {{ property.title }} - a {{ pType }} property located in {{ property.location.district.name }}">
 {% endblock %}
 
 {% block extra_css %}
-        /* Modern gradient backgrounds with luxury feel */
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
+    :root {
+        /* Core Colors */
+        --color-primary: #11324F;
+        --color-primary-light: #1F5D94;
+        --color-primary-dark: #0A1F30;
+        --color-accent: #ff6c37;
+        --color-accent-hover: #ff5722;
+        --color-success: #10b981;
+        --color-warning: #f59e0b;
+        --color-danger: #ef4444;
         
-        .bg-gradient-secondary {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        }
-
-        /* Luxury card design */
-        .property-card {
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateY(0);
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 2rem;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-        }
+        /* Neutrals */
+        --color-gray-50: #f8fafc;
+        --color-gray-100: #f1f5f9;
+        --color-gray-200: #e2e8f0;
+        --color-gray-300: #cbd5e1;
+        --color-gray-400: #94a3b8;
+        --color-gray-500: #64748b;
+        --color-gray-600: #475569;
+        --color-gray-700: #334155;
+        --color-gray-800: #1e293b;
+        --color-gray-900: #0f172a;
         
-        .property-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.2);
-        }
+        /* Shadows */
+        --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 12px 24px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
+        --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        
+        /* Transitions */
+        --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-smooth: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: 0.5s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+        
+        /* Border Radius */
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1.25rem;
+        --radius-2xl: 1.5rem;
+        --radius-full: 9999px;
+        
+        /* Spacing (8px system) */
+        --space-1: 0.25rem;  /* 4px */
+        --space-2: 0.5rem;   /* 8px */
+        --space-3: 0.75rem;  /* 12px */
+        --space-4: 1rem;     /* 16px */
+        --space-5: 1.25rem;  /* 20px */
+        --space-6: 1.5rem;   /* 24px */
+        --space-8: 2rem;     /* 32px */
+        --space-10: 2.5rem;  /* 40px */
+        --space-12: 3rem;    /* 48px */
+        --space-16: 4rem;    /* 64px */
+        --space-20: 5rem;    /* 80px */
+        --space-24: 6rem;    /* 96px */
+    }
 
-        /* Premium image gallery */
-        .gallery-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%);
+    /* Gallery Styles */
+    .gallery-container {
+        position: relative;
+        border-radius: var(--radius-2xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.05) 100%);
+        margin-bottom: var(--space-8);
+    }
+
+    .gallery-image {
+        width: 100%;
+        height: 70vh;
+        max-height: 650px;
+        object-fit: cover;
+        transition: transform var(--transition-smooth);
+    }
+
+    .gallery-container:hover .gallery-image {
+        transform: scale(1.03);
+    }
+
+    .gallery-controls {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: var(--space-4) var(--space-6);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(to top, rgba(17, 50, 79, 0.8), transparent);
+        backdrop-filter: blur(8px);
+        z-index: 10;
+    }
+
+    .image-counter {
+        padding: var(--space-2) var(--space-4);
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        border-radius: var(--radius-full);
+        color: white;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+    }
+
+    .gallery-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        margin: 0 var(--space-1);
+        transition: var(--transition-fast);
+        cursor: pointer;
+    }
+
+    .gallery-dot.active {
+        background: white;
+        transform: scale(1.3);
+    }
+
+    .carousel-control-prev, .carousel-control-next {
+        width: 3rem;
+        height: 3rem;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: var(--transition-base);
+    }
+
+    .carousel-control-prev {
+        left: var(--space-4);
+    }
+
+    .carousel-control-next {
+        right: var(--space-4);
+    }
+
+    .gallery-container:hover .carousel-control-prev,
+    .gallery-container:hover .carousel-control-next {
+        opacity: 0.9;
+    }
+
+    .carousel-control-prev:hover, .carousel-control-next:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    /* Property Details Card */
+    .property-card {
+        border: none;
+        border-radius: var(--radius-2xl);
+        overflow: hidden;
+        background: white;
+        box-shadow: var(--shadow-md);
+        transition: transform var(--transition-base), box-shadow var(--transition-base);
+        height: 100%;
+    }
+
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+        background: linear-gradient(120deg, var(--color-primary), var(--color-primary-light));
+        padding: var(--space-8);
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: radial-gradient(circle at top right, rgba(255,255,255,0.1), transparent 60%);
+    }
+
+    .property-title {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: var(--space-4);
+        line-height: 1.2;
+        position: relative;
+    }
+
+    .location-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-2) var(--space-4);
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-full);
+        font-weight: 500;
+        color: white;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        gap: var(--space-2);
+    }
+
+    .card-body {
+        padding: var(--space-8);
+    }
+
+    /* Property Badges */
+    .badge-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        margin-bottom: var(--space-6);
+    }
+
+    .property-badge {
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        transition: transform var(--transition-fast);
+    }
+
+    .property-badge:hover {
+        transform: translateY(-2px);
+    }
+
+    .badge-price {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--color-success);
+    }
+
+    .badge-ses {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--color-warning);
+    }
+
+    .badge-type {
+        background: rgba(31, 93, 148, 0.15);
+        color: var(--color-primary-light);
+    }
+
+    /* Property Description */
+    .description-container {
+        margin: var(--space-6) 0;
+    }
+
+    .description-box {
+        background: var(--color-gray-50);
+        border-radius: var(--radius-lg);
+        padding: var(--space-6);
+        border-left: 5px solid var(--color-primary);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .description-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(135deg, rgba(31, 93, 148, 0.03), transparent);
+        pointer-events: none;
+    }
+
+    .section-title {
+        color: var(--color-primary);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-4);
+    }
+
+    .section-title i {
+        font-size: 1.5rem;
+    }
+
+    /* Map Section */
+    .map-container {
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        height: 300px;
+        transition: box-shadow var(--transition-base);
+    }
+
+    .map-container:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+        margin-top: var(--space-8);
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        transition: all var(--transition-base);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        min-width: 150px;
+    }
+
+    .btn-action::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+        z-index: -1;
+    }
+
+    .btn-primary {
+        background: var(--color-primary);
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: var(--color-primary-light);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -5px rgba(17, 50, 79, 0.3);
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--color-primary);
+        color: var(--color-primary);
+        background: transparent;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--color-primary);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -5px rgba(17, 50, 79, 0.3);
+    }
+
+    .btn-outline-danger {
+        border: 2px solid var(--color-danger);
+        color: var(--color-danger);
+        background: transparent;
+    }
+
+    .btn-outline-danger:hover {
+        background: var(--color-danger);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -5px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Dropdown Menu */
+    .dropdown-menu {
+        border: none;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        padding: var(--space-4);
+        min-width: 300px;
+    }
+
+    /* Reviews Section */
+    .reviews-container {
+        margin-top: var(--space-16);
+    }
+
+    .reviews-title {
+        text-align: center;
+        margin-bottom: var(--space-8);
+        position: relative;
+        padding-bottom: var(--space-4);
+    }
+
+    .reviews-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--color-primary);
+        border-radius: var(--radius-full);
+    }
+
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--space-6);
+        margin-bottom: var(--space-12);
+    }
+
+    .review-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: var(--space-6);
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-base);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .review-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+    }
+
+    .avatar-container {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: var(--color-primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .avatar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .review-info {
+        flex: 1;
+    }
+
+    .review-author {
+        font-weight: 700;
+        color: var(--color-gray-800);
+        margin-bottom: 0.25rem;
+    }
+
+    .review-date {
+        color: var(--color-gray-500);
+        font-size: 0.875rem;
+    }
+
+    .rating {
+        display: flex;
+        gap: var(--space-1);
+        margin-bottom: var(--space-4);
+        color: var(--color-gray-300);
+    }
+
+    .rating .filled {
+        color: var(--color-warning);
+    }
+
+    .review-text {
+        color: var(--color-gray-700);
+        line-height: 1.6;
+    }
+
+    .empty-reviews {
+        text-align: center;
+        padding: var(--space-12) var(--space-6);
+        background: white;
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .empty-reviews i {
+        font-size: 3rem;
+        color: var(--color-gray-400);
+        margin-bottom: var(--space-4);
+        display: block;
+    }
+
+    /* Review Form */
+    .review-form-card {
+        background: white;
+        border-radius: var(--radius-2xl);
+        padding: var(--space-8);
+        box-shadow: var(--shadow-md);
+    }
+
+    .form-group {
+        margin-bottom: var(--space-6);
+    }
+
+    .rating-selector {
+        display: flex;
+        align-items: center;
+        margin-top: var(--space-2);
+    }
+
+    .stars {
+        display: flex;
+        gap: var(--space-2);
+        font-size: 1.75rem;
+        color: var(--color-gray-300);
+    }
+
+    .rating-star {
+        cursor: pointer;
+        transition: all var(--transition-base);
+    }
+
+    .rating-star:hover {
+        transform: scale(1.2);
+    }
+
+    .rating-star.selected,
+    .rating-star.bi-star-fill {
+        color: var(--color-warning);
+    }
+
+    .rating-text {
+        margin-left: var(--space-3);
+        color: var(--color-gray-600);
+        font-weight: 500;
+    }
+
+    textarea.form-control {
+        border: 2px solid var(--color-gray-200);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        resize: none;
+        transition: all var(--transition-base);
+    }
+
+    textarea.form-control:focus {
+        border-color: var(--color-primary-light);
+        box-shadow: 0 0 0 4px rgba(31, 93, 148, 0.1);
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-3) var(--space-6);
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        gap: var(--space-2);
+        border: none;
+        transition: all var(--transition-base);
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .action-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -5px rgba(17, 50, 79, 0.3);
+    }
+
+    .login-prompt-card {
+        background: white;
+        border-radius: var(--radius-2xl);
+        padding: var(--space-8);
+        box-shadow: var(--shadow-md);
+        text-align: center;
+    }
+
+    .login-prompt-card i {
+        font-size: 3rem;
+        color: var(--color-primary);
+        margin-bottom: var(--space-4);
+        display: block;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+        .property-title {
+            font-size: 2rem;
         }
 
         .gallery-image {
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: zoom-in;
-            height: 700px;
-            width: 100%;
-            object-fit: cover;
-            filter: brightness(1.02) contrast(1.02);
+            height: 50vh;
         }
 
-        .gallery-container:hover .gallery-image {
-            transform: scale(1.03);
+        .card-header,
+        .card-body {
+            padding: var(--space-6);
         }
 
-        /* Elegant navigation buttons */
-        .nav-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.98);
-            border: none;
-            border-radius: 50%;
-            width: 4.5rem;
-            height: 4.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            z-index: 10;
-            backdrop-filter: blur(10px);
+        .reviews-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .gallery-image {
+            height: 40vh;
         }
 
-        .nav-button:hover {
-            background: white;
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
-            transform: translateY(-50%) scale(1.1);
+        .property-title {
+            font-size: 1.75rem;
         }
 
-        .nav-button.prev { left: 2rem; }
-        .nav-button.next { right: 2rem; }
+        .card-header {
+            padding: var(--space-4);
+        }
 
-        /* Luxurious property details */
-        .detail-card {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(229, 231, 235, 0.8);
-            height: 100%;
-            display: flex;
+        .card-body {
+            padding: var(--space-4);
+        }
+
+        .action-buttons {
             flex-direction: column;
-            gap: 1.25rem;
         }
 
-        .detail-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.12);
-            background: rgba(255, 255, 255, 1);
-            border-color: rgba(15, 23, 42, 0.15);
+        .reviews-title {
+            font-size: 1.75rem;
         }
 
-        .detail-icon {
-            font-size: 2.75rem;
-            color: #2672bs;
-            margin-bottom: 1.25rem;
-            transition: all 0.4s ease;
+        .review-form-card,
+        .login-prompt-card {
+            padding: var(--space-4);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .gallery-image {
+            height: 35vh;
         }
 
-        .detail-card:hover .detail-icon {
-            transform: scale(1.15);
-            color: #1e293b;
+        .gallery-controls {
+            padding: var(--space-3);
         }
 
-        .description-box {
-            border-left: 8px solid #0f172a;
-            background: rgba(248, 250, 252, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            transition: all 0.4s ease;
-            margin: 2.5rem 0;
-            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
-        }
-
-        .description-box:hover {
-            border-left-width: 12px;
-            background: rgba(248, 250, 252, 1);
-            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.12);
-            transform: scale(1.01);
-        }
-
-        /* Premium badges */
-        .feature-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 1.25rem 2.5rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(10px);
-            letter-spacing: 0.025em;
-        }
-
-        .feature-badge:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 25px -3px rgba(0, 0, 0, 0.25);
-        }
-
-        .badge-price {
-            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-            color: white;
-        }
-
-        .badge-ses {
-            background: linear-gradient(135deg, #854d0e 0%, #a16207 100%);
-            color: white;
-        }
-
-        /* Luxury header section */
-        .property-header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            padding: 3rem 2.5rem;
-            border-radius: 2rem 2rem 0 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .property-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-            opacity: 0.08;
-        }
-
-        /* Elegant image counter */
         .image-counter {
-            position: absolute;
-            bottom: 2rem;
-            right: 2rem;
-            background: rgba(15, 23, 42, 0.9);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 9999px;
-            font-size: 0.95rem;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-            letter-spacing: 0.05em;
-            font-weight: 500;
+            font-size: 0.75rem;
+            padding: var(--space-1) var(--space-3);
         }
 
-        /* Action buttons */
-        .action-button {
-            display: inline-block;
-            padding: 1.25rem 2.5rem;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            border-radius: 9999px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.4s ease;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-            text-align: center;
-            letter-spacing: 0.025em;
-            margin-top: 2rem;
-            width: 100%;
-        }
-
-        .action-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            color: white;
-            text-decoration: none;
-        }
-
-        .action-button.favorite {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-        }
-
-        .action-button.favorite:hover {
-            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
-        }
-
-        /* Responsive typography */
-        @media (max-width: 768px) {
-            .property-header h1 {
-                font-size: 2rem;
-            }
-            
-            .gallery-image {
-                height: 400px;
-            }
-            
-            .nav-button {
-                width: 3.5rem;
-                height: 3.5rem;
-            }
-        }
-
-        /* Estilos para la sección de reseñas */
-        .review-card {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 1.5rem;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(229, 231, 235, 0.8);
-            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
-            height: 100%;
-            display: flex;
+        .badge-container {
             flex-direction: column;
+            align-items: flex-start;
         }
 
-        .review-card:hover {
-            transform: translateY(-7px) scale(1.01);
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
-            background: rgba(255, 255, 255, 1);
-            border-color: rgba(15, 23, 42, 0.15);
-        }
-
-        .review-header {
-            padding: 2rem 2rem 1rem;
-            position: relative;
-        }
-
-        .review-body {
-            padding: 1rem 2rem 2rem;
-            flex-grow: 1;
-        }
-
-        .avatar-container {
-            width: 4rem;
-            height: 4rem;
-            border-radius: 50%;
-            overflow: hidden;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .avatar-image {
+        .property-badge {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
-
-        .avatar-placeholder {
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .rating {
-            font-size: 1.25rem;
-            color: #a16207;
-        }
-
-        .rating i {
-            margin-right: 0.25rem;
-        }
-
-        .rating i.filled {
-            color: #f59e0b;
-        }
-
-        .review-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #334155;
-        }
-
-        /* Formulario de reseñas */
-        .review-form-card {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 2rem;
-            padding: 3rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(229, 231, 235, 0.8);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-        }
-
-        .review-form-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 1);
-            border-color: rgba(15, 23, 42, 0.15);
-        }
-
-        .rating-selector {
-            display: flex;
-            align-items: center;
-        }
-
-        .stars {
-            display: flex;
-            font-size: 2rem;
-            cursor: pointer;
-        }
-
-        .rating-star {
-            color: #cbd5e1;
-            transition: all 0.3s ease;
-            margin-right: 0.25rem;
-        }
-
-        .rating-star:hover, 
-        .rating-star.selected {
-            color: #f59e0b;
-            transform: scale(1.15);
-        }
-
-        .rating-text {
-            font-size: 1rem;
-            color: #64748b;
-            transition: all 0.3s ease;
-        }
-
-        .luxury-input {
-            border: none;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            background: rgba(248, 250, 252, 0.8);
-            backdrop-filter: blur(10px);
-            transition: all 0.4s ease;
-            border: 2px solid transparent;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-            font-size: 1.1rem;
-            resize: none;
-        }
-
-        .luxury-input:focus {
-            outline: none;
-            border-color: #0f172a;
-            background: rgba(248, 250, 252, 1);
-            box-shadow: 0 15px 25px -3px rgba(0, 0, 0, 0.1);
-            transform: translateY(-3px);
-        }
-
-        .luxury-input::placeholder {
-            color: #2672bs;
-        }
-
-        .review-submit {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-
-        /* Estado vacío y prompt de inicio de sesión */
-        .empty-reviews, .login-prompt-card {
-            background: rgba(248, 250, 252, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 2rem;
-            padding: 4rem 2rem;
-            text-align: center;
-            transition: all 0.4s ease;
-            border: 1px solid rgba(229, 231, 235, 0.8);
-            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
-        }
-
-        .empty-reviews:hover, .login-prompt-card:hover {
-            background: rgba(248, 250, 252, 1);
-            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.12);
-            transform: scale(1.02);
-        }
-
-        .detail-icon {
-            font-size: 3.5rem;
-            color: #0f172a;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .review-form-card, .login-prompt-card {
-                padding: 2rem;
-            }
-            
-            .stars {
-                font-size: 1.75rem;
-            }
-        }
-
-        .bg-custom-blue {
-            background-color: #184873 !important;
-        }
+    }
 {% endblock %}
 
 {% block content %}
-<div class="container py-8">
-    <!-- Galería de Imágenes -->
-    <div class="row g-5 justify-content-center mb-5">
-        <div class="col-12 col-lg-8">
-            <div class="gallery-container position-relative mb-4">
-                <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+<div class="container py-5">
+    <!-- Property Gallery Section -->
+    <div class="row justify-content-center mb-6">
+        <div class="col-12 col-xl-10">
+            <div class="gallery-container">
+                <div id="propertyCarousel" class="carousel slide" data-bs-ride="false">
                     <div class="carousel-inner">
                         {% for image in property.imagenes.all %}
                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <img src="{{ image.image.url }}" class="gallery-image" alt="{{ property.title }}">
+                            <img src="{{ image.image.url }}" 
+                                 class="gallery-image" 
+                                 alt="{{ property.title }} - Image {{ forloop.counter }}" 
+                                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
                         </div>
                         {% endfor %}
                     </div>
@@ -462,278 +713,363 @@
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
-                    <div class="image-counter">
-                        <span id="current-image">1</span> / <span>{{ property.imagenes.count }}</span>
+                    <div class="gallery-controls">
+                        <div class="gallery-dots">
+                            {% for image in property.imagenes.all %}
+                            <span class="gallery-dot {% if forloop.first %}active{% endif %}" data-bs-target="#propertyCarousel" data-bs-slide-to="{{ forloop.counter0 }}"></span>
+                            {% endfor %}
+                        </div>
+                        <div class="image-counter">
+                            <i class="bi bi-image me-1"></i>
+                            <span id="current-image">1</span> / <span>{{ property.imagenes.count }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Información de la propiedad -->
-    <div class="row g-5 justify-content-center mb-5">
-        <div class="col-12 col-lg-6">
-            <div class="card property-card h-100 d-flex flex-column justify-content-between shadow-sm">
-                <header class="card-header bg-custom-blue text-white position-relative p-4">
-                    <h1 class="display-5 fw-bold mb-2">{{ property.title }}</h1>
-                    {% if property.associatedAccount == request.user.account %}
-                    <div class="d-flex justify-content-end">
-                        <a href="{% url 'editProperty' property.id %}" class="btn btn-outline-light btn-sm px-3 py-2 mt-2 shadow-sm" style="border-radius: 1rem; font-weight: 500;">
-                            <i class="bi bi-pencil-square me-2"></i> Edit Property Information
+    <!-- Property Details Section -->
+    <div class="row g-5 justify-content-center">
+        <!-- Property Card -->
+        <div class="col-12 col-lg-7">
+            <div class="property-card h-100 d-flex flex-column">
+                <header class="card-header position-relative">
+                    <h1 class="property-title mb-4">{{ property.title }}</h1>
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <span class="location-badge">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            {{ property.location.district.name }} - {{ property.location.district.city.name }}
+                        </span>
+                        {% if property.associatedAccount == request.user.account %}
+                        <a href="{% url 'editProperty' property.id %}" class="btn btn-sm px-4 py-2 ms-auto" 
+                           style="background-color: rgba(255,255,255,0.2); color: white; border-radius: 2rem; backdrop-filter: blur(5px);">
+                            <i class="bi bi-pencil-square me-2"></i> Edit Property
                         </a>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                    <p class="fs-5 mb-0 opacity-90">
-                        <i class="bi bi-geo-alt-fill me-2"></i>
-                        {{ property.location.district.name }} - {{ property.location.district.city.name }}
-                    </p>
                 </header>
-                <div class="card-body p-5 d-flex flex-column gap-4 flex-grow-1">
-                    <div class="d-flex flex-wrap gap-4 mb-3 justify-content-between">
-                        <span class="badge bg-success text-light fs-5">
-                            <i class="bi bi-tag-fill me-2"></i>${{ property.price|intcomma }}
+
+                <div class="card-body d-flex flex-column flex-grow-1">
+                    <!-- Property Badges -->
+                    <div class="badge-container">
+                        <span class="property-badge badge-price">
+                            <i class="bi bi-tag-fill"></i>${{ property.price|intcomma }}
                         </span>
-                        <span class="badge bg-warning text-dark fs-5">
-                            <i class="bi bi-star-fill me-2"></i>SES {{ property.SES }}
+                        <span class="property-badge badge-ses">
+                            <i class="bi bi-star-fill"></i>SES Level {{ property.SES }}
+                        </span>
+                        <span class="property-badge badge-type">
+                            <i class="bi bi-house-door-fill"></i>{{ pType }}
                         </span>
                     </div>
-                    <section>
-                        <h3 class="fw-bold text-primary mb-3">
-                            <i class="bi bi-house-door-fill me-3"></i>{{ pType }}
+
+                    <!-- Property Description -->
+                    <div class="description-container">
+                        <h3 class="section-title">
+                            <i class="bi bi-file-text"></i>Property Description
                         </h3>
-                        <div class="description-box mt-2">
-                            <h4 class="fw-bold mb-3">Description</h4>
-                            <p class="lead text-dark lh-lg mb-0">{{ property.description }}</p>
+                        <div class="description-box">
+                            <p class="mb-0 lh-lg">{{ property.description }}</p>
                         </div>
-                    </section>
-                    <div class="row g-4 mt-2">
-                        <div class="col-12 col-md-6 mb-4 mb-md-0">
-                            <div class="d-flex align-items-start mb-2">
-                                <i class="bi bi-geo-alt-fill fs-3 me-2 text-muted"></i>
-                                <div>
-                                    <h5 class="fw-bold mb-1">Location</h5>
-                                </div>
-                            </div>
-                            <div id="property-map" style="width:100%; max-width:420px; height:260px; border-radius:1rem; box-shadow:0 4px 24px rgba(10,61,98,0.10);"></div>
-                            <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}"></script>
+                    </div>
+
+                    <!-- Property Information -->
+                    <div class="row g-5 mt-2">
+                        <div class="col-12 col-md-7">
+                            <h3 class="section-title">
+                                <i class="bi bi-geo-alt"></i>Location
+                            </h3>
+                            <div id="property-map" class="map-container w-100"></div>
+                            <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initPropertyMap" async defer></script>
                             <script>
                                 function initPropertyMap() {
                                     const lat = {{ property.location.coordinates.latitude }};
                                     const lng = {{ property.location.coordinates.longitude }};
                                     const center = {lat: lat, lng: lng};
-                                    const map = new google.maps.Map(document.getElementById('property-map'), {
+                                    
+                                    const mapOptions = {
                                         center: center,
                                         zoom: 15,
                                         mapTypeControl: false,
                                         streetViewControl: false,
-                                        fullscreenControl: false,
+                                        fullscreenControl: true,
+                                        zoomControl: true,
                                         styles: [
-                                            { featureType: "poi", stylers: [{ visibility: "off" }] },
-                                            { featureType: "transit", stylers: [{ visibility: "off" }] }
+                                            {
+                                                featureType: "poi",
+                                                elementType: "labels",
+                                                stylers: [{ visibility: "off" }]
+                                            },
+                                            {
+                                                featureType: "transit",
+                                                stylers: [{ visibility: "off" }]
+                                            },
+                                            {
+                                                featureType: "water",
+                                                elementType: "geometry",
+                                                stylers: [{ color: "#a2d9f2" }]
+                                            }
                                         ]
-                                    });
-                                    new google.maps.Marker({
+                                    };
+                                    
+                                    const map = new google.maps.Map(
+                                        document.getElementById('property-map'),
+                                        mapOptions
+                                    );
+                                    
+                                    const marker = new google.maps.Marker({
                                         position: center,
                                         map: map,
+                                        animation: google.maps.Animation.DROP,
                                         icon: {
                                             url: "https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2_hdpi.png",
                                             scaledSize: new google.maps.Size(38, 38)
                                         }
                                     });
+                                    
+                                    const infoWindow = new google.maps.InfoWindow({
+                                        content: '<div style="padding: 8px; max-width: 200px;"><strong>{{ property.title }}</strong><p style="margin: 4px 0 0;">{{ property.location.district.name }}</p></div>'
+                                    });
+                                    
+                                    marker.addListener('click', function() {
+                                        infoWindow.open(map, marker);
+                                    });
                                 }
-                                window.addEventListener('DOMContentLoaded', initPropertyMap);
                             </script>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <div class="d-flex align-items-start">
-                                <i class="bi bi-calendar-check-fill fs-3 me-2 text-muted"></i>
+                        <div class="col-12 col-md-5">
+                            <div class="d-flex flex-column h-100 justify-content-between">
                                 <div>
-                                    <h5 class="fw-bold mb-1">Publication date</h5>
-                                    <p class="text-muted fs-5 mb-0">{{ property.creationDate|date:"d M, Y" }}</p>
+                                    <h3 class="section-title">
+                                        <i class="bi bi-calendar-check"></i>Details
+                                    </h3>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-3 d-flex align-items-center">
+                                            <i class="bi bi-calendar fs-5 me-3 text-primary"></i>
+                                            <span class="fw-semibold">Listed on:</span>
+                                            <span class="ms-2">{{ property.creationDate|date:"d M, Y" }}</span>
+                                        </li>
+                                        <li class="mb-3 d-flex align-items-start">
+                                            <i class="bi bi-person-circle fs-5 me-3 text-primary"></i>
+                                            <div>
+                                                <span class="fw-semibold">Listed by:</span>
+                                                <a href="{% url 'view_profile' username=property.associatedAccount.user.username %}" 
+                                                   class="ms-2 text-decoration-none text-primary">
+                                                   {{ property.associatedAccount.user }}
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </ul>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% if sessionActive %}
-                    <div class="mt-4 d-flex flex-column flex-md-row gap-4">
-                        <div class="dropdown flex-fill" style="min-width: 220px;">
-                            {% if property.associatedAccount != request.user.account and request.user.account.role.nameRole == 'Buyer' %}
-                            <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" id="dropdownAppointment" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-calendar2-check me-2"></i>Schedule an appointment
-                            </button>
-                            {% endif %}
-                            <div class="dropdown-menu p-4 shadow-lg rounded" aria-labelledby="dropdownAppointment">
-                                <form method="post" id="appointmentForm" autocomplete="off">
-                                    <input type="hidden" name="action" value="appointment">
-                                    {% csrf_token %}
-                                    {{ date_form.media }}
-                                    <div class="mb-3">
-                                        {{ date_form.date.label_tag }}
-                                        {{ date_form.date }}
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100" style="font-size: 1.15rem;">
-                                        <i class="bi bi-calendar-check me-2"></i>Confirm date
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        <form method="post" class="flex-fill">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="favourite">
-                            <button type="submit" class="btn btn-outline-danger w-100">
-                                <i class="bi bi-heart{% if not is_fav %}-fill{% endif %} me-2"></i>
-                                {% if is_fav %}
-                                    Remove from favorites
-                                {% else %}
-                                    Add to favorites
-                                {% endif %}
-                            </button>
-                        </form>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sección de Reseñas -->
-    <div class="row mt-5 mb-5">
-        <div class="col-12">
-            <h2 class="fw-bold text-center mb-5 display-5">Thoughts about this property</h2>
-        </div>
-    </div>
-    <div class="row g-4 mb-5 justify-content-center" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
-        {% if property.reviews.all %}
-            {% for review in property.reviews.all %}
-            <div class="col d-flex">
-                <div class="review-card flex-fill">
-                    <div class="review-header">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar-container">
-                                <a href = "{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
-                                    {% if review.user.profilePicture %}
-                                        <img src="{{ review.user.profilePicture.url }}" alt="{{ review.user.username }}" class="avatar-image">
-                                    {% else %}
-                                        <div class="avatar-placeholder">
-                                            <i class="bi bi-person-fill"></i>
+                                
+                                {% if sessionActive %}
+                                <div class="action-buttons mt-auto">
+                                    {% if property.associatedAccount != request.user.account and request.user.account.role.nameRole == 'Buyer' %}
+                                    <div class="dropdown flex-fill">
+                                        <button type="button" 
+                                                class="btn-action btn-primary w-100 dropdown-toggle" 
+                                                data-bs-toggle="dropdown" 
+                                                aria-expanded="false">
+                                            <i class="bi bi-calendar2-check"></i>Schedule Appointment
+                                        </button>
+                                        <div class="dropdown-menu p-4">
+                                            <form method="post" id="appointmentForm" autocomplete="off">
+                                                <input type="hidden" name="action" value="appointment">
+                                                {% csrf_token %}
+                                                {{ date_form.media }}
+                                                <div class="mb-4">
+                                                    <label for="id_date" class="form-label fw-semibold">Select Date and Time</label>
+                                                    {{ date_form.date }}
+                                                </div>
+                                                <button type="submit" class="action-button w-100">
+                                                    <i class="bi bi-check-circle"></i>Confirm Appointment
+                                                </button>
+                                            </form>
                                         </div>
+                                    </div>
                                     {% endif %}
-                                </a>
-                            </div>
-                            <div class="ms-3">
-                                <a href = "{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
-                                    <h5 class="fw-bold mb-1">
-                                        {% if review.reviewer.userType.nameUserType == 'Natural Person' %}
-                                            {{ review.reviewer.personAccount.firstName }} {{ review.reviewer.personAccount.lastName }}
-                                        {% else %}
-                                            {{review.reviewer.bussinessAccount.nameBussiness}}
-                                        {% endif %}
-                                    </h5>
-                                    <p class="text-muted small mb-0">{{ review.created_at|date:"d M, Y" }}</p>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="review-body">
-                        <div class="rating mb-3">
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= review.rating %}
-                                    <i class="bi bi-star-fill filled"></i>
-                                {% else %}
-                                    <i class="bi bi-star"></i>
+                                    
+                                    <form method="post" class="flex-fill">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="favourite">
+                                        <button type="submit" class="btn-action btn-outline-danger w-100">
+                                            <i class="bi bi-heart{% if not is_fav %}-fill{% endif %}"></i>
+                                            {% if is_fav %}Remove from Favorites{% else %}Add to Favorites{% endif %}
+                                        </button>
+                                    </form>
+                                </div>
                                 {% endif %}
-                            {% endfor %}
+                            </div>
                         </div>
-                        <p class="review-text">{{ review.comment }}</p>
                     </div>
                 </div>
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="col-12">
-                <div class="empty-reviews">
-                    <i class="bi bi-chat-square-text detail-icon"></i>
-                    <h4 class="fw-bold mb-3">There's no reviews yet</h4>
-                    <p class="lead text-muted">Be the first one and review this property.</p>
-                </div>
-            </div>
-        {% endif %}
+        </div>
     </div>
 
-    <!-- Formulario para agregar reseñas -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-12 col-md-10 col-lg-8">
-            {% if sessionActive %}
-            <div class="review-form-card mt-5">
-                <h3 class="fw-bold mb-4 text-center">Share your experience</h3>
-                <form method="post" action="" id="reviewForm">
-                    {% csrf_token %}
-                    <div class="form-group mb-4">
-                        <input type="hidden" name="action" value="review">
-                        <label class="fw-bold mb-2">Your rating</label>
-                        <div class="rating-selector align-items-center">
-                            <input type="hidden" name="rating" id="selected-rating" value="0">
-                            <div class="stars me-3">
-                                <i class="bi bi-star rating-star" data-value="1"></i>
-                                <i class="bi bi-star rating-star" data-value="2"></i>
-                                <i class="bi bi-star rating-star" data-value="3"></i>
-                                <i class="bi bi-star rating-star" data-value="4"></i>
-                                <i class="bi bi-star rating-star" data-value="5"></i>
-                            </div>
-                            <span class="rating-text ms-2">Select a rating</span>
+    <!-- Reviews Section -->
+    <div class="reviews-container">
+        <h2 class="reviews-title display-5 fw-bold">Property Reviews</h2>
+        
+        <div class="reviews-grid">
+            {% if property.reviews.all %}
+                {% for review in property.reviews.all %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="avatar-container">
+                            <a href="{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
+                                {% if review.user.profilePicture %}
+                                    <img src="{{ review.user.profilePicture.url }}" alt="{{ review.user.username }}" class="avatar-image">
+                                {% else %}
+                                    <div class="avatar-placeholder">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="review-info">
+                            <a href="{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
+                                <h5 class="review-author">
+                                    {% if review.reviewer.userType.nameUserType == 'Natural Person' %}
+                                        {{ review.reviewer.personAccount.firstName }} {{ review.reviewer.personAccount.lastName }}
+                                    {% else %}
+                                        {{review.reviewer.bussinessAccount.nameBussiness}}
+                                    {% endif %}
+                                </h5>
+                            </a>
+                            <p class="review-date">{{ review.created_at|date:"d M, Y" }}</p>
                         </div>
                     </div>
-                    <div class="form-group mb-4">
-                        <label for="review-comment" class="fw-bold mb-2">Your comment</label>
-                        <textarea id="review-comment" name="comment" class="form-control luxury-input" rows="5" placeholder="Share your experience..." required></textarea>
+                    <div class="rating">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="bi bi-star-fill filled"></i>
+                            {% else %}
+                                <i class="bi bi-star"></i>
+                            {% endif %}
+                        {% endfor %}
                     </div>
-                    <div class="text-center">
-                        <button type="submit" class="action-button review-submit px-5 text-white" id="submit-review" style="background-color: #11324f; border-color: #11324f;">
-                            <i class="bi bi-send-fill me-2"></i>Send review
-                        </button>
-                    </div>
-                </form>
-            </div>
+                    <p class="review-text">{{ review.comment }}</p>
+                </div>
+                {% endfor %}
             {% else %}
-            <div class="login-prompt-card mt-5">
-                <i class="bi bi-shield-lock detail-icon"></i>
-                <h4 class="fw-bold mb-2">You must sign in in order to review a property</h4>
-                <p class="lead text-muted mb-4">Share your opinion with others signing in into your account.</p>
-                <a href="{% url 'login' %}" class="action-button px-5">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
-                </a>
-            </div>
+                <div class="col-12">
+                    <div class="empty-reviews">
+                        <i class="bi bi-chat-square-text"></i>
+                        <h4 class="fw-bold mb-3">No Reviews Yet</h4>
+                        <p class="lead text-muted">Be the first to share your thoughts about this property.</p>
+                    </div>
+                </div>
             {% endif %}
+        </div>
+
+        <!-- Add Review Section -->
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                {% if sessionActive %}
+                <div class="review-form-card">
+                    <h3 class="text-center fw-bold mb-5">Share Your Experience</h3>
+                    <form method="post" action="" id="reviewForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="review">
+                        
+                        <div class="form-group">
+                            <label class="fw-bold mb-2">Your Rating</label>
+                            <div class="rating-selector">
+                                <input type="hidden" name="rating" id="selected-rating" value="0">
+                                <div class="stars">
+                                    <i class="bi bi-star rating-star" data-value="1"></i>
+                                    <i class="bi bi-star rating-star" data-value="2"></i>
+                                    <i class="bi bi-star rating-star" data-value="3"></i>
+                                    <i class="bi bi-star rating-star" data-value="4"></i>
+                                    <i class="bi bi-star rating-star" data-value="5"></i>
+                                </div>
+                                <span class="rating-text">Select a rating</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="review-comment" class="fw-bold mb-2">Your Comment</label>
+                            <textarea id="review-comment" name="comment" class="form-control" rows="5" 
+                                      placeholder="What did you think about this property? Share your experience here..." required></textarea>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="action-button px-5">
+                                <i class="bi bi-send-fill me-2"></i>Submit Review
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="login-prompt-card">
+                    <i class="bi bi-shield-lock"></i>
+                    <h4 class="fw-bold mb-3">Sign In to Leave a Review</h4>
+                    <p class="lead text-muted mb-4">Share your opinion with others by signing in to your account.</p>
+                    <a href="{% url 'login' %}" class="action-button px-5">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </a>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
 
-<script>
-    // Número total de imágenes
-    const totalImages = {{ property.imagenes.count }};
-    const currentImageElement = document.getElementById('current-image');
-    const updateImageCounter = () => {
-        const activeItem = document.querySelector('#propertyCarousel .carousel-item.active');
-        const items = document.querySelectorAll('#propertyCarousel .carousel-item');
-        const currentIndex = Array.from(items).indexOf(activeItem) + 1;
-        currentImageElement.textContent = currentIndex;
-    };
-    document.querySelector('#propertyCarousel').addEventListener('slid.bs.carousel', updateImageCounter);
-    updateImageCounter();
-</script>
+{% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Image Gallery Counter
+        const totalImages = {{ property.imagenes.count }};
+        const currentImageElement = document.getElementById('current-image');
+        
+        const updateImageCounter = () => {
+            const activeItem = document.querySelector('#propertyCarousel .carousel-item.active');
+            const items = document.querySelectorAll('#propertyCarousel .carousel-item');
+            const currentIndex = Array.from(items).indexOf(activeItem) + 1;
+            currentImageElement.textContent = currentIndex;
+            
+            // Update dots
+            const dots = document.querySelectorAll('.gallery-dot');
+            dots.forEach((dot, index) => {
+                if (index === currentIndex - 1) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        };
+        
+        // Initialize Carousel
+        const carousel = document.querySelector('#propertyCarousel');
+        carousel.addEventListener('slid.bs.carousel', updateImageCounter);
+        updateImageCounter();
+        
+        // Initialize Flatpickr if available
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr('#id_date', {
+                enableTime: true,
+                minDate: 'today',
+                dateFormat: 'Y-m-d H:i',
+                time_24hr: true
+            });
+        }
+        
+        // Star Rating System
         const ratingStars = document.querySelectorAll('.rating-star');
         const ratingInput = document.getElementById('selected-rating');
         const ratingText = document.querySelector('.rating-text');
+        
         const ratingTexts = {
             0: 'Select a rating',
-            1: 'Disgusting',
-            2: 'Could be better',
-            3: 'Good enough',
-            4: 'Pretty good',
-            5: 'Good asf'
+            1: 'Poor',
+            2: 'Fair',
+            3: 'Good',
+            4: 'Very Good',
+            5: 'Excellent'
         };
+        
         function updateStars(rating) {
             ratingStars.forEach(star => {
                 const starValue = parseInt(star.getAttribute('data-value'));
@@ -747,14 +1083,17 @@
                     star.classList.add('bi-star');
                 }
             });
+            
             ratingText.textContent = ratingTexts[rating];
             ratingInput.value = rating;
         }
+        
         ratingStars.forEach(star => {
             star.addEventListener('click', function() {
                 const rating = parseInt(this.getAttribute('data-value'));
                 updateStars(rating);
             });
+            
             star.addEventListener('mouseover', function() {
                 const rating = parseInt(this.getAttribute('data-value'));
                 ratingStars.forEach(s => {
@@ -767,38 +1106,49 @@
                         s.classList.add('bi-star');
                     }
                 });
+                
                 ratingText.textContent = ratingTexts[rating];
             });
         });
+        
         const starsContainer = document.querySelector('.stars');
-        starsContainer.addEventListener('mouseleave', function() {
-            const currentRating = parseInt(ratingInput.value);
-            updateStars(currentRating);
-        });
+        if (starsContainer) {
+            starsContainer.addEventListener('mouseleave', function() {
+                const currentRating = parseInt(ratingInput.value);
+                updateStars(currentRating);
+            });
+        }
+        
+        // Form Validation
         const reviewForm = document.getElementById('reviewForm');
-        reviewForm.addEventListener('submit', function(e) {
-            const rating = parseInt(ratingInput.value);
-            const comment = document.getElementById('review-comment').value.trim();
-            if (rating === 0) {
-                e.preventDefault();
-                ratingText.textContent = 'Por favor selecciona una calificación';
-                ratingText.style.color = '#ef4444';
-                setTimeout(() => {
-                    ratingText.style.color = '';
-                    ratingText.textContent = ratingTexts[0];
-                }, 3000);
-            }
-            if (comment === '') {
-                e.preventDefault();
-                const textarea = document.getElementById('review-comment');
-                textarea.style.borderColor = '#ef4444';
-                setTimeout(() => {
-                    textarea.style.borderColor = '';
-                }, 3000);
-            }
-        });
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', function(e) {
+                const rating = parseInt(ratingInput.value);
+                const comment = document.getElementById('review-comment').value.trim();
+                
+                if (rating === 0) {
+                    e.preventDefault();
+                    ratingText.textContent = 'Please select a rating';
+                    ratingText.style.color = '#ef4444';
+                    
+                    setTimeout(() => {
+                        ratingText.style.color = '';
+                        ratingText.textContent = ratingTexts[0];
+                    }, 3000);
+                }
+                
+                if (comment === '') {
+                    e.preventDefault();
+                    const textarea = document.getElementById('review-comment');
+                    textarea.style.borderColor = '#ef4444';
+                    
+                    setTimeout(() => {
+                        textarea.style.borderColor = '';
+                    }, 3000);
+                }
+            });
+        }
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="{% static 'js/property_details.js' %}"></script>
-{% endblock %}
+{% endblock extra_js %}
+{% endblock content %}

@@ -77,7 +77,6 @@ def home(request):
         'maxPrice': maxPrice,
         'propertyPresence': propertyPresence,
         'districts': districts, 'types': PropertyType.objects.all(),
-        'sessionActive': sessionActive,
     })
 
 
@@ -106,7 +105,7 @@ def publish(request):
             messages.success(request, "Property published succesfully")
     else:
         publishForm = PublishForm()
-    return render(request, 'publish.html', {'publishForm':publishForm, 'sessionActive':checkSession(request.user)})
+    return render(request, 'publish.html', {'publishForm':publishForm})
 
 def get_disabled_dates(property):
     appointments = property.appointments.filter(status__name = 'Approved')
@@ -157,7 +156,7 @@ def view_property(request, id):
             request_appointment(property, request.POST.get('date'), request.user.account)
         return redirect('property_info', id = id)
     else:
-        return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'sessionActive':sessionActive, 'date_form':date_form, 'api_key':os.getenv('maps_api')})
+        return render(request, 'property_info.html', {'property':property, 'pType': type, 'is_fav': is_fav, 'date_form':date_form, 'api_key':os.getenv('maps_api')})
     try:
         ...
     except:
