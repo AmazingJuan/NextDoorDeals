@@ -232,21 +232,24 @@ def view_profile(request, username):
 
 
 def get_contacts(request):
-    user = request.user.account
+    if checkSession(request.user):
+        user = request.user.account
 
-    messages = Message.objects.filter(Q(sender=user) | Q(receiver=user)).order_by('-timestamp')
+        messages = Message.objects.filter(Q(sender=user) | Q(receiver=user)).order_by('-timestamp')
 
-    latest_messages = {}
+        latest_messages = {}
 
-    for message in messages:
-        contact = message.receiver if message.sender == user else message.sender
-        if contact not in latest_messages:
-            latest_messages[contact] = message.timestamp  # Solo se guarda el primero (más reciente por orden)
+        for message in messages:
+            contact = message.receiver if message.sender == user else message.sender
+            if contact not in latest_messages:
+                latest_messages[contact] = message.timestamp  # Solo se guarda el primero (más reciente por orden)
 
-    # Ordenar contactos por el timestamp más reciente
-    contacts = sorted(latest_messages.keys(), key=lambda c: latest_messages[c], reverse=True)
-    print(contacts)
-    return contacts
+        # Ordenar contactos por el timestamp más reciente
+        contacts = sorted(latest_messages.keys(), key=lambda c: latest_messages[c], reverse=True)
+        print(contacts)
+        return contacts
+    else:
+        return None
 
 
 def retrieve_appointments(account):
