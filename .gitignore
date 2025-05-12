@@ -125,4 +125,6 @@ venv.bak/
 # mkdocs documentation
 /site
 
+keys.env
+
 # mypy
