@@ -150,8 +150,8 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-GDAL_LIBRARY_PATH = "C:/Users/lesdi/OneDrive/Documentos/release-1928-x64-gdal-3-10-0-mapserver-8-2-2/bin/gdal.dll"
-GEOS_LIBRARY_PATH = "C:/Users/lesdi/OneDrive/Documentos/release-1928-x64-gdal-3-10-0-mapserver-8-2-2/bin/geos_c.dll"
+GDAL_LIBRARY_PATH = "C:/Users/maria/Desktop/q/bin/gdal.dll"
+GEOS_LIBRARY_PATH = "C:/Users/maria/Desktop/q/bin/geos_c.dll"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
