@@ -29,6 +29,8 @@
         --gray-700: #334155;
         --gray-800: #1e293b;
         --gray-900: #0f172a;
+        --gold: #FFD700;
+        --gold-light: #FFF0A3;
 
         /* Shadows */
         --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
@@ -187,9 +189,40 @@
         border: 1px solid var(--gray-100);
     }
 
-    .property-card:hover {
+    /* Premium Property Card */
+    .property-card-premium {
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15),
+                    0 0 0 1px rgba(255, 215, 0, 0.1);
+        position: relative;
+    }
+
+    .property-card-premium::before {
+        content: 'PREMIUM';
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, var(--gold), var(--gold-light));
+        color: var(--primary);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-xl);
+        font-weight: 700;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        z-index: 2;
+        box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .property-card:hover,
+    .property-card-premium:hover {
         transform: translateY(-8px);
         box-shadow: var(--shadow-xl);
+    }
+
+    .property-card-premium:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2),
+                    0 0 0 2px rgba(255, 215, 0, 0.2);
     }
 
     .property-image-wrapper {
@@ -216,6 +249,14 @@
         padding: var(--spacing-6);
     }
 
+    .property-card-premium .property-details {
+        background: linear-gradient(180deg, 
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(255, 255, 255, 0.95) 100%
+        );
+        backdrop-filter: blur(10px);
+    }
+
     .property-title {
         font-size: 1.25rem;
         font-weight: 700;
@@ -228,6 +269,12 @@
         overflow: hidden;
     }
 
+    .property-card-premium .property-title {
+        color: var(--primary);
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+    }
+
     .property-price {
         font-size: 1.25rem;
         font-weight: 700;
@@ -236,6 +283,12 @@
         padding: var(--spacing-2) var(--spacing-4);
         border-radius: var(--radius-xl);
         display: inline-block;
+    }
+
+    .property-card-premium .property-price {
+        background: linear-gradient(135deg, var(--gold), var(--gold-light));
+        color: var(--primary);
+        font-size: 1.4rem;
     }
 
     .property-type {
@@ -247,6 +300,11 @@
         display: inline-block;
     }
 
+    .property-card-premium .property-type {
+        background: rgba(17, 50, 79, 0.15);
+        color: var(--primary);
+    }
+
     .property-seller {
         margin-top: var(--spacing-4);
         padding-top: var(--spacing-4);
@@ -256,6 +314,10 @@
         display: flex;
         align-items: center;
         transition: color var(--transition-fast);
+    }
+
+    .property-card-premium .property-seller {
+        border-top: 1px solid rgba(255, 215, 0, 0.2);
     }
 
     .property-seller:hover {
@@ -558,7 +620,39 @@
     <!-- Property Grid -->
     <div class="row g-4 mb-5">
         {% if propertyPresence %}
-            {% for property in propertys %}
+            {% for property in h_properties %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <article class="property-card property-card-premium">
+                    <a href="{% url 'property_info' id=property.id %}" class="text-decoration-none">
+                        <div class="property-image-wrapper">
+                            <img src="{{ property.imagenes.first.image.url }}" 
+                                 class="property-image" 
+                                 alt="{{ property.title }}"
+                                 loading="lazy">
+                        </div>
+                        
+                        <div class="property-details">
+                            <h3 class="property-title">{{ property.title }}</h3>
+                            
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <span class="property-type">
+                                    {{ types|getTypeID:property.propertyType.id }}
+                                </span>
+                                <span class="property-price">${{ property.price|intcomma }}</span>
+                            </div>
+                            
+                            <a href="{% url 'view_profile' username=property.associatedAccount.user.username %}" 
+                               class="property-seller">
+                                <i class="bi bi-person-circle me-2"></i>
+                                Listed by {{ property.associatedAccount.user }}
+                            </a>
+                        </div>
+                    </a>
+                </article>
+            </div>
+            {% endfor %}
+
+            {% for property in n_properties %}
             <div class="col-12 col-md-6 col-lg-4">
                 <article class="property-card">
                     <a href="{% url 'property_info' id=property.id %}" class="text-decoration-none">
@@ -621,7 +715,6 @@ document.addEventListener('DOMContentLoaded', function() {
     useRangeSES?.addEventListener('change', toggleSESContainers);
 });
 </script>
-
 {% endblock %}
 
 {% endblock content %}

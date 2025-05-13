@@ -45,34 +45,45 @@ def home(request):
 
     isChecked = request.GET.get('useRangeSES') == 'on'  
     singleSES = request.GET.get('singleSES') 
-    properties = Property.objects.all()
-    properties = filterPrice(minPrice, maxPrice, properties)
+    highlighted_properties = Property.objects.filter(
+    associatedAccount__subscription__is_active=True).distinct()
+    print(len(highlighted_properties), "hp")
+    normal_properties = Property.objects.exclude(id__in=highlighted_properties.values_list('id', flat=True))
+    print(len(normal_properties), "np")
+
+    highlighted_properties = filterPrice(minPrice, maxPrice, highlighted_properties)
+    normal_properties = filterPrice(minPrice, maxPrice, normal_properties)
     if not isChecked:
         minSES = singleSES
         maxSES = singleSES
-    properties = filterSES(minSES, maxSES, properties) 
-    cities = City.objects.all()
+    highlighted_properties = filterSES(minSES, maxSES, highlighted_properties) 
+    normal_properties = filterSES(minSES, maxSES, normal_properties) 
     districts = District.objects.all()
 
     if searchTerm: 
-        properties = properties.filter(title__icontains=searchTerm)
+        highlighted_properties = highlighted_properties.filter(title__icontains=searchTerm)
+        normal_properties = highlighted_properties.filter(title__icontains=searchTerm)
     else:
         searchTerm = None
 
     if district:
-        properties = filterDistrict(district, properties)
+        highlighted_properties = filterDistrict(district, highlighted_properties)
+        normal_properties = filterDistrict(district, normal_properties)
+        
 
     sessionActive = checkSession(request.user)
 
     if sessionActive and request.GET.get("favourite"):  # Si el usuario está autenticado y activó el filtro
         account = request.user.account
         favourite_properties = Favourites.objects.filter(associatedAccount=account).values_list('property', flat=True)
-        properties = properties.filter(id__in=favourite_properties)  # Filtra solo las propiedades favoritas
-    propertyPresence = properties.exists()
+        highlighted_properties = highlighted_properties.filter(id__in=favourite_properties)  # Filtra solo las propiedades favoritas
+        normal_properties = normal_properties.filter(id__in=favourite_properties)
+    propertyPresence = len(highlighted_properties) + len(normal_properties) > 0
 
     return render(request, 'home.html', {
         'searchTerm': searchTerm,
-        'propertys': properties,
+        'h_properties': highlighted_properties,
+        'n_properties': normal_properties,
         'minPrice': minPrice,
         'maxPrice': maxPrice,
         'propertyPresence': propertyPresence,

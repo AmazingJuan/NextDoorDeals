@@ -42,7 +42,7 @@ class PublishForm(forms.Form):
                             )
     price = forms.IntegerField(label = "Price: ")
     district = forms.ChoiceField(choices=getDistricts, widget = forms.Select(), 
-                            label = "Type: "
+                            label = "District: "
                             )
     pictures = MultipleFileField()
     location = forms.PointField(widget=GoogleMapPointFieldWidget)

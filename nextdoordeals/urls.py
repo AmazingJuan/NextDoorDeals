@@ -17,11 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from property.views import error
-from account.views import logout_logic, loginUser, show_appointments
+from account.views import logout_logic, loginUser, show_appointments, send_message, subscription, create_checkout_session, success, fail
 from django.conf.urls.static import static
 from django.conf import settings
 from account import consumers
-from account.views import send_message
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
@@ -31,6 +30,10 @@ urlpatterns = [
     path('login/', loginUser, name = 'login'),
     path('appointments/', show_appointments, name = 'appointments'),
     path('send_message/', send_message, name='send_message'),
+    path('subscription/', subscription, name = 'info_subscription'),
+    path('create-checkout-session/', create_checkout_session, name = 'pay'),
+    path('checkout_success/', success, name = 'pay_success'),
+    path('checkout_fail/', fail, name = 'pay_fail')
 ]
 
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Account, BussinessAccount, PersonAccount, UserType, Role, Message
+from .models import Account, BussinessAccount, PersonAccount, UserType, Role, Message, Subscription
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from .forms import AccountForm, NaturalForm, BussinesForm, loginForm, EditAccountForm
@@ -16,7 +16,9 @@ import matplotlib
 import matplotlib.pyplot as plt 
 import json
 from django.views.decorators.csrf import csrf_exempt
-
+import stripe 
+from django.conf import settings
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def checkSession(user):
@@ -25,6 +27,17 @@ def checkSession(user):
 def signupSuccess(request):
      
      return render(request, 'success.html')
+
+def posses_subscription(user):
+    if checkSession(user):
+        cont = 0
+        account = user.account
+        subscriptions = Subscription.objects.filter(belongs_to=account)
+        for subscription in subscriptions:
+            if subscription.is_active:
+                cont += 1
+        print(cont)
+        return cont > 0
 
 def createUser(request):
         regularForm = AccountForm(request.POST)
@@ -223,7 +236,6 @@ def view_profile(request, username):
         graph1 = None
         graph2 = None
         graph3 = None
-    print(request.user.account.role.nameRole == "Buyer")
     return render(request, 'profile.html', {'profile_user':profile_user, 'is_same_user': is_same_user, 'graphic_year':graph1, 'graphic_month':graph2, 'graphic_weekday':graph3})
     try:
         ...
@@ -345,8 +357,56 @@ def send_message(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
          
-        
-        
-    
+def subscription(request):
+    return render(request, 'subscription.html')       
 
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == 'POST':
+        if request.POST.get('period') == "monthly":
+            price = "price_1ROC28PTfWgceLfwdM86isby"
+            type = "monthly"
+        else:
+            price = "price_1ROCgwPTfWgceLfw1fzX5puD"
+            type = "annual"
+        try:
+            session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        'price': price,
+                        'quantity': 1,
+                    },
+                ],
+                mode='subscription',
+                success_url='http://localhost:8000/checkout_success/',
+                cancel_url='http://localhost:8000/checkout_fail/',
+            )
+            
+            Subscription.objects.create(belongs_to = request.user.account, type = type)
+
+            return HttpResponseRedirect(session.url)
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def success(request):
+    account = request.user.account
+    subscriptions = Subscription.objects.filter(belongs_to=account)
+    print(len(subscriptions))
+    last_subscription = subscriptions.last()
+
+    if last_subscription:
+        last_subscription.is_active = True
+        last_subscription.save()
+    return render(request, 'checkout_success.html')
+    
+def fail(request):
+
+    subscriptions = Subscription.objects.filter(belongs_to = request.user.account)
+    for subscription in subscriptions:
+        if not subscription.is_active:
+            subscription.delete()
+            continue
+    return render(request, 'checkout_fail.html')
 

@@ -317,6 +317,13 @@
                                             <i class="bi bi-calendar-check me-2"></i>Appointments
                                         </a>
                                     </li>
+                                    {% if not has_subscription and request.user.account.role.nameRole == 'Seller' %}
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'info_subscription' %}">
+                                            <i class="bi bi-credit-card me-2"></i>Buy a subscription
+                                        </a>
+                                    </li>
+                                    {% endif %}
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item" href="{% url 'logout' %}">

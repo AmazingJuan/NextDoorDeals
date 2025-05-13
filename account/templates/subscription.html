@@ -1,0 +1,663 @@
+{% extends "base.html" %}
+
+{% block title %}<title>NextDoorDeals - Subscription Plans</title>{% endblock %}
+
+{% block extra_css %}
+    :root {
+        --primary-dark: #1d4ed8;
+        --secondary-color: #64748b;
+        --accent-color: #f97316;
+        --accent-hover: #ea580c;
+        --success-color: #10b981;
+        --success-light: #d1fae5;
+        --premium-color: #f59e0b;
+        --premium-dark: #d97706;
+    }
+
+    .subscription-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        padding: 4rem 0;
+        text-align: center;
+        color: white;
+    }
+
+    .subscription-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .subscription-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .subscription-subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    .subscription-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 3rem;
+    }
+
+    .toggle-label {
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .toggle-label.active {
+        color: white;
+    }
+
+    .toggle-label.inactive {
+        color: rgba(255,255,255,0.7);
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 30px;
+        background-color: rgba(255,255,255,0.2);
+        border-radius: 15px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .toggle-switch:hover {
+        background-color: rgba(255,255,255,0.3);
+    }
+
+    .toggle-slider {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 24px;
+        height: 24px;
+        background-color: white;
+        border-radius: 50%;
+        transition: var(--transition);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .toggle-switch.annual .toggle-slider {
+        transform: translateX(30px);
+    }
+
+    .save-badge {
+        background-color: var(--success-color);
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        margin-left: 0.5rem;
+    }
+
+    .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 4rem;
+    }
+
+    .plan-card {
+        background-color: white;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: var(--transition);
+        box-shadow: var(--shadow-md);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .plan-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .plan-card.popular {
+        transform: scale(1.03);
+        z-index: 10;
+        box-shadow: 0 10px 25px -5px rgba(var(--primary-color-rgb), 0.25);
+        border: 2px solid var(--premium-color);
+    }
+
+    .plan-card.popular:hover {
+        transform: translateY(-5px) scale(1.03);
+    }
+
+    .popular-badge {
+        background-color: var(--premium-color);
+        color: white;
+        text-align: center;
+        padding: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .plan-header {
+        padding: 2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .plan-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .plan-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: flex;
+        align-items: baseline;
+    }
+
+    .plan-price .currency {
+        font-size: 1.5rem;
+        margin-right: 0.25rem;
+    }
+
+    .plan-price .period {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+        margin-left: 0.5rem;
+    }
+
+    .plan-price .original {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+        margin-left: 0.75rem;
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+
+    .plan-billing {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+
+    .plan-features {
+        padding: 2rem;
+        flex-grow: 1;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+
+    .feature-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .feature-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .feature-icon.included {
+        color: var(--success-color);
+    }
+
+    .feature-icon.premium {
+        color: var(--premium-color);
+    }
+
+    .feature-icon.excluded {
+        color: var(--text-secondary);
+        opacity: 0.4;
+    }
+
+    .feature-text {
+        font-size: 0.975rem;
+        color: var(--text-primary);
+        line-height: 1.5;
+    }
+
+    .feature-text.excluded {
+        color: var(--text-secondary);
+        opacity: 0.6;
+    }
+
+    .feature-tooltip {
+        display: inline-block;
+        margin-left: 0.5rem;
+        position: relative;
+        cursor: help;
+    }
+
+    .tooltip-icon {
+        color: var(--text-secondary);
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .tooltip-text {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--text-primary);
+        color: white;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-sm);
+        width: 200px;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+        z-index: 100;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+        pointer-events: none;
+        margin-bottom: 0.5rem;
+    }
+
+    .tooltip-text::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: var(--text-primary) transparent transparent transparent;
+    }
+
+    .feature-tooltip:hover .tooltip-text {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .plan-action {
+        padding: 1.5rem 2rem 2rem;
+    }
+
+    .btn-subscribe {
+        display: block;
+        width: 100%;
+        padding: 0.875rem;
+        text-align: center;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-subscribe.primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .btn-subscribe.primary:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-subscribe.premium {
+        background-color: var(--premium-color);
+        color: white;
+    }
+
+    .btn-subscribe.premium:hover {
+        background-color: var(--premium-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-subscribe.secondary {
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+    }
+
+    .btn-subscribe.secondary:hover {
+        background-color: rgba(37, 99, 235, 0.05);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .faq-section {
+        max-width: 800px;
+        margin: 0 auto 4rem;
+    }
+
+    .faq-title {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 2rem;
+        color: var(--text-primary);
+    }
+
+    .faq-item {
+        background-color: white;
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+
+    .faq-question {
+        padding: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        background: white;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        width: 100%;
+        text-align: left;
+        transition: var(--transition);
+    }
+
+    .faq-question:hover {
+        background-color: rgba(0,0,0,0.01);
+    }
+
+    .faq-answer {
+        padding: 0 1.25rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .faq-answer.active {
+        max-height: 500px;
+        padding-bottom: 1.25rem;
+    }
+
+    .faq-answer p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .contact-support {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .contact-support p {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .btn-contact {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .btn-contact:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 768px) {
+        .subscription-title {
+            font-size: 2rem;
+        }
+        
+        .subscription-subtitle {
+            font-size: 1rem;
+            padding: 0 1rem;
+        }
+        
+        .plans-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .plan-card.popular {
+            transform: scale(1);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-card.popular:hover {
+            transform: translateY(-5px) scale(1);
+        }
+    }
+{% endblock extra_css %}
+
+{% block content %}
+<div class="subscription-hero">
+    <div class="subscription-container">
+        <h1 class="subscription-title">Unlock Premium Features</h1>
+        <p class="subscription-subtitle">Choose the perfect plan to enhance your real estate experience with NextDoorDeals</p>
+        
+        <div class="subscription-toggle">
+            <span class="toggle-label active" id="monthly-label">Monthly</span>
+            <div class="toggle-switch" id="billing-toggle">
+                <span class="toggle-slider"></span>
+            </div>
+            <span class="toggle-label inactive" id="annual-label">Annually <span class="save-badge">Save 20%</span></span>
+        </div>
+    </div>
+</div>
+
+<form action="/create-checkout-session/" method="POST" class="subscription-container">
+    {% csrf_token %}
+    <input type="hidden" name="period" value="monthly" id='selection_input'>
+    <div class="plans-grid">
+
+        <!-- Professional Plan (Popular) -->
+        <div class="plan-card popular">
+            <div class="popular-badge">Adquire this now!</div>
+            <div class="plan-header">
+                <h3 class="plan-name">NextDoorDeals Subscription</h3>
+                <div class="plan-price">
+                    <span class="currency">$</span>
+                    <span id="pro-price">20.00</span>
+                    <span class="period">/month</span>
+                </div>
+                <div class="plan-billing" id="pro-billing">Billed monthly</div>
+            </div>
+            <div class="plan-features">
+                <div class="feature-item">
+                    <div class="feature-icon included">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="feature-text">Premium badge in your profile page</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon premium">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <div class="feature-text">Featured listings
+                        <span class="feature-tooltip">
+                            <i class="bi bi-question-circle tooltip-icon"></i>
+                            <span class="tooltip-text">Your properties will appear at the top of search results for increased visibility</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="plan-action">
+                <button type="submit" class="btn-subscribe premium">Buy now!</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="faq-section">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+            <button type="button" class="faq-question">
+                <span>What happens when I upgrade my subscription?</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+                <p>When you upgrade your subscription, you'll immediately gain access to all the features included in your new plan...</p>
+            </div>
+        </div>
+        
+        <!-- ...otros items FAQ... -->
+
+        <div class="contact-support">
+            <p>Still have questions about our subscription plans?</p>
+            <a href="#" class="btn-contact">Contact Support</a>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Billing toggle functionality
+        const billingToggle = document.getElementById('billing-toggle');
+        const monthlyLabel = document.getElementById('monthly-label');
+        const annualLabel = document.getElementById('annual-label');
+        
+        // Price elements
+        const proPrice = document.getElementById('pro-price');
+        
+        // Billing description elements
+        const proBilling = document.getElementById('pro-billing');
+        
+        // Monthly prices
+        const monthlyPrices = {
+            pro: 20.00,
+        };
+        
+        // Annual prices (with 20% discount)
+        const annualPrices = {
+            pro: (monthlyPrices.pro * 12 * 0.8 / 12).toFixed(2),
+        };
+        
+        // Initialize with monthly prices
+        let isAnnual = false;
+        
+        // Toggle between monthly and annual billing
+        billingToggle.addEventListener('click', function() {
+            isAnnual = !isAnnual;
+            
+            // Toggle active class
+            if (isAnnual) {
+                document.getElementById('selection_input').value = "annual";
+                billingToggle.classList.add('annual');
+                monthlyLabel.classList.remove('active');
+                monthlyLabel.classList.add('inactive');
+                annualLabel.classList.remove('inactive');
+                annualLabel.classList.add('active');
+                
+                // Update prices to annual
+                proPrice.textContent = annualPrices.pro;
+                
+                // Update billing description
+                proBilling.textContent = 'Billed annually';
+            } else {
+                document.getElementById('selection_input').value = "monthly";
+                billingToggle.classList.remove('annual');
+                monthlyLabel.classList.remove('inactive');
+                monthlyLabel.classList.add('active');
+                annualLabel.classList.remove('active');
+                annualLabel.classList.add('inactive');
+                
+                // Update prices to monthly
+                proPrice.textContent = monthlyPrices.pro.toFixed(2);
+                
+                // Update billing description
+                proBilling.textContent = 'Billed monthly';
+            }
+        });
+        
+        // FAQ accordion functionality
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i.bi');
+                
+                // Toggle active class
+                if (answer.classList.contains('active')) {
+                    answer.classList.remove('active');
+                    icon.classList.remove('bi-chevron-up');
+                    icon.classList.add('bi-chevron-down');
+                } else {
+                    // Close all other answers
+                    document.querySelectorAll('.faq-answer.active').forEach(activeAnswer => {
+                        activeAnswer.classList.remove('active');
+                        activeAnswer.previousElementSibling.querySelector('i.bi').classList.remove('bi-chevron-up');
+                        activeAnswer.previousElementSibling.querySelector('i.bi').classList.add('bi-chevron-down');
+                    });
+                    
+                    // Open this answer
+                    answer.classList.add('active');
+                    icon.classList.remove('bi-chevron-down');
+                    icon.classList.add('bi-chevron-up');
+                }
+            });
+        });
+        
+        // Add animation to plan cards
+        const planCards = document.querySelectorAll('.plan-card');
+        
+        planCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('popular')) {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = 'var(--shadow-lg)';
+                } else {
+                    this.style.transform = 'translateY(-5px) scale(1.03)';
+                    this.style.boxShadow = '0 15px 30px -5px rgba(var(--primary-color-rgb), 0.3)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('popular')) {
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                } else {
+                    this.style.transform = 'scale(1.03)';
+                    this.style.boxShadow = '0 10px 25px -5px rgba(var(--primary-color-rgb), 0.25)';
+                }
+            });
+        });
+    });
+</script>
+{% endblock extra_js %}

@@ -1046,16 +1046,6 @@
         carousel.addEventListener('slid.bs.carousel', updateImageCounter);
         updateImageCounter();
         
-        // Initialize Flatpickr if available
-        if (typeof flatpickr !== 'undefined') {
-            flatpickr('#id_date', {
-                enableTime: true,
-                minDate: 'today',
-                dateFormat: 'Y-m-d H:i',
-                time_24hr: true
-            });
-        }
-        
         // Star Rating System
         const ratingStars = document.querySelectorAll('.rating-star');
         const ratingInput = document.getElementById('selected-rating');

@@ -43,3 +43,9 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['timestamp']
+
+class Subscription(models.Model):
+    belongs_to = models.ForeignKey(Account, related_name='subscription', on_delete=models.CASCADE)
+    start_date = models.DateTimeField(auto_now_add=True)
+    type = models.CharField(max_length=7)
+    is_active = models.BooleanField(default=False)
