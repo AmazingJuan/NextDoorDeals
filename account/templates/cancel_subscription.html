@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}<title>Cancel Subscription | NextDoorDeals</title>{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            {% if cancelled %}
+                <div class="card border-0 shadow-sm" style="border-radius: var(--radius-lg); overflow: hidden;">
+                    <div class="card-body p-0">
+                        <div class="bg-success bg-opacity-10 text-success p-4 d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill me-3" style="font-size: 2rem;"></i>
+                            <div>
+                                <h4 class="mb-1">Subscription Cancelled Successfully</h4>
+                                <p class="mb-0">Your subscription has been cancelled and you will have no chance to get your benefits back.</p>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <p class="mb-4 text-secondary">Thank you for being a subscriber with NextDoorDeals. We hope to see you again soon!</p>
+                            <a href="{% url 'home' %}" class="btn btn-primary">
+                                <i class="bi bi-house-door me-2"></i>Return to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card border-0 shadow-sm" style="border-radius: var(--radius-lg); overflow: hidden;">
+                    <div class="card-body p-0">
+                        <div class="bg-warning bg-opacity-10 text-warning p-4 d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 2rem;"></i>
+                            <div>
+                                <h4 class="mb-1">Cancel Your Subscription</h4>
+                                <p class="mb-0">Please review the information below before confirming</p>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-4">
+                                <h5>What happens when you cancel:</h5>
+                                <ul class="text-secondary">
+                                    <li>Your subscription benefits wont remain active</li>
+                                    <li>Your properties won't be highligted anymore</li>
+                                    <li>Your premium badge will disappear</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="border-top pt-4 mt-4 d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                                <div class="text-secondary">
+                                    <strong>Are you sure you want to cancel?</strong>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>No, Go Back
+                                    </a>
+                                    <form method="post" class="d-inline-block">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-x-circle me-2"></i>Yes, Cancel Subscription
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
