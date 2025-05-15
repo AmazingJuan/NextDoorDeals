@@ -29,15 +29,33 @@ def signupSuccess(request):
      return render(request, 'success.html')
 
 def posses_subscription(user):
-    if checkSession(user):
+    
+
+
+    if isinstance(user, str): 
         cont = 0
-        account = user.account
-        subscriptions = Subscription.objects.filter(belongs_to=account)
-        for subscription in subscriptions:
-            if subscription.is_active:
-                cont += 1
-        print(cont)
-        return cont > 0
+        url = user
+        username = url.strip("/").split("/")[-1]
+        try:
+            account = Account.objects.get(user__username=username)
+            subscriptions = Subscription.objects.filter(belongs_to=account)
+
+            for subscription in subscriptions:
+                if subscription.is_active:
+                    cont += 1
+            return cont > 0    
+        except:
+            return None
+    else:
+        if checkSession(user):
+            cont = 0
+            account = user.account
+            subscriptions = Subscription.objects.filter(belongs_to=account)
+            for subscription in subscriptions:
+                if subscription.is_active:
+                    cont += 1
+            return cont > 0
+
 
 def createUser(request):
         regularForm = AccountForm(request.POST)
@@ -105,7 +123,7 @@ def loginUser(request):
 
                 if user is not None:
                     login(request, user)
-                    return redirect('home')  # Cambia 'home' por la URL de la página de inicio
+                    return redirect('home')
                 else:
                     messages.error(request, "Invalid username or password. Please try again.")
     else:
@@ -120,17 +138,13 @@ def logout_logic(request):
 
 def generate_bar_chart(data_dict, title, xlabel, ylabel):
     matplotlib.use('Agg')
-    # Ordenar los datos
     sorted_data = sorted(data_dict.items())
     keys = [str(k) for k, _ in sorted_data]
     values = [v for _, v in sorted_data]
 
-    # Usar estilo bonito de Seaborn
     sns.set_style("whitegrid")
     plt.figure(figsize=(10, 6))
 
-
-    # Crear gráfico de barras estilizado
     bars = plt.bar(
         keys,
         values,
@@ -139,30 +153,25 @@ def generate_bar_chart(data_dict, title, xlabel, ylabel):
         linewidth=0.5
     )
 
-    # Redondear las esquinas superiores de las barras
     for bar in bars:
         bar.set_linewidth(1)
         bar.set_linestyle('-')
         bar.set_alpha(0.9)
         bar.set_zorder(3)
 
-    # Títulos y etiquetas
     plt.title(title, fontsize=18, weight='bold')
     plt.xlabel(xlabel, fontsize=14)
     plt.ylabel(ylabel, fontsize=14)
     plt.xticks(rotation=45, fontsize=10)
     plt.yticks(fontsize=10)
 
-    # Ajustar espaciado para las etiquetas
     plt.tight_layout()
 
-    # Guardar la imagen en un buffer
     buffer = io.BytesIO()
     plt.savefig(buffer, format='png', bbox_inches='tight', dpi=150)
     buffer.seek(0)
     plt.close()
 
-    # Codificar la imagen en base64
     graphic = base64.b64encode(buffer.getvalue()).decode('utf-8')
     buffer.close()
 
@@ -200,7 +209,6 @@ def statistic_images(user):
 def edit_profile(request, username, wanna_save):
     user_to_edit = request.user
     if request.user != user_to_edit:
-        print("entre aki no se pq")
         messages.error(request, "You are not allowed to edit this profile")
         return redirect('view_profile', username=username)
     
@@ -264,11 +272,9 @@ def get_contacts(request):
         for message in messages:
             contact = message.receiver if message.sender == user else message.sender
             if contact not in latest_messages:
-                latest_messages[contact] = message.timestamp  # Solo se guarda el primero (más reciente por orden)
+                latest_messages[contact] = message.timestamp
 
-        # Ordenar contactos por el timestamp más reciente
         contacts = sorted(latest_messages.keys(), key=lambda c: latest_messages[c], reverse=True)
-        print(contacts)
         return contacts
     else:
         return None
@@ -334,51 +340,56 @@ def send_message(request):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'No estás autenticado'}, status=401)
     
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            message_content = data.get('message')
-            reciever_username = data.get('receiver')
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        message_content = data.get('message')
+        receiver_username = data.get('receiver')
 
-            # Asegurarse de que el mensaje no esté vacío
-            if not message_content:
-                return JsonResponse({'error': 'El mensaje no puede estar vacío'}, status=400)
-            
-            user = request.user.account
-            chat_partner = Account.objects.get(user__username__iexact=reciever_username)
-            print(chat_partner)
-
-            # Crear el nuevo mensaje
-            message = Message.objects.create(
-                sender=user,
-                receiver=chat_partner,
-                content=message_content
-            )
-            
-            # Devolver el mensaje en la respuesta
-            message_data = {
-                'sender': message.sender.user.username,
-                'content': message.content,
-                'timestamp': message.timestamp
-            }
-
-            return JsonResponse({'message': message_data}, status=201)
+        if not message_content:
+            return JsonResponse({'error': 'El mensaje no puede estar vacío'}, status=400)
+        if not receiver_username:
+            return JsonResponse({'error': 'Usuario receptor no especificado'}, status=400)
         
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+        user = request.user.account
+        try:
+            chat_partner = Account.objects.get(user__username__iexact=receiver_username)
+        except Account.DoesNotExist:
+            return JsonResponse({'error': 'Usuario receptor no existe'}, status=404)
+
+        message = Message.objects.create(
+            sender=user,
+            receiver=chat_partner,
+            content=message_content
+        )
+        
+        timestamp = message.timestamp
+        if hasattr(timestamp, 'isoformat'):
+            timestamp = timestamp.isoformat()
+
+        message_data = {
+            'sender': message.sender.user.username,
+            'content': message.content,
+            'timestamp': timestamp
+        }
+
+        return JsonResponse({'message': message_data}, status=201)
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
          
 def subscription(request):
     return render(request, 'subscription.html')      
 
 def info_subscription(request):
-    # Check if user has an active subscription
     has_subscription = False
     subscription = None
     
     if checkSession(request.user):
         has_subscription = posses_subscription(request.user)
         if has_subscription:
-            # Get the active subscription
             subscription = Subscription.objects.filter(
                 belongs_to=request.user.account, 
                 is_active=True

@@ -47,9 +47,7 @@ def home(request):
     singleSES = request.GET.get('singleSES') 
     highlighted_properties = Property.objects.filter(
     associatedAccount__subscription__is_active=True).distinct()
-    print(len(highlighted_properties), "hp")
     normal_properties = Property.objects.exclude(id__in=highlighted_properties.values_list('id', flat=True))
-    print(len(normal_properties), "np")
  
     highlighted_properties = filterPrice(minPrice, maxPrice, highlighted_properties)
     normal_properties = filterPrice(minPrice, maxPrice, normal_properties)
@@ -106,7 +104,7 @@ def publish(request):
             location = Location(district = District.objects.get(id = int(district) - 1), coordinates = coordinates)
             location.save()
             price = data["price"]
-            newProperty = Property(associatedAccount = request.user.account, title = title, description = description, SES = SES, price = price, propertyType = PropertyType.objects.get(id = int(type)-1), location = location)
+            newProperty = Property(associatedAccount = request.user.account, title = title, description = description, SES = str(int(SES) - 1), price = price, propertyType = PropertyType.objects.get(id = int(type)-1), location = location)
             newProperty.save()
             images = data["pictures"]
             for i in images:
@@ -225,7 +223,7 @@ def editProperty(request, id):
             }
             form = EditPropertyForm(initial=initial_data)
     else:
-        print("No puedes editar esto bro")
+
         return redirect('home')  # o alguna otra vista a la que quieras redirigir
 
     context = {

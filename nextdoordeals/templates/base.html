@@ -258,30 +258,6 @@
                 height: 2rem;
             }
         }
-        .nav-premium-btn {
-            background: linear-gradient(135deg, var(--gold), var(--gold-light));
-            color: var(--primary) !important;
-            font-weight: 700;
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-            padding: 0.5rem 1rem !important;
-            border-radius: var(--radius-xl);
-            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
-            position: relative;
-            top: 2px;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            border: none;
-        }
-
-        .nav-premium-btn:hover {
-            background: linear-gradient(135deg, var(--gold-light), var(--gold));
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
-        }
-
-
         {% block extra_css %}{% endblock extra_css %}
     </style>
 </head>
@@ -377,20 +353,6 @@
                             </li>
                         {% endif %}
 
-                        {% if sessionActive and request.user.account.role.nameRole == 'Seller' and has_subscription %}
-                        <li class="nav-item dropdown ms-lg-2">
-                            <a class="nav-link nav-premium-btn dropdown-toggle" href="#" id="premiumDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i></i>USER PREMIUM
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="premiumDropdown">
-                                <li>
-                                    <a class="dropdown-item text-danger" href="{% url 'cancel_subscription' %}">
-                                        Cancel Subscription
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -446,115 +408,151 @@
 
     {% block extra_js %}{% endblock extra_js %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const csrfToken = "{{ csrf_token }}";
-        let otherUser = null;
-        let chatSocket = null;
+<script>
+    const csrfToken = "{{ csrf_token }}";
+    let otherUser = null;
+    let chatSocket = null;
 
-        function toggleChat() {
-            const chatWindow = document.getElementById('chat-window');
-            const chatActive = document.getElementById('chat-active');
-            const display = chatWindow.style.display === 'none' || chatWindow.style.display === '';
-            
-            chatWindow.style.display = display ? 'block' : 'none';
-            chatActive.style.display = display && otherUser ? 'block' : 'none';
+    function toggleChat() {
+        const chatWindow = document.getElementById('chat-window');
+        const chatActive = document.getElementById('chat-active');
+        const display = chatWindow.style.display === 'none' || chatWindow.style.display === '';
+        
+        chatWindow.style.display = display ? 'block' : 'none';
+        chatActive.style.display = display && otherUser ? 'block' : 'none';
+    }
+
+    function openChatWith(username) {
+        const chatWindow = document.getElementById('chat-window');
+        if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+            chatWindow.style.display = 'block';
+        }
+        otherUser = username;
+        document.getElementById('chat-with').innerText = username;
+        document.getElementById('chat-list').style.display = 'none';
+        document.getElementById('chat-active').style.display = 'block';
+        loadChatHistory(username);
+        initializeWebSocket(username);
+
+        const input = document.getElementById('chat-input');
+        if (input) {
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    function initializeWebSocket(username) {
+        if (chatSocket) {
+            chatSocket.close();
+            chatSocket = null;
         }
 
-        function openChatWith(username) {
-            otherUser = username;
-            document.getElementById('chat-with').innerText = username;
-            document.getElementById('chat-list').style.display = 'none';
-            document.getElementById('chat-active').style.display = 'block';
-            
-            loadChatHistory(username);
-            initializeWebSocket(username);
-        }
+        const currentUser = "{{ request.user.username }}";
+        const chatRoom = [currentUser, username].sort().join('_');
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        chatSocket = new WebSocket(`${protocol}://${window.location.host}/ws/chat/${chatRoom}/`);
 
-        function initializeWebSocket(username) {
-            if (chatSocket) chatSocket.close();
-            
+        chatSocket.onopen = function () {
+            console.log("WebSocket conectado.");
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log("Mensaje recibido:", data);
+
+            if (data.sender && data.sender !== currentUser) {
+                appendMessage(data.sender, data.message);
+            }
+        };
+
+        chatSocket.onerror = function(e) {
+            appendMessage('Sistema', 'Error en la conexión del chat.');
+        };
+    }
+
+    function loadChatHistory(username) {
+        const chatBox = document.getElementById('chat-messages');
+        chatBox.innerHTML = '';
+
+        fetch("{% url 'get_chat_history' username='__username__' %}".replace('__username__', username))
+            .then(response => response.json())
+            .then(data => {
+                data.messages.forEach(message => {
+                    appendMessage(message.sender, message.content);
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(() => {
+                appendMessage('Sistema', 'No se pudo cargar el historial.');
+            });
+    }
+
+    function appendMessage(sender, content) {
+        const chatBox = document.getElementById('chat-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message';
+        
+        const currentUser = "{{ request.user.username }}";
+        let displayName = sender === currentUser ? "Tú" : sender;
+        
+        messageDiv.innerHTML = `<strong>${displayName}:</strong> ${content}`;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        
+        if (message && chatSocket) {
             const currentUser = "{{ request.user.username }}";
-            const chatRoom = [currentUser, username].sort().join('_');
-            chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatRoom}/`);
             
-            chatSocket.onmessage = function(e) {
-                const data = JSON.parse(e.data);
-                appendMessage(otherUser, data.message);
-            };
+            fetch('{% url "send_message" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({
+                    message: message,
+                    receiver: otherUser
+                }),
+            });
+
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'receiver': otherUser,
+                'sender': currentUser
+            }));
+
+            appendMessage(currentUser, message);
+
+            input.value = '';
+            input.focus();
         }
+    }
 
-        function loadChatHistory(username) {
-            const chatBox = document.getElementById('chat-messages');
-            chatBox.innerHTML = '';
-            
-            fetch("{% url 'get_chat_history' username='__username__' %}".replace('__username__', username))
-                .then(response => response.json())
-                .then(data => {
-                    data.messages.forEach(message => {
-                        appendMessage(message.sender, message.content);
-                    });
-                    chatBox.scrollTop = chatBox.scrollHeight;
-                });
+    function backToChatList() {
+        document.getElementById('chat-active').style.display = 'none';
+        document.getElementById('chat-list').style.display = 'block';
+        
+        if (chatSocket) {
+            chatSocket.close();
+            chatSocket = null;
         }
+        
+        otherUser = null;
+    }
 
-        function appendMessage(sender, content) {
-            const chatBox = document.getElementById('chat-messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'chat-message';
-            messageDiv.innerHTML = `<strong>${sender}:</strong> ${content}`;
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+    document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
         }
+    });
+</script>
 
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            
-            if (message && chatSocket) {
-                fetch('{% url "send_message" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken,
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        receiver: otherUser
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    appendMessage(data.message.sender, data.message.content);
-                });
 
-                chatSocket.send(JSON.stringify({
-                    'message': message,
-                    'receiver': otherUser
-                }));
-                
-                input.value = '';
-            }
-        }
 
-        function backToChatList() {
-            document.getElementById('chat-active').style.display = 'none';
-            document.getElementById('chat-list').style.display = 'block';
-            
-            if (chatSocket) {
-                chatSocket.close();
-                chatSocket = null;
-            }
-            
-            otherUser = null;
-        }
-
-        // Handle Enter key in chat input
-        document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-    </script>
 </body>
 </html>

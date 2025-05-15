@@ -1,17 +1,385 @@
 {% extends 'base.html' %}
+{% load static %}
 
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; background-color: #f5f7fa; font-family: 'Segoe UI', sans-serif;">
-    <h1 style="color: #2d3a8c; margin-bottom: 30px;">Account Successfully Created!</h1>
+{% block title %}
+<title>NextDoorDeals | Welcome Aboard!</title>
+<meta name="description" content="Successfully registered on NextDoorDeals - Your journey to finding the perfect property begins here">
+{% endblock %}
 
-    <a href="{% url 'home' %}" 
-       style="padding: 12px 24px; 
-              background-color: #3a45b4; 
-              color: white; 
-              border-radius: 8px; 
-              text-decoration: none; 
-              font-weight: bold; 
-              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-              transition: background-color 0.3s;">
-       Return Home
-    </a>
+{% block extra_css %}
+:root {
+    /* Core color variables */
+    --primary-color: #11324F;
+    --primary-light: #1F5D94;
+    --primary-dark: #0A2540;
+    --accent-color: #ff6c37;
+    --accent-hover: #ff5722;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --neutral-50: #f9fafb;
+    --neutral-100: #f3f4f6;
+    --neutral-200: #e5e7eb;
+    --neutral-300: #d1d5db;
+    --neutral-400: #9ca3af;
+    --neutral-500: #6b7280;
+    --neutral-600: #4b5563;
+    --neutral-700: #374151;
+    --neutral-800: #1f2937;
+    --neutral-900: #111827;
+    
+    /* Layout variables */
+    --container-max-width: 1100px;
+    --card-border-radius: 1.25rem;
+    --btn-border-radius: 0.75rem;
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --primary-gradient: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    --accent-gradient: linear-gradient(135deg, var(--accent-color), #ff9d72);
+    --success-gradient: linear-gradient(135deg, var(--success-color), #34d399);
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+    --card-shadow-hover: 0 20px 35px -10px rgba(0, 0, 0, 0.1), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+}
+
+.success-container {
+    min-height: 100vh;
+    background-color: var(--neutral-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg) var(--spacing-sm);
+}
+
+.success-card {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    position: relative;
+}
+
+.success-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.success-header {
+    background: var(--success-gradient);
+    padding: var(--spacing-xl) var(--spacing-lg);
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.success-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.2), transparent 60%);
+    z-index: 1;
+}
+
+.success-header::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-gradient);
+    z-index: 2;
+}
+
+.success-icon {
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    margin: 0 auto var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.success-icon i {
+    font-size: 4rem;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.success-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.success-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: var(--spacing-xs);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.success-body {
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.welcome-message {
+    color: var(--neutral-700);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+}
+
+.next-steps {
+    background: var(--neutral-50);
+    border-radius: var(--btn-border-radius);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.next-steps-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--neutral-600);
+    padding: var(--spacing-sm);
+    border-radius: var(--btn-border-radius);
+    background: white;
+    transition: all var(--transition-base);
+}
+
+.step-item:hover {
+    transform: translateX(5px);
+    background: var(--neutral-100);
+}
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    background: var(--primary-light);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    margin-top: var(--spacing-xl);
+}
+
+.btn-action {
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 180px;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-action::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+    top: -100%;
+    left: -100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-action:hover::after {
+    opacity: 1;
+    top: -50%;
+    left: -50%;
+    transition: top 0.4s ease, left 0.4s ease, opacity 0.4s ease;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(31, 93, 148, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-light);
+}
+
+.btn-outline:hover {
+    background: var(--primary-light);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(31, 93, 148, 0.2);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .success-card {
+        margin: var(--spacing-sm);
+    }
+
+    .success-header {
+        padding: var(--spacing-lg);
+    }
+
+    .success-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .success-icon i {
+        font-size: 3rem;
+    }
+
+    .success-title {
+        font-size: 1.75rem;
+    }
+
+    .success-body {
+        padding: var(--spacing-lg);
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .btn-action {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .success-icon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .success-icon i {
+        font-size: 2.5rem;
+    }
+
+    .success-title {
+        font-size: 1.5rem;
+    }
+
+    .success-subtitle {
+        font-size: 1rem;
+    }
+
+    .next-steps {
+        padding: var(--spacing-md);
+    }
+
+    .step-item {
+        font-size: 0.9rem;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-header">
+            <div class="success-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h1 class="success-title">Welcome to NextDoorDeals!</h1>
+            <p class="success-subtitle">Your account has been successfully created</p>
+        </div>
+
+        <div class="success-body">
+            <p class="welcome-message">
+                Thank you for joining NextDoorDeals! We're excited to help you discover your perfect property match.
+            </p>
+
+            <div class="action-buttons">
+                <a href="{% url 'home' %}" class="btn btn-action btn-outline">
+                    <i class="bi bi-house-heart"></i>
+                    Browse Properties
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}

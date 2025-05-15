@@ -7,963 +7,1353 @@
 {% endblock %}
 
 {% block extra_css %}
+:root {
+    /* Core color variables */
+    --primary-color: #11324F;
+    --primary-light: #1F5D94;
+    --primary-dark: #0A2540;
+    --accent-color: #ff6c37;
+    --accent-hover: #ff5722;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --neutral-50: #f9fafb;
+    --neutral-100: #f3f4f6;
+    --neutral-200: #e5e7eb;
+    --neutral-300: #d1d5db;
+    --neutral-400: #9ca3af;
+    --neutral-500: #6b7280;
+    --neutral-600: #4b5563;
+    --neutral-700: #374151;
+    --neutral-800: #1f2937;
+    --neutral-900: #111827;
+    
+    /* Layout variables */
+    --container-max-width: 1100px;
+    --card-border-radius: 1.25rem;
+    --btn-border-radius: 0.75rem;
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --primary-gradient: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    --accent-gradient: linear-gradient(135deg, var(--accent-color), #ff9d72);
+    --premium-gradient: linear-gradient(135deg, #FFD700, #FFC107);
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+    --card-shadow-hover: 0 20px 35px -10px rgba(0, 0, 0, 0.1), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
+    --header-height: 80px;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+}
+
+/* Main Profile Container */
+.profile-container {
+    min-height: calc(100vh - var(--header-height));
+    padding: var(--spacing-lg) var(--spacing-sm);
+    background-color: var(--neutral-100);
+}
+
+.profile-wrapper {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+}
+
+/* Profile Card */
+.profile-card {
+    width: 100%;
+    border: none;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: box-shadow var(--transition-base);
+    background-color: white;
+}
+
+.profile-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* Profile Header */
+.profile-header {
+    background: var(--primary-gradient);
+    padding: var(--spacing-xl) var(--spacing-lg);
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.15), transparent 60%);
+    z-index: 1;
+}
+
+.profile-header::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-gradient);
+    z-index: 3;
+}
+
+.profile-header-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Profile Avatar */
+.profile-avatar-wrapper {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto var(--spacing-md);
+    position: relative;
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.profile-avatar-icon {
+    font-size: 4rem;
+    color: var(--neutral-400);
+}
+
+/* Profile Title and Subtitle */
+.profile-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: var(--spacing-xs);
+    font-size: 1.1rem;
+}
+
+/* Profile Badge */
+.profile-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.25rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: var(--spacing-sm);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    transition: all var(--transition-base);
+}
+
+.profile-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.profile-badge i {
+    margin-right: 0.5rem;
+}
+
+.badge-person {
+    background-color: rgba(79, 70, 229, 0.2);
+    color: #fff;
+    border-color: rgba(79, 70, 229, 0.3);
+}
+
+.badge-business {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fff;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Premium Badge */
+.premium-btn {
+    background: var(--premium-gradient);
+    color: #4b2e00 !important;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    box-shadow:
+        0 0 8px 2px rgba(255, 215, 0, 0.3),
+        0 4px 12px rgba(255, 215, 0, 0.2);
+    border: none;
+    cursor: pointer;
+    user-select: none;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    min-width: 180px;
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-btn::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent 65%);
+    opacity: 0;
+    z-index: 1;
+    transform: scale(0.5);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.premium-btn:hover::before {
+    opacity: 0.6;
+    transform: scale(1);
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        opacity: 0.6;
+        transform: rotate(0deg);
+    }
+    25% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 0.6;
+        transform: rotate(360deg);
+    }
+}
+
+.premium-btn:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+.premium-btn i {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.premium-btn span {
+    position: relative;
+    z-index: 2;
+}
+
+.premium-btn.dropdown-toggle::after {
+    margin-left: 0.5rem;
+    border-top-color: #4b2e00;
+    position: relative;
+    z-index: 2;
+}
+
+.premium-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 12px 4px rgba(255, 215, 0, 0.4),
+        0 6px 16px rgba(255, 215, 0, 0.3);
+}
+
+/* Profile Action Buttons */
+.profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: var(--spacing-lg);
+}
+
+.profile-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.btn-profile-action {
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    min-width: 180px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-profile-action::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+    top: -100%;
+    left: -100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-profile-action:hover::after {
+    opacity: 1;
+    top: -50%;
+    left: -50%;
+    transition: top 0.4s ease, left 0.4s ease, opacity 0.4s ease;
+}
+
+.btn-edit-profile {
+    background-color: var(--primary-light);
+    color: white;
+}
+
+.btn-edit-profile:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(31, 93, 148, 0.3);
+}
+
+.btn-chat {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-chat:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 108, 55, 0.3);
+}
+
+/* Profile Body */
+.profile-body {
+    padding: var(--spacing-xl);
+}
+
+/* Alert Container */
+.alert-container {
+    padding: var(--spacing-md) var(--spacing-xl);
+}
+
+.alert {
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Star Rating System */
+.star-rating {
+    direction: rtl;
+    unicode-bidi: bidi-override;
+    display: inline-flex;
+    align-items: center;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2.5rem;
+    color: var(--neutral-300);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin: 0 0.1em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: var(--warning-color);
+    transform: scale(1.2);
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.star-rating input[type="radio"]:focus ~ label {
+    outline: 2px solid var(--primary-light);
+    border-radius: 4px;
+}
+
+/* Rating Section */
+.rating-section {
+    background-color: var(--neutral-50);
+    border-radius: var(--card-border-radius);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--neutral-200);
+    transition: all var(--transition-base);
+}
+
+.rating-section:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.rating-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.current-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.rating-score {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stars-container {
+    margin-top: 0.5rem;
+}
+
+.stars-container i {
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+    transition: transform var(--transition-fast);
+}
+
+.stars-container:hover i {
+    transform: rotate(-5deg);
+}
+
+.stars-container:hover i:nth-child(2n) {
+    transform: rotate(5deg);
+}
+
+.rating-count {
+    font-size: 0.9rem;
+    color: var(--neutral-500);
+    margin-top: 0.25rem;
+}
+
+.rating-controls {
+    position: relative;
+}
+
+.btn-rate {
+    background-color: var(--warning-color);
+    color: white;
+    border-radius: 50px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all var(--transition-base);
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-rate::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+    top: -100%;
+    left: -100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-rate:hover::after {
+    opacity: 1;
+    top: -50%;
+    left: -50%;
+    transition: top 0.4s ease, left 0.4s ease, opacity 0.4s ease;
+}
+
+.btn-rate:hover {
+    background-color: #e69009;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.rate-dropdown {
+    min-width: 350px;
+    border-radius: var(--card-border-radius);
+    border: none;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rate-dropdown-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: var(--spacing-md);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.rate-dropdown-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at top right, rgba(255,255,255,0.15), transparent 60%);
+    z-index: 1;
+}
+
+.rate-dropdown-header h4 {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font-weight: 700;
+}
+
+.rate-form {
+    padding: var(--spacing-lg);
+}
+
+.rate-value-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: var(--spacing-md);
+}
+
+.rate-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.rate-max {
+    font-size: 1.25rem;
+    color: var(--neutral-500);
+}
+
+.btn-submit-rating {
+    background-color: var(--primary-light);
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-submit-rating::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+    top: -100%;
+    left: -100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-submit-rating:hover::after {
+    opacity: 1;
+    top: -50%;
+    left: -50%;
+    transition: top 0.4s ease, left 0.4s ease, opacity 0.4s ease;
+}
+
+.btn-submit-rating:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(31, 93, 148, 0.3);
+}
+
+/* Properties Section */
+.properties-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.section-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.25rem;
+    bottom: 0.25rem;
+    width: 4px;
+    background: var(--accent-gradient);
+    border-radius: 2px;
+}
+
+.section-title i {
+    color: var(--accent-color);
+}
+
+.properties-carousel {
+    border-radius: var(--card-border-radius);
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    transition: all var(--transition-base);
+}
+
+.properties-carousel:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+}
+
+.carousel-inner {
+    border-radius: var(--card-border-radius);
+}
+
+.property-link {
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.property-image {
+    height: 450px;
+    object-fit: cover;
+    width: 100%;
+    transition: transform var(--transition-slow);
+    filter: brightness(0.95);
+}
+
+.property-link:hover .property-image {
+    transform: scale(1.05);
+    filter: brightness(1);
+}
+
+.carousel-caption {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4) 70%, transparent);
+    border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
+    text-align: left;
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-md);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(5px);
+    transition: transform var(--transition-base);
+}
+
+.property-link:hover .carousel-caption {
+    transform: translateY(0);
+}
+
+.carousel-caption h5 {
+    font-weight: 700;
+    font-size: 1.75rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 0.5rem;
+    transform: translateY(5px);
+    opacity: 0.95;
+    transition: all var(--transition-base);
+}
+
+.property-link:hover .carousel-caption h5 {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.carousel-caption p {
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    transform: translateY(8px);
+    transition: all var(--transition-base) 0.1s;
+}
+
+.property-link:hover .carousel-caption p {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.carousel-control-prev, 
+.carousel-control-next {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: all var(--transition-base);
+}
+
+.carousel-control-prev {
+    left: 20px;
+}
+
+.carousel-control-next {
+    right: 20px;
+}
+
+.properties-carousel:hover .carousel-control-prev, 
+.properties-carousel:hover .carousel-control-next {
+    opacity: 0.7;
+}
+
+.carousel-control-prev:hover, 
+.carousel-control-next:hover {
+    background-color: white;
+    opacity: 1 !important;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-control-prev-icon, 
+.carousel-control-next-icon {
+    filter: invert(1) grayscale(100%);
+}
+
+/* Analytics Section */
+.analytics-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.chart-container {
+    background-color: white;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+.chart-container:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-3px);
+}
+
+.chart-image-wrapper {
+    width: 100%;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--neutral-50);
+    padding: var(--spacing-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-image-wrapper::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--primary-gradient);
+}
+
+.chart-img-large {
+    max-width: 100%;
+    max-height: 600px;
+    height: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all var(--transition-base);
+}
+
+.chart-switcher {
+    display: flex;
+    background-color: var(--neutral-100);
+    padding: var(--spacing-sm);
+    border-top: 1px solid var(--neutral-200);
+}
+
+.chart-switcher .btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: var(--btn-border-radius);
+    font-weight: 600;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-switcher .btn::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+    top: -100%;
+    left: -100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.chart-switcher .btn:hover::after {
+    opacity: 1;
+    top: -50%;
+    left: -50%;
+    transition: top 0.4s ease, left 0.4s ease, opacity 0.4s ease;
+}
+
+.chart-switcher .btn:not(:last-child) {
+    margin-right: var(--spacing-xs);
+}
+
+.chart-switcher .btn.active {
+    position: relative;
+    background-color: var(--primary-light);
+    color: white;
+}
+
+.chart-switcher .btn:hover:not(.active) {
+    background-color: var(--neutral-200);
+    transform: translateY(-2px);
+}
+
+.chart-switcher .btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -0.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 4px;
+    background-color: var(--accent-color);
+    border-radius: 2px;
+}
+
+/* Animation Keyframes */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInFromBottom {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideInFromTop {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
     :root {
-        /* Core color variables */
-        --primary-color: #11324F;
-        --primary-light: #1F5D94;
-        --primary-dark: #0A2540;
-        --accent-color: #ff6c37;
-        --accent-hover: #ff5722;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --neutral-50: #f9fafb;
-        --neutral-100: #f3f4f6;
-        --neutral-200: #e5e7eb;
-        --neutral-300: #d1d5db;
-        --neutral-400: #9ca3af;
-        --neutral-500: #6b7280;
-        --neutral-600: #4b5563;
-        --neutral-700: #374151;
-        --neutral-800: #1f2937;
-        --neutral-900: #111827;
-        
-        /* Layout variables */
-        --container-max-width: 1100px;
-        --card-border-radius: 1rem;
-        --btn-border-radius: 0.5rem;
-        --transition-fast: 0.2s ease;
-        --transition-base: 0.3s ease;
-        --transition-slow: 0.5s ease;
-        --primary-gradient: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        --card-shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.12);
-        --header-height: 80px;
-        --spacing-xs: 0.5rem;
-        --spacing-sm: 1rem;
-        --spacing-md: 1.5rem;
-        --spacing-lg: 2rem;
-        --spacing-xl: 3rem;
-    }
-
-    /* Star Rating System */
-    .star-rating {
-        direction: rtl;
-        unicode-bidi: bidi-override;
-        display: inline-flex;
-        align-items: center;
+        --spacing-xl: 2.5rem;
     }
     
-    .star-rating input[type="radio"] {
-        display: none;
-    }
-    
-    .star-rating label {
-        font-size: 2.5rem;
-        color: var(--neutral-300);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        margin: 0 0.1em;
-    }
-    
-    .star-rating input[type="radio"]:checked ~ label,
-    .star-rating label:hover,
-    .star-rating label:hover ~ label {
-        color: var(--warning-color);
-        transform: scale(1.2);
-        text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-    }
-    
-    .star-rating input[type="radio"]:focus ~ label {
-        outline: 2px solid var(--primary-light);
-        border-radius: 4px;
-    }
-
-    /* Main Profile Container */
-    .profile-container {
-        min-height: calc(100vh - var(--navbar-height) - 2rem);
-        padding: var(--spacing-lg) var(--spacing-sm);
-        background-color: var(--neutral-100);
-    }
-
-    /* Profile Card */
-    .profile-card {
-        width: 100%;
-        max-width: var(--container-max-width);
-        border: none;
-        border-radius: var(--card-border-radius);
-        box-shadow: var(--card-shadow);
-        overflow: hidden;
-        transition: box-shadow var(--transition-base);
-        background-color: white;
-    }
-    
-    .profile-card:hover {
-        box-shadow: var(--card-shadow-hover);
-    }
-
-    /* Profile Header */
-    .profile-header {
-        background: var(--primary-gradient);
-        padding: var(--spacing-xl) var(--spacing-lg);
-        text-align: center;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .profile-header::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at top right, rgba(255,255,255,0.15), transparent 60%);
-        z-index: 1;
-    }
-    
-    .profile-header-content {
-        position: relative;
-        z-index: 2;
-    }
-
-    /* Profile Avatar */
-    .profile-avatar-wrapper {
-        width: 160px;
-        height: 160px;
-        margin: 0 auto var(--spacing-md);
-        position: relative;
-    }
-    
-    .profile-avatar {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        border: 5px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        object-fit: cover;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        transition: transform var(--transition-base);
-    }
-    
-    .profile-avatar:hover {
-        transform: scale(1.03);
-    }
-    
-    .profile-avatar-icon {
-        font-size: 4rem;
-        color: var(--neutral-400);
-    }
-
-    /* Profile Title and Subtitle */
-    .profile-title {
-        font-size: 2.25rem;
-        font-weight: 700;
-        margin: 0;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .profile-subtitle {
-        color: rgba(255, 255, 255, 0.9);
-        margin-top: var(--spacing-xs);
-        font-size: 1.1rem;
-    }
-
-    /* Profile Badge */
-    .profile-badge {
-        display: inline-block;
-        padding: 0.5rem 1.25rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-top: var(--spacing-sm);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        background-color: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(5px);
-        transition: all var(--transition-base);
-    }
-    
-    .profile-badge:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .badge-person {
-        background-color: rgba(79, 70, 229, 0.2);
-        color: #fff;
-        border-color: rgba(79, 70, 229, 0.3);
-    }
-    
-    .badge-business {
-        background-color: rgba(245, 158, 11, 0.2);
-        color: #fff;
-        border-color: rgba(245, 158, 11, 0.3);
-    }
-
-    /* Profile Body */
     .profile-body {
-        padding: var(--spacing-xl);
-    }
-
-    /* Profile Action Buttons */
-    .profile-actions {
-        display: flex;
-        justify-content: center;
-        gap: var(--spacing-md);
-        margin-bottom: var(--spacing-lg);
-    }
-    
-    .btn-profile-action {
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
-        font-weight: 600;
-        transition: all var(--transition-base);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border: none;
-    }
-    
-    .btn-edit-profile {
-        background-color: var(--primary-light);
-        color: white;
-    }
-    
-    .btn-edit-profile:hover {
-        background-color: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(31, 93, 148, 0.3);
-    }
-    
-    .btn-chat {
-        background-color: var(--accent-color);
-        color: white;
-    }
-    
-    .btn-chat:hover {
-        background-color: var(--accent-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255, 108, 55, 0.3);
-    }
-
-    /* Rating Section */
-    .rating-section {
-        background-color: var(--neutral-50);
-        border-radius: var(--card-border-radius);
         padding: var(--spacing-lg);
-        margin-bottom: var(--spacing-lg);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-        border: 1px solid var(--neutral-200);
+    }
+}
+
+@media (max-width: 992px) {
+    .profile-title {
+        font-size: 2rem;
+    }
+    
+    .profile-avatar-wrapper {
+        width: 140px;
+        height: 140px;
     }
     
     .rating-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: flex-start;
         gap: var(--spacing-md);
     }
     
-    .current-rating {
+    .rating-controls {
+        width: 100%;
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .rating-score {
-        font-size: 3.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .stars-container {
-        margin-top: 0.5rem;
-    }
-    
-    .rating-count {
-        font-size: 0.9rem;
-        color: var(--neutral-500);
-        margin-top: 0.25rem;
-    }
-    
-    .btn-rate {
-        background-color: var(--warning-color);
-        color: white;
-        border-radius: 50px;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-        transition: all var(--transition-base);
-        border: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .btn-rate:hover {
-        background-color: #e69009;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-    }
-    
-    .rate-dropdown {
-        min-width: 350px;
-        border-radius: var(--card-border-radius);
-        border: none;
-        overflow: hidden;
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-        padding: 0;
-    }
-    
-    .rate-dropdown-header {
-        background: var(--primary-gradient);
-        color: white;
-        padding: var(--spacing-md);
-        text-align: center;
-    }
-    
-    .rate-form {
-        padding: var(--spacing-lg);
-    }
-    
-    .rate-value-display {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: var(--spacing-md);
-    }
-    
-    .rate-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-    }
-    
-    .rate-max {
-        font-size: 1.25rem;
-        color: var(--neutral-500);
-    }
-    
-    .btn-submit-rating {
-        background-color: var(--primary-light);
-        border: none;
-        border-radius: 50px;
-        padding: 0.75rem 0;
-        font-weight: 600;
-        font-size: 1.1rem;
-        transition: all var(--transition-base);
-    }
-    
-    .btn-submit-rating:hover {
-        background-color: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(31, 93, 148, 0.3);
-    }
-
-    /* Properties Section */
-    .properties-section {
-        margin-bottom: var(--spacing-xl);
-    }
-    
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: var(--spacing-md);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .section-title i {
-        color: var(--accent-color);
-    }
-    
-    .properties-carousel {
-        border-radius: var(--card-border-radius);
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    }
-    
-    .carousel-inner {
-        border-radius: var(--card-border-radius);
-    }
-    
-    .property-link {
-        display: block;
-        position: relative;
-        overflow: hidden;
+        justify-content: flex-start;
     }
     
     .property-image {
-        height: 450px;
-        object-fit: cover;
+        height: 400px;
+    }
+
+    .chart-img-large {
+        max-height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --spacing-xl: 2rem;
+        --spacing-lg: 1.5rem;
+        --spacing-md: 1rem;
+    }
+    
+    .profile-header {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+    
+    .profile-avatar-wrapper {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .profile-title {
+        font-size: 1.75rem;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+        gap: var(--spacing-sm);
         width: 100%;
-        transition: transform var(--transition-slow);
+        max-width: 300px;
+        margin: var(--spacing-md) auto var(--spacing-lg);
     }
     
-    .property-link:hover .property-image {
-        transform: scale(1.05);
+    .btn-profile-action {
+        width: 100%;
+        justify-content: center;
     }
     
-    .carousel-caption {
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4), transparent);
-        border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
-        text-align: left;
-        padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
-        bottom: 0;
-        left: 0;
-        right: 0;
+    .property-image {
+        height: 350px;
+    }
+    
+    .chart-image-wrapper {
+        min-height: 350px;
+    }
+    
+    .chart-img-large {
+        max-height: 400px;
+    }
+    
+    .chart-switcher {
+        flex-wrap: wrap;
+    }
+    
+    .chart-switcher .btn {
+        flex: 1 0 calc(50% - 0.5rem);
+        margin-bottom: 0.5rem;
+    }
+    
+    .chart-switcher .btn.active::after {
+        width: 20px;
+    }
+    
+    .rate-dropdown {
+        min-width: 300px;
+    }
+
+    .carousel-caption h5 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-header {
+        padding: var(--spacing-md);
+    }
+    
+    .profile-body {
+        padding: var(--spacing-md);
+    }
+    
+    .profile-avatar-wrapper {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .profile-avatar-icon {
+        font-size: 3rem;
+    }
+    
+    .property-image {
+        height: 250px;
     }
     
     .carousel-caption h5 {
-        font-weight: 700;
-        font-size: 1.5rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-    
-    .carousel-caption p {
-        opacity: 0.9;
-        margin-top: 0.5rem;
+        font-size: 1.25rem;
     }
     
     .carousel-control-prev, 
     .carousel-control-next {
-        width: 50px;
-        height: 50px;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        opacity: 0.7;
-        transition: all var(--transition-base);
-    }
-    
-    .carousel-control-prev {
-        left: 20px;
-    }
-    
-    .carousel-control-next {
-        right: 20px;
-    }
-    
-    .carousel-control-prev:hover, 
-    .carousel-control-next:hover {
-        background-color: white;
-        opacity: 1;
-        transform: translateY(-50%) scale(1.1);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .carousel-control-prev-icon, 
-    .carousel-control-next-icon {
-        filter: invert(1) grayscale(100%);
-    }
-
-    /* Analytics Section */
-    .analytics-section {
-        margin-bottom: var(--spacing-xl);
-    }
-    
-    .chart-container {
-        background-color: white;
-        border-radius: var(--card-border-radius);
-        box-shadow: var(--card-shadow);
-        overflow: hidden;
+        width: 40px;
+        height: 40px;
     }
     
     .chart-image-wrapper {
-        width: 100%;
-        min-height: 500px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--neutral-50);
-        padding: var(--spacing-md);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .chart-image-wrapper::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: var(--primary-gradient);
+        min-height: 250px;
     }
     
     .chart-img-large {
-        max-width: 100%;
-        max-height: 600px;
-        height: auto;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        transition: all var(--transition-base);
+        max-height: 300px;
     }
     
+    .rating-score {
+        font-size: 2.5rem;
+    }
+
     .chart-switcher {
-        display: flex;
-        background-color: var(--neutral-100);
-        padding: var(--spacing-sm);
-        border-top: 1px solid var(--neutral-200);
+        flex-direction: column;
+        gap: var(--spacing-xs);
     }
     
     .chart-switcher .btn {
-        flex: 1;
-        padding: 0.75rem;
-        border-radius: var(--btn-border-radius);
-        font-weight: 600;
-        transition: all var(--transition-base);
-    }
-    
-    .chart-switcher .btn:not(:last-child) {
-        margin-right: var(--spacing-xs);
-    }
-    
-    .chart-switcher .btn.active {
-        position: relative;
-        background-color: var(--primary-light);
-        color: white;
-    }
-    
-    .chart-switcher .btn:hover:not(.active) {
-        background-color: var(--neutral-200);
+        margin-right: 0 !important;
+        flex: 1 0 100%;
     }
     
     .chart-switcher .btn.active::after {
-        content: "";
-        position: absolute;
-        bottom: -0.25rem;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 30px;
-        height: 4px;
-        background-color: var(--accent-color);
-        border-radius: 2px;
+        display: none;
     }
 
-    /* Responsive Styles */
-    @media (max-width: 1200px) {
-        :root {
-            --spacing-xl: 2.5rem;
-        }
-        
-        .profile-body {
-            padding: var(--spacing-lg);
-        }
-    }
-    
-    @media (max-width: 992px) {
-        .profile-title {
-            font-size: 2rem;
-        }
-        
-        .profile-avatar-wrapper {
-            width: 140px;
-            height: 140px;
-        }
-        
-        .rating-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: var(--spacing-md);
-        }
-        
-        .rating-controls {
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-        }
-        
-        .property-image {
-            height: 400px;
-        }
-    }
-    
-    @media (max-width: 768px) {
-        :root {
-            --spacing-xl: 2rem;
-            --spacing-lg: 1.5rem;
-            --spacing-md: 1rem;
-        }
-        
-        .profile-header {
-            padding: var(--spacing-lg) var(--spacing-md);
-        }
-        
-        .profile-avatar-wrapper {
-            width: 120px;
-            height: 120px;
-        }
-        
-        .profile-title {
-            font-size: 1.75rem;
-        }
-        
-        .profile-actions {
-            flex-direction: column;
-            gap: var(--spacing-sm);
-            width: 100%;
-            max-width: 300px;
-            margin: 0 auto var(--spacing-lg);
-        }
-        
-        .btn-profile-action {
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .property-image {
-            height: 300px;
-        }
-        
-        .chart-image-wrapper {
-            min-height: 350px;
-        }
-        
-        .chart-img-large {
-            max-height: 400px;
-        }
-        
-        .chart-switcher {
-            flex-direction: column;
-            gap: var(--spacing-xs);
-        }
-        
-        .chart-switcher .btn {
-            margin-right: 0 !important;
-        }
-        
-        .chart-switcher .btn.active::after {
-            display: none;
-        }
-        
-        .rate-dropdown {
-            min-width: 300px;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .profile-header {
-            padding: var(--spacing-md);
-        }
-        
-        .profile-body {
-            padding: var(--spacing-md);
-        }
-        
-        .profile-avatar-wrapper {
-            width: 100px;
-            height: 100px;
-        }
-        
-        .profile-avatar-icon {
-            font-size: 3rem;
-        }
-        
-        .property-image {
-            height: 250px;
-        }
-        
-        .carousel-caption h5 {
-            font-size: 1.25rem;
-        }
-        
-        .carousel-control-prev, 
-        .carousel-control-next {
-            width: 40px;
-            height: 40px;
-        }
-        
-        .chart-image-wrapper {
-            min-height: 250px;
-        }
-        
-        .chart-img-large {
-            max-height: 300px;
-        }
-        
-        .rating-score {
-            font-size: 2.5rem;
-        }
+    .profile-actions form,
+    .profile-actions button {
+        width: 100%;
     }
 
-    /* Animation Keyframes */
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
+    .premium-btn {
+        min-width: 100%;
     }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    @keyframes slideInFromBottom {
-        from { transform: translateY(20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
+}
 {% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center py-5">
-    <div class="card profile-card shadow-lg border-0">
-        {% if messages %}
-        <div class="alert-container p-4">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-pill shadow-sm">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <div class="profile-header">
-            <div class="profile-header-content">
-                <div class="profile-avatar-wrapper">
-                    {% if profile_user.profilePicture %}
-                        <img src="{{ profile_user.profile.avatar.url }}" 
-                             alt="{{ profile_user.personAccount.firstName }}'s profile picture"
-                             class="profile-avatar img-fluid">
-                    {% else %}
-                        <div class="profile-avatar bg-white d-flex align-items-center justify-content-center">
-                            <i class="bi bi-person-circle profile-avatar-icon text-primary"></i>
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <h1 class="profile-title mb-2">
-                    {% if profile_user.userType.nameUserType == 'Natural Person' %}
-                        {{ profile_user.personAccount.firstName }} {{ profile_user.personAccount.lastName }}
-                    {% else %}
-                        {{ profile_user.bussinessAccount.nameBussiness }}
-                    {% endif %}
-                </h1>
-                
-                <div class="mt-2">
-                    <span class="profile-badge 
-                            {% if profile_user.userType.nameUserType == 'Natural Person' %}
-                                badge-person
-                            {% else %}
-                                badge-business
-                            {% endif %}">
-                        <i class="bi {% if profile_user.userType.nameUserType == 'Natural Person' %}bi-person{% else %}bi-building{% endif %} me-1"></i>
-                        {% if profile_user.userType.nameUserType == 'Natural Person' %}
-                            Natural Person
-                        {% else %}
-                            Business
-                        {% endif %}
-                    </span>
-                </div>
-                
-                <p class="profile-subtitle mt-3">
-                    <i class="bi bi-calendar-check me-2"></i>
-                    Member since {{ profile_user.creationDate|date:"F Y" }}
-                </p>
+<div class="container profile-container py-4 py-md-5">
+    <div class="profile-wrapper">
+        <div class="profile-card shadow-lg">
+            {% if messages %}
+            <div class="alert-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-pill shadow-sm">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
             </div>
-        </div>
-
-        <!-- Profile Action Buttons -->
-        <div class="profile-actions mt-4">
-            {% if request.user == profile_user.user %}
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="edit_profile">
-                <button type="submit" class="btn btn-profile-action btn-edit-profile">
-                    <i class="bi bi-pencil"></i>
-                    Edit Profile
-                </button>
-            </form>
             {% endif %}
-            
-            {% if not is_same_user and request.user.is_authenticated and request.user.account.role.nameRole == "Buyer" %}
-            <button onclick="openChatWith('{{ profile_user.user.username }}')" class="btn btn-profile-action btn-chat">
-                <i class="bi bi-chat-dots"></i>
-                Chat with {{ profile_user.personAccount.firstName|default:profile_user.user.username }}
-            </button>
-            {% endif %}
-        </div>
-
-        <!-- Profile Body -->
-        <div class="profile-body">
-            <!-- Rating Section -->
-            <div class="rating-section">
-                <div class="rating-header">
-                    <div class="current-rating">
-                        <div class="rating-score">
-                            {{ profile_user.rating|default:"0.0"|floatformat:2 }}
-                            <div class="stars-container">
-                                {% with rating=profile_user.rating|default:0 %}
-                                    {% for i in "12345" %}
-                                        {% if forloop.counter <= rating %}
-                                            <i class="bi bi-star-fill fs-3 text-warning"></i>
-                                        {% elif forloop.counter < rating|add:0.5 %}
-                                            <i class="bi bi-star-half fs-3 text-warning"></i>
-                                        {% else %}
-                                            <i class="bi bi-star fs-3 text-warning"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endwith %}
+    
+            <div class="profile-header">
+                <div class="profile-header-content">
+                    <div class="profile-avatar-wrapper">
+                        {% if profile_user.profilePicture %}
+                            <img src="{{ profile_user.profile.avatar.url }}" 
+                                 alt="{{ profile_user.personAccount.firstName }}'s profile picture"
+                                 class="profile-avatar img-fluid">
+                        {% else %}
+                            <div class="profile-avatar bg-white d-flex align-items-center justify-content-center">
+                                <i class="bi bi-person-circle profile-avatar-icon text-primary"></i>
                             </div>
-                        </div>
-                        <div class="rating-count">
-                            <span>
-                                {{ profile_user.rating_count|default:0 }} {{ profile_user.rating_count|default:0|pluralize:"rating,ratings" }}
-                            </span>
-                        </div>
+                        {% endif %}
                     </div>
                     
-                    <div class="rating-controls">
-                        {% if not is_same_user and request.user.is_authenticated %}
-                            <div class="dropdown">
-                                <button class="btn btn-rate" 
-                                        type="button" 
-                                        data-bs-toggle="dropdown"
-                                        data-bs-auto-close="outside"
-                                        aria-expanded="false">
+                    <h1 class="profile-title mb-2">
+                        {% if profile_user.userType.nameUserType == 'Natural Person' %}
+                            {{ profile_user.personAccount.firstName }} {{ profile_user.personAccount.lastName }}
+                        {% else %}
+                            {{ profile_user.bussinessAccount.nameBussiness }}
+                        {% endif %}
+                    </h1>
+                    
+                    <div class="d-flex flex-column align-items-center gap-2 mt-3">
+                        <span class="profile-badge 
+                                {% if profile_user.userType.nameUserType == 'Natural Person' %}
+                                    badge-person
+                                {% else %}
+                                    badge-business
+                                {% endif %}">
+                            <i class="bi {% if profile_user.userType.nameUserType == 'Natural Person' %}bi-person{% else %}bi-building{% endif %}"></i>
+                            {% if profile_user.userType.nameUserType == 'Natural Person' %}
+                                Natural Person
+                            {% else %}
+                                Business
+                            {% endif %}
+                        </span>
+    
+                        {% if profile_subscription %}
+                            {% if is_same_user %}
+                                <div class="dropdown mt-3">
+                                    <button class="btn premium-btn dropdown-toggle" 
+                                            type="button" id="premiumDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-star-fill"></i>
+                                        <span>Premium member</span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="premiumDropdown">
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="{% url 'cancel_subscription' %}">
+                                                <i class="bi bi-x-circle me-2"></i> Cancel Subscription
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            {% else %}
+                                <button class="btn premium-btn mt-3" type="button" disabled>
                                     <i class="bi bi-star-fill"></i>
-                                    Rate This {{ profile_user.userType.nameUserType }}
+                                    <span>Premium member</span>
                                 </button>
-                                <div class="dropdown-menu rate-dropdown">
-                                    <div class="rate-dropdown-header">
-                                        <h4 class="m-0 fw-bold">Rate {{ profile_user.personAccount.firstName|default:profile_user.user.username }}</h4>
-                                    </div>
-                                    <div class="rate-form">
-                                        <form method="post" class="rating-form">
-                                            {% csrf_token %}
-                                            {% if error_message %}
-                                                <div class="alert alert-danger rounded-3">{{ error_message }}</div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="profile-actions">
+                        {% if request.user == profile_user.user %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="edit_profile">
+                            <button type="submit" class="btn btn-profile-action btn-edit-profile">
+                                <i class="bi bi-pencil"></i>
+                                Edit Profile
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if not is_same_user and request.user.is_authenticated and request.user.account.role.nameRole == "Buyer" %}
+                        <button onclick="openChatWith('{{ profile_user.user.username }}')" class="btn btn-profile-action btn-chat">
+                            <i class="bi bi-chat-dots"></i>
+                            Chat with {{ profile_user.personAccount.firstName|default:profile_user.user.username }}
+                        </button>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="profile-subtitle">
+                        <i class="bi bi-calendar-check"></i>
+                        Member since {{ profile_user.creationDate|date:"F Y" }}
+                    </p>
+                </div>
+            </div>
+    
+            <!-- Profile Body -->
+            <div class="profile-body">
+                <!-- Rating Section -->
+                <div class="rating-section">
+                    <div class="rating-header">
+                        <div class="current-rating">
+                            <div class="rating-score">
+                                {{ profile_user.rating|default:"0.0"|floatformat:2 }}
+                                <div class="stars-container">
+                                    {% with rating=profile_user.rating|default:0 %}
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= rating %}
+                                                <i class="bi bi-star-fill fs-3 text-warning"></i>
+                                            {% elif forloop.counter < rating|add:0.5 %}
+                                                <i class="bi bi-star-half fs-3 text-warning"></i>
+                                            {% else %}
+                                                <i class="bi bi-star fs-3 text-warning"></i>
                                             {% endif %}
-                                            <div class="text-center mb-4">
-                                                <p class="text-muted mb-3">How was your experience?</p>
-                                                <div class="star-rating-wrapper">
-                                                    <div class="star-rating">
-                                                        {% for star in "54321" %}
-                                                        <input type="radio" id="star{{ star }}" name="rating" value="{{ star }}" required />
-                                                        <label for="star{{ star }}" title="{{ star }} stars">&#9733;</label>
-                                                        {% endfor %}
-                                                    </div>
-                                                </div>
-                                                <div class="rate-value-display">
-                                                    <span class="rate-value" id="ratingValue">0</span>
-                                                    <span class="rate-max">/5</span>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" name="action" value="rate">
-                                            <button type="submit" class="btn btn-submit-rating w-100">
-                                                <i class="bi bi-send-check-fill me-2"></i>
-                                                Submit Rating
-                                            </button>
-                                        </form>
-                                    </div>
+                                        {% endfor %}
+                                    {% endwith %}
                                 </div>
                             </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Properties Section -->
-            {% if profile_user.propertys.all %}
-            <section class="properties-section">
-                <h2 class="section-title">
-                    <i class="bi bi-house-heart"></i>
-                    Active Properties
-                </h2>
-                
-                <div id="propertiesCarousel" class="carousel slide properties-carousel" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        {% for listing in profile_user.propertys.all %}
-                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <a href="{% url 'property_info' listing.id %}" class="property-link">
-                                    <img src="{{ listing.imagenes.first.image.url }}" 
-                                         class="property-image" 
-                                         alt="{{ listing.title }}">
-                                    <div class="carousel-caption">
-                                        <h5>{{ listing.title }}</h5>
-                                        <p>{{ listing.description|truncatechars:120 }}</p>
-                                    </div>
-                                </a>
+                            <div class="rating-count">
+                                <span>
+                                    {{ profile_user.rating_count|default:0 }} {{ profile_user.rating_count|default:0|pluralize:"rating,ratings" }}
+                                </span>
                             </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <button class="carousel-control-prev" type="button" data-bs-target="#propertiesCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#propertiesCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-            </section>
-            {% endif %}
-
-            <!-- Statistics Section -->
-            {% if is_same_user and profile_user.role.nameRole == "Seller" %}
-            <section class="analytics-section">
-                <h2 class="section-title">
-                    <i class="bi bi-graph-up"></i>
-                    Performance Analytics
-                </h2>
-                
-                <div class="chart-container">
-                    <div class="chart-image-wrapper">
-                        <img id="active-chart-img"
-                             src="data:image/png;base64,{{ graphic_year }}"
-                             class="chart-img-large"
-                             alt="Annual Statistics">
-                    </div>
-                    
-                    <div class="chart-switcher" role="group">
-                        <button type="button"
-                                class="btn btn-outline-primary active"
-                                data-chart="yearly"
-                                onclick="switchChart('yearly')">
-                            <i class="bi bi-calendar3 me-1"></i> 
-                            Annual Overview
-                        </button>
-                        <button type="button"
-                                class="btn btn-outline-primary"
-                                data-chart="monthly"
-                                onclick="switchChart('monthly')">
-                            <i class="bi bi-calendar-month me-1"></i> 
-                            Monthly Analysis
-                        </button>
-                        <button type="button"
-                                class="btn btn-outline-primary"
-                                data-chart="weekly"
-                                onclick="switchChart('weekly')">
-                            <i class="bi bi-calendar-week me-1"></i> 
-                            Weekly Trends
-                        </button>
+                        </div>
+                        
+                        <div class="rating-controls">
+                            {% if not is_same_user and request.user.is_authenticated %}
+                                <div class="dropdown">
+                                    <button class="btn btn-rate" 
+                                            type="button" 
+                                            data-bs-toggle="dropdown"
+                                            data-bs-auto-close="outside"
+                                            aria-expanded="false">
+                                        <i class="bi bi-star-fill"></i>
+                                        Rate This {{ profile_user.userType.nameUserType }}
+                                    </button>
+                                    <div class="dropdown-menu rate-dropdown">
+                                        <div class="rate-dropdown-header">
+                                            <h4>Rate {{ profile_user.personAccount.firstName|default:profile_user.user.username }}</h4>
+                                        </div>
+                                        <div class="rate-form">
+                                            <form method="post" class="rating-form">
+                                                {% csrf_token %}
+                                                {% if error_message %}
+                                                    <div class="alert alert-danger rounded-3">{{ error_message }}</div>
+                                                {% endif %}
+                                                <div class="text-center mb-4">
+                                                    <p class="text-muted mb-3">How was your experience?</p>
+                                                    <div class="star-rating-wrapper">
+                                                        <div class="star-rating">
+                                                            {% for star in "54321" %}
+                                                            <input type="radio" id="star{{ star }}" name="rating" value="{{ star }}" required />
+                                                            <label for="star{{ star }}" title="{{ star }} stars">&#9733;</label>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="rate-value-display">
+                                                        <span class="rate-value" id="ratingValue">0</span>
+                                                        <span class="rate-max">/5</span>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" name="action" value="rate">
+                                                <button type="submit" class="btn btn-submit-rating w-100">
+                                                    <i class="bi bi-send-check-fill me-2"></i>
+                                                    Submit Rating
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            </section>
-            {% endif %}
+    
+                <!-- Properties Section -->
+                {% if profile_user.propertys.all %}
+                <section class="properties-section">
+                    <h2 class="section-title">
+                        <i class="bi bi-house-heart"></i>
+                        Active Properties
+                    </h2>
+                    
+                    <div id="propertiesCarousel" class="carousel slide properties-carousel" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for listing in profile_user.propertys.all %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <a href="{% url 'property_info' listing.id %}" class="property-link">
+                                        <img src="{{ listing.imagenes.first.image.url }}" 
+                                             class="property-image" 
+                                             alt="{{ listing.title }}">
+                                        <div class="carousel-caption">
+                                            <h5>{{ listing.title }}</h5>
+                                            <p>{{ listing.description|truncatechars:120 }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <button class="carousel-control-prev" type="button" data-bs-target="#propertiesCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#propertiesCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </section>
+                {% endif %}
+    
+                <!-- Statistics Section -->
+                {% if is_same_user and profile_user.role.nameRole == "Seller" %}
+                <section class="analytics-section">
+                    <h2 class="section-title">
+                        <i class="bi bi-graph-up"></i>
+                        Performance Analytics
+                    </h2>
+                    
+                    <div class="chart-container">
+                        <div class="chart-image-wrapper">
+                            <img id="active-chart-img"
+                                 src="data:image/png;base64,{{ graphic_year }}"
+                                 class="chart-img-large"
+                                 alt="Annual Statistics">
+                        </div>
+                        
+                        <div class="chart-switcher" role="group">
+                            <button type="button"
+                                    class="btn btn-outline-primary active"
+                                    data-chart="yearly"
+                                    onclick="switchChart('yearly')">
+                                <i class="bi bi-calendar3 me-1"></i> 
+                                Annual Overview
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    data-chart="monthly"
+                                    onclick="switchChart('monthly')">
+                                <i class="bi bi-calendar-month me-1"></i> 
+                                Monthly Analysis
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    data-chart="weekly"
+                                    onclick="switchChart('weekly')">
+                                <i class="bi bi-calendar-week me-1"></i> 
+                                Weekly Trends
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-// Star Rating Functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle star rating input change
+    // Star Rating Functionality
     const ratingInputs = document.querySelectorAll('.star-rating input[type="radio"]');
     const ratingValue = document.getElementById('ratingValue');
     
@@ -1041,6 +1431,46 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+    
+    
+    // Add smooth scroll behavior
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add entrance animations
+    const profileHeader = document.querySelector('.profile-header');
+    const profileBody = document.querySelector('.profile-body');
+    
+    if (profileHeader) {
+        profileHeader.style.opacity = '0';
+        profileHeader.style.transform = 'translateY(-10px)';
+        setTimeout(() => {
+            profileHeader.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            profileHeader.style.opacity = '1';
+            profileHeader.style.transform = 'translateY(0)';
+        }, 100);
+    }
+    
+    if (profileBody) {
+        profileBody.style.opacity = '0';
+        setTimeout(() => {
+            profileBody.style.transition = 'opacity 0.5s ease 0.2s';
+            profileBody.style.opacity = '1';
+        }, 300);
+    }
+    
+    // Add hover effects for buttons
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+    });
 });
 </script>
 {% endblock %}
