@@ -42,13 +42,13 @@ class Favourites(models.Model):
         unique_together = ('associatedAccount', 'property') 
 
 class AppointmentStatus(models.Model):
-    name = models.CharField(max_length=15, blank = False, null = False)
+    name = models.CharField(max_length=30, blank = False, null = False)
 
 class Appointment(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name = 'appointments')
     requester = models.ForeignKey(Account, on_delete=models.CASCADE)
     date = models.DateField()
-    status = models.ForeignKey(AppointmentStatus, on_delete = models.CASCADE, default=2)
+    status = models.ForeignKey(AppointmentStatus, on_delete = models.CASCADE, default=3)
 
 class Visit(models.Model):
     visited_user = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='visits')
