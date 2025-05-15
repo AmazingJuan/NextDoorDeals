@@ -67,6 +67,44 @@
         --space-24: 6rem;    /* 96px */
     }
 
+    /* Page Layout */
+    .property-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-6);
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: var(--space-6) var(--space-4);
+    }
+
+    @media (min-width: 992px) {
+        .property-container {
+            flex-direction: row;
+            padding: var(--space-8) var(--space-6);
+            align-items: flex-start;
+        }
+    }
+
+    .gallery-section {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .details-section {
+        flex: 1;
+        min-width: 0;
+    }
+
+    @media (min-width: 992px) {
+        .gallery-section {
+            position: sticky;
+            top: var(--space-8);
+            max-height: calc(100vh - var(--space-16));
+            overflow-y: auto;
+            padding-right: var(--space-4);
+        }
+    }
+
     /* Gallery Styles */
     .gallery-container {
         position: relative;
@@ -74,13 +112,28 @@
         overflow: hidden;
         box-shadow: var(--shadow-lg);
         background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.05) 100%);
-        margin-bottom: var(--space-8);
+        margin-bottom: var(--space-6);
+        height: 0;
+        padding-bottom: 75%; /* 4:3 aspect ratio */
+    }
+
+    @media (min-width: 992px) {
+        .gallery-container {
+            padding-bottom: 67%; /* Slightly taller for desktop */
+        }
+    }
+
+    .carousel, .carousel-inner, .carousel-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
     }
 
     .gallery-image {
         width: 100%;
-        height: 70vh;
-        max-height: 650px;
+        height: 100%;
         object-fit: cover;
         transition: transform var(--transition-smooth);
     }
@@ -161,31 +214,51 @@
         transform: translateY(-50%) scale(1.1);
     }
 
-    /* Property Details Card */
-    .property-card {
-        border: none;
-        border-radius: var(--radius-2xl);
+    /* Thumbnail Gallery */
+    .thumbnail-gallery {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-3);
+        margin-bottom: var(--space-6);
+    }
+
+    .thumbnail {
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        background: white;
-        box-shadow: var(--shadow-md);
-        transition: transform var(--transition-base), box-shadow var(--transition-base);
+        cursor: pointer;
+        position: relative;
+        height: 0;
+        padding-bottom: 75%;
+    }
+
+    .thumbnail img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
         height: 100%;
+        object-fit: cover;
+        transition: transform var(--transition-base);
     }
 
-    .property-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-lg);
+    .thumbnail:hover img {
+        transform: scale(1.05);
     }
 
-    .card-header {
+    .thumbnail.active {
+        box-shadow: 0 0 0 3px var(--color-primary);
+    }
+
+    /* Property Details Card */
+    .property-header {
         background: linear-gradient(120deg, var(--color-primary), var(--color-primary-light));
         padding: var(--space-8);
-        border: none;
+        border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
         position: relative;
         overflow: hidden;
     }
 
-    .card-header::before {
+    .property-header::before {
         content: '';
         position: absolute;
         top: 0;
@@ -197,7 +270,7 @@
 
     .property-title {
         color: white;
-        font-size: 2.5rem;
+        font-size: 2.25rem;
         font-weight: 800;
         margin-bottom: var(--space-4);
         line-height: 1.2;
@@ -217,8 +290,11 @@
         gap: var(--space-2);
     }
 
-    .card-body {
+    .property-content {
+        background: white;
+        border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
         padding: var(--space-8);
+        box-shadow: var(--shadow-md);
     }
 
     /* Property Badges */
@@ -618,12 +694,8 @@
             font-size: 2rem;
         }
 
-        .gallery-image {
-            height: 50vh;
-        }
-
-        .card-header,
-        .card-body {
+        .property-header,
+        .property-content {
             padding: var(--space-6);
         }
 
@@ -633,19 +705,15 @@
     }
 
     @media (max-width: 768px) {
-        .gallery-image {
-            height: 40vh;
-        }
-
         .property-title {
             font-size: 1.75rem;
         }
 
-        .card-header {
+        .property-header {
             padding: var(--space-4);
         }
 
-        .card-body {
+        .property-content {
             padding: var(--space-4);
         }
 
@@ -664,10 +732,6 @@
     }
 
     @media (max-width: 576px) {
-        .gallery-image {
-            height: 35vh;
-        }
-
         .gallery-controls {
             padding: var(--space-3);
         }
@@ -690,9 +754,10 @@
 
 {% block content %}
 <div class="container py-5">
-    <!-- Property Gallery Section -->
-    <div class="row justify-content-center mb-6">
-        <div class="col-12 col-xl-10">
+    <div class="property-container">
+        <!-- Left Column: Property Images -->
+        <div class="gallery-section">
+            <!-- Main Gallery -->
             <div class="gallery-container">
                 <div id="propertyCarousel" class="carousel slide" data-bs-ride="false">
                     <div class="carousel-inner">
@@ -726,292 +791,250 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Thumbnail Gallery -->
+            <div class="thumbnail-gallery">
+                {% for image in property.imagenes.all|slice:":4" %}
+                <div class="thumbnail {% if forloop.first %}active{% endif %}" data-bs-target="#propertyCarousel" data-bs-slide-to="{{ forloop.counter0 }}">
+                    <img src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}" loading="lazy">
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Map Section (Mobile Only) -->
+            <div class="d-block d-lg-none">
+                <h3 class="section-title">
+                    <i class="bi bi-geo-alt"></i>Location
+                </h3>
+                <div id="property-map-mobile" class="map-container w-100 mb-5"></div>
+            </div>
         </div>
-    </div>
 
-    <!-- Property Details Section -->
-    <div class="row g-5 justify-content-center">
-        <!-- Property Card -->
-        <div class="col-12 col-lg-7">
-            <div class="property-card h-100 d-flex flex-column">
-                <header class="card-header position-relative">
-                    <h1 class="property-title mb-4">{{ property.title }}</h1>
-                    <div class="d-flex align-items-center gap-3 flex-wrap">
-                        <span class="location-badge">
-                            <i class="bi bi-geo-alt-fill"></i>
-                            {{ property.location.district.name }} - {{ property.location.district.city.name }}
-                        </span>
-                        {% if property.associatedAccount == request.user.account %}
-                        <a href="{% url 'editProperty' property.id %}" class="btn btn-sm px-4 py-2 ms-auto" 
-                           style="background-color: rgba(255,255,255,0.2); color: white; border-radius: 2rem; backdrop-filter: blur(5px);">
-                            <i class="bi bi-pencil-square me-2"></i> Edit Property
-                        </a>
-                        {% endif %}
+        <!-- Right Column: Property Details -->
+        <div class="details-section">
+            <div class="property-header">
+                <h1 class="property-title">{{ property.title }}</h1>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <span class="location-badge">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        {{ property.location.district.name }} - {{ property.location.district.city.name }}
+                    </span>
+                    {% if property.associatedAccount == request.user.account %}
+                    <a href="{% url 'editProperty' property.id %}" class="btn btn-sm px-4 py-2 ms-auto" 
+                       style="background-color: rgba(255,255,255,0.2); color: white; border-radius: 2rem; backdrop-filter: blur(5px);">
+                        <i class="bi bi-pencil-square me-2"></i> Edit Property
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="property-content">
+                <!-- Property Badges -->
+                <div class="badge-container">
+                    <span class="property-badge badge-price">
+                        <i class="bi bi-tag-fill"></i>${{ property.price|intcomma }}
+                    </span>
+                    <span class="property-badge badge-ses">
+                        <i class="bi bi-star-fill"></i>SES Level {{ property.SES }}
+                    </span>
+                    <span class="property-badge badge-type">
+                        <i class="bi bi-house-door-fill"></i>{{ pType }}
+                    </span>
+                </div>
+
+                <!-- Property Description -->
+                <div class="description-container">
+                    <h3 class="section-title">
+                        <i class="bi bi-file-text"></i>Property Description
+                    </h3>
+                    <div class="description-box">
+                        <p class="mb-0 lh-lg">{{ property.description }}</p>
                     </div>
-                </header>
+                </div>
 
-                <div class="card-body d-flex flex-column flex-grow-1">
-                    <!-- Property Badges -->
-                    <div class="badge-container">
-                        <span class="property-badge badge-price">
-                            <i class="bi bi-tag-fill"></i>${{ property.price|intcomma }}
-                        </span>
-                        <span class="property-badge badge-ses">
-                            <i class="bi bi-star-fill"></i>SES Level {{ property.SES }}
-                        </span>
-                        <span class="property-badge badge-type">
-                            <i class="bi bi-house-door-fill"></i>{{ pType }}
-                        </span>
-                    </div>
-
-                    <!-- Property Description -->
-                    <div class="description-container">
+                <!-- Property Information -->
+                <div class="row g-5 mt-2">
+                    <!-- Map Section (Desktop Only) -->
+                    <div class="col-12 col-md-7 d-none d-lg-block">
                         <h3 class="section-title">
-                            <i class="bi bi-file-text"></i>Property Description
+                            <i class="bi bi-geo-alt"></i>Location
                         </h3>
-                        <div class="description-box">
-                            <p class="mb-0 lh-lg">{{ property.description }}</p>
-                        </div>
+                        <div id="property-map" class="map-container w-100"></div>
                     </div>
-
-                    <!-- Property Information -->
-                    <div class="row g-5 mt-2">
-                        <div class="col-12 col-md-7">
-                            <h3 class="section-title">
-                                <i class="bi bi-geo-alt"></i>Location
-                            </h3>
-                            <div id="property-map" class="map-container w-100"></div>
-                            <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initPropertyMap" async defer></script>
-                            <script>
-                                function initPropertyMap() {
-                                    const lat = {{ property.location.coordinates.latitude }};
-                                    const lng = {{ property.location.coordinates.longitude }};
-                                    const center = {lat: lat, lng: lng};
-                                    
-                                    const mapOptions = {
-                                        center: center,
-                                        zoom: 15,
-                                        mapTypeControl: false,
-                                        streetViewControl: false,
-                                        fullscreenControl: true,
-                                        zoomControl: true,
-                                        styles: [
-                                            {
-                                                featureType: "poi",
-                                                elementType: "labels",
-                                                stylers: [{ visibility: "off" }]
-                                            },
-                                            {
-                                                featureType: "transit",
-                                                stylers: [{ visibility: "off" }]
-                                            },
-                                            {
-                                                featureType: "water",
-                                                elementType: "geometry",
-                                                stylers: [{ color: "#a2d9f2" }]
-                                            }
-                                        ]
-                                    };
-                                    
-                                    const map = new google.maps.Map(
-                                        document.getElementById('property-map'),
-                                        mapOptions
-                                    );
-                                    
-                                    const marker = new google.maps.Marker({
-                                        position: center,
-                                        map: map,
-                                        animation: google.maps.Animation.DROP,
-                                        icon: {
-                                            url: "https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2_hdpi.png",
-                                            scaledSize: new google.maps.Size(38, 38)
-                                        }
-                                    });
-                                    
-                                    const infoWindow = new google.maps.InfoWindow({
-                                        content: '<div style="padding: 8px; max-width: 200px;"><strong>{{ property.title }}</strong><p style="margin: 4px 0 0;">{{ property.location.district.name }}</p></div>'
-                                    });
-                                    
-                                    marker.addListener('click', function() {
-                                        infoWindow.open(map, marker);
-                                    });
-                                }
-                            </script>
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <div class="d-flex flex-column h-100 justify-content-between">
-                                <div>
-                                    <h3 class="section-title">
-                                        <i class="bi bi-calendar-check"></i>Details
-                                    </h3>
-                                    <ul class="list-unstyled">
-                                        <li class="mb-3 d-flex align-items-center">
-                                            <i class="bi bi-calendar fs-5 me-3 text-primary"></i>
-                                            <span class="fw-semibold">Listed on:</span>
-                                            <span class="ms-2">{{ property.creationDate|date:"d M, Y" }}</span>
-                                        </li>
-                                        <li class="mb-3 d-flex align-items-start">
-                                            <i class="bi bi-person-circle fs-5 me-3 text-primary"></i>
-                                            <div>
-                                                <span class="fw-semibold">Listed by:</span>
-                                                <a href="{% url 'view_profile' username=property.associatedAccount.user.username %}" 
-                                                   class="ms-2 text-decoration-none text-primary">
-                                                   {{ property.associatedAccount.user }}
-                                                </a>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                
-                                {% if sessionActive %}
-                                <div class="action-buttons mt-auto">
-                                    {% if property.associatedAccount != request.user.account and request.user.account.role.nameRole == 'Buyer' %}
-                                    <div class="dropdown flex-fill">
-                                        <button type="button" 
-                                                class="btn-action btn-primary w-100 dropdown-toggle" 
-                                                data-bs-toggle="dropdown" 
-                                                aria-expanded="false">
-                                            <i class="bi bi-calendar2-check"></i>Schedule Appointment
-                                        </button>
-                                        <div class="dropdown-menu p-4">
-                                            <form method="post" id="appointmentForm" autocomplete="off">
-                                                <input type="hidden" name="action" value="appointment">
-                                                {% csrf_token %}
-                                                {{ date_form.media }}
-                                                <div class="mb-4">
-                                                    <label for="id_date" class="form-label fw-semibold">Select Date and Time</label>
-                                                    {{ date_form.date }}
-                                                </div>
-                                                <button type="submit" class="action-button w-100">
-                                                    <i class="bi bi-check-circle"></i>Confirm Appointment
-                                                </button>
-                                            </form>
+                    
+                    <div class="col-12 col-md-5">
+                        <div class="d-flex flex-column h-100 justify-content-between">
+                            <div>
+                                <h3 class="section-title">
+                                    <i class="bi bi-calendar-check"></i>Details
+                                </h3>
+                                <ul class="list-unstyled">
+                                    <li class="mb-3 d-flex align-items-center">
+                                        <i class="bi bi-calendar fs-5 me-3 text-primary"></i>
+                                        <span class="fw-semibold">Listed on:</span>
+                                        <span class="ms-2">{{ property.creationDate|date:"d M, Y" }}</span>
+                                    </li>
+                                    <li class="mb-3 d-flex align-items-start">
+                                        <i class="bi bi-person-circle fs-5 me-3 text-primary"></i>
+                                        <div>
+                                            <span class="fw-semibold">Listed by:</span>
+                                            <a href="{% url 'view_profile' username=property.associatedAccount.user.username %}" 
+                                               class="ms-2 text-decoration-none text-primary">
+                                               {{ property.associatedAccount.user }}
+                                            </a>
                                         </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            {% if sessionActive %}
+                            <div class="action-buttons mt-auto">
+                                {% if property.associatedAccount != request.user.account and request.user.account.role.nameRole == 'Buyer' %}
+                                <div class="dropdown flex-fill">
+                                    <button type="button" 
+                                            class="btn-action btn-primary w-100 dropdown-toggle" 
+                                            data-bs-toggle="dropdown" 
+                                            aria-expanded="false">
+                                        <i class="bi bi-calendar2-check"></i>Schedule Appointment
+                                    </button>
+                                    <div class="dropdown-menu p-4">
+                                        <form method="post" id="appointmentForm" autocomplete="off">
+                                            <input type="hidden" name="action" value="appointment">
+                                            {% csrf_token %}
+                                            {{ date_form.media }}
+                                            <div class="mb-4">
+                                                <label for="id_date" class="form-label fw-semibold">Select Date and Time</label>
+                                                {{ date_form.date }}
+                                            </div>
+                                            <button type="submit" class="action-button w-100">
+                                                <i class="bi bi-check-circle"></i>Confirm Appointment
+                                            </button>
+                                        </form>
                                     </div>
-                                    {% endif %}
-                                    
-                                    <form method="post" class="flex-fill">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="action" value="favourite">
-                                        <button type="submit" class="btn-action btn-outline-danger w-100">
-                                            <i class="bi bi-heart{% if not is_fav %}-fill{% endif %}"></i>
-                                            {% if is_fav %}Remove from Favorites{% else %}Add to Favorites{% endif %}
-                                        </button>
-                                    </form>
                                 </div>
                                 {% endif %}
+                                
+                                <form method="post" class="flex-fill">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="favourite">
+                                    <button type="submit" class="btn-action btn-outline-danger w-100">
+                                        <i class="bi bi-heart{% if not is_fav %}-fill{% endif %}"></i>
+                                        {% if is_fav %}Remove from Favorites{% else %}Add to Favorites{% endif %}
+                                    </button>
+                                </form>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Reviews Section -->
-    <div class="reviews-container">
-        <h2 class="reviews-title display-5 fw-bold">Property Reviews</h2>
-        
-        <div class="reviews-grid">
-            {% if property.reviews.all %}
-                {% for review in property.reviews.all %}
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="avatar-container">
-                            <a href="{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
-                                {% if review.user.profilePicture %}
-                                    <img src="{{ review.user.profilePicture.url }}" alt="{{ review.user.username }}" class="avatar-image">
-                                {% else %}
-                                    <div class="avatar-placeholder">
-                                        <i class="bi bi-person-fill"></i>
-                                    </div>
-                                {% endif %}
-                            </a>
-                        </div>
-                        <div class="review-info">
-                            <a href="{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
-                                <h5 class="review-author">
-                                    {% if review.reviewer.userType.nameUserType == 'Natural Person' %}
-                                        {{ review.reviewer.personAccount.firstName }} {{ review.reviewer.personAccount.lastName }}
-                                    {% else %}
-                                        {{review.reviewer.bussinessAccount.nameBussiness}}
-                                    {% endif %}
-                                </h5>
-                            </a>
-                            <p class="review-date">{{ review.created_at|date:"d M, Y" }}</p>
-                        </div>
-                    </div>
-                    <div class="rating">
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= review.rating %}
-                                <i class="bi bi-star-fill filled"></i>
-                            {% else %}
-                                <i class="bi bi-star"></i>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <p class="review-text">{{ review.comment }}</p>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-12">
-                    <div class="empty-reviews">
-                        <i class="bi bi-chat-square-text"></i>
-                        <h4 class="fw-bold mb-3">No Reviews Yet</h4>
-                        <p class="lead text-muted">Be the first to share your thoughts about this property.</p>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Add Review Section -->
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-8">
-                {% if sessionActive %}
-                <div class="review-form-card">
-                    <h3 class="text-center fw-bold mb-5">Share Your Experience</h3>
-                    <form method="post" action="" id="reviewForm">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="review">
-                        
-                        <div class="form-group">
-                            <label class="fw-bold mb-2">Your Rating</label>
-                            <div class="rating-selector">
-                                <input type="hidden" name="rating" id="selected-rating" value="0">
-                                <div class="stars">
-                                    <i class="bi bi-star rating-star" data-value="1"></i>
-                                    <i class="bi bi-star rating-star" data-value="2"></i>
-                                    <i class="bi bi-star rating-star" data-value="3"></i>
-                                    <i class="bi bi-star rating-star" data-value="4"></i>
-                                    <i class="bi bi-star rating-star" data-value="5"></i>
+            <!-- Reviews Section -->
+            <div class="reviews-container">
+                <h2 class="reviews-title display-5 fw-bold">Property Reviews</h2>
+                
+                <div class="reviews-grid">
+                    {% if property.reviews.all %}
+                        {% for review in property.reviews.all %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="avatar-container">
+                                    <a href="{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
+                                        {% if review.user.profilePicture %}
+                                            <img src="{{ review.user.profilePicture.url }}" alt="{{ review.user.username }}" class="avatar-image">
+                                        {% else %}
+                                            <div class="avatar-placeholder">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+                                        {% endif %}
+                                    </a>
                                 </div>
-                                <span class="rating-text">Select a rating</span>
+                                <div class="review-info">
+                                    <a href="{% url 'view_profile' username=review.reviewer.user %}" class="text-decoration-none">
+                                        <h5 class="review-author">
+                                            {% if review.reviewer.userType.nameUserType == 'Natural Person' %}
+                                                {{ review.reviewer.personAccount.firstName }} {{ review.reviewer.personAccount.lastName }}
+                                            {% else %}
+                                                {{review.reviewer.bussinessAccount.nameBussiness}}
+                                            {% endif %}
+                                        </h5>
+                                    </a>
+                                    <p class="review-date">{{ review.date|date:"d M, Y" }}</p>
+                                </div>
+                            </div>
+                            <div class="rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="bi bi-star-fill filled"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="review-text">{{ review.comment }}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <div class="empty-reviews">
+                                <i class="bi bi-chat-square-text"></i>
+                                <h4 class="fw-bold mb-3">No Reviews Yet</h4>
+                                <p class="lead text-muted">Be the first to share your thoughts about this property.</p>
                             </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="review-comment" class="fw-bold mb-2">Your Comment</label>
-                            <textarea id="review-comment" name="comment" class="form-control" rows="5" 
-                                      placeholder="What did you think about this property? Share your experience here..." required></textarea>
-                        </div>
-                        
-                        <div class="text-center">
-                            <button type="submit" class="action-button px-5">
-                                <i class="bi bi-send-fill me-2"></i>Submit Review
-                            </button>
-                        </div>
-                    </form>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="login-prompt-card">
-                    <i class="bi bi-shield-lock"></i>
-                    <h4 class="fw-bold mb-3">Sign In to Leave a Review</h4>
-                    <p class="lead text-muted mb-4">Share your opinion with others by signing in to your account.</p>
-                    <a href="{% url 'login' %}" class="action-button px-5">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
-                    </a>
+
+                <!-- Sección de reviews -->
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-8">
+                        {% if sessionActive %}
+                        <div class="review-form-card">
+                            <h3 class="text-center fw-bold mb-5">Share Your Experience</h3>
+                            <form method="post" action="" id="reviewForm">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="review">
+                                
+                                <div class="form-group">
+                                    <label class="fw-bold mb-2">Your Rating</label>
+                                    <div class="rating-selector">
+                                        <input type="hidden" name="rating" id="selected-rating" value="0">
+                                        <div class="stars">
+                                            <i class="bi bi-star rating-star" data-value="1"></i>
+                                            <i class="bi bi-star rating-star" data-value="2"></i>
+                                            <i class="bi bi-star rating-star" data-value="3"></i>
+                                            <i class="bi bi-star rating-star" data-value="4"></i>
+                                            <i class="bi bi-star rating-star" data-value="5"></i>
+                                        </div>
+                                        <span class="rating-text">Select a rating</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="review-comment" class="fw-bold mb-2">Your Comment</label>
+                                    <textarea id="review-comment" name="comment" class="form-control" rows="5" 
+                                              placeholder="What did you think about this property? Share your experience here..." required></textarea>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button type="submit" class="action-button px-5">
+                                        <i class="bi bi-send-fill me-2"></i>Submit Review
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="login-prompt-card">
+                            <i class="bi bi-shield-lock"></i>
+                            <h4 class="fw-bold mb-3">Sign In to Leave a Review</h4>
+                            <p class="lead text-muted mb-4">Share your opinion with others by signing in to your account.</p>
+                            <a href="{% url 'login' %}" class="action-button px-5">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -1020,7 +1043,7 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Image Gallery Counter
+        // Contador de imagenes
         const totalImages = {{ property.imagenes.count }};
         const currentImageElement = document.getElementById('current-image');
         
@@ -1030,7 +1053,6 @@
             const currentIndex = Array.from(items).indexOf(activeItem) + 1;
             currentImageElement.textContent = currentIndex;
             
-            // Update dots
             const dots = document.querySelectorAll('.gallery-dot');
             dots.forEach((dot, index) => {
                 if (index === currentIndex - 1) {
@@ -1039,11 +1061,29 @@
                     dot.classList.remove('active');
                 }
             });
+            
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach((thumb, index) => {
+                if (index === currentIndex - 1) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
         };
         
-        // Initialize Carousel
         const carousel = document.querySelector('#propertyCarousel');
         carousel.addEventListener('slid.bs.carousel', updateImageCounter);
+        
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                const slideIndex = this.getAttribute('data-bs-slide-to');
+                const carousel = new bootstrap.Carousel(document.getElementById('propertyCarousel'));
+                carousel.to(parseInt(slideIndex));
+            });
+        });
+        
         updateImageCounter();
         
         // Star Rating System
@@ -1139,6 +1179,92 @@
             });
         }
     });
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initPropertyMap" async defer></script>
+<script>
+    function initPropertyMap() {
+        const lat = {{ property.location.coordinates.latitude }};
+        const lng = {{ property.location.coordinates.longitude }};
+        const center = {lat: lat, lng: lng};
+        
+        const mapOptions = {
+            center: center,
+            zoom: 15,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true,
+            zoomControl: true,
+            styles: [
+                {
+                    featureType: "poi",
+                    elementType: "labels",
+                    stylers: [{ visibility: "off" }]
+                },
+                {
+                    featureType: "transit",
+                    stylers: [{ visibility: "off" }]
+                },
+                {
+                    featureType: "water",
+                    elementType: "geometry",
+                    stylers: [{ color: "#a2d9f2" }]
+                }
+            ]
+        };
+        
+        // Desktop map
+        if (document.getElementById('property-map')) {
+            const map = new google.maps.Map(
+                document.getElementById('property-map'),
+                mapOptions
+            );
+            
+            const marker = new google.maps.Marker({
+                position: center,
+                map: map,
+                animation: google.maps.Animation.DROP,
+                icon: {
+                    url: "https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2_hdpi.png",
+                    scaledSize: new google.maps.Size(38, 38)
+                }
+            });
+            
+            const infoWindow = new google.maps.InfoWindow({
+                content: '<div style="padding: 8px; max-width: 200px;"><strong>{{ property.title }}</strong><p style="margin: 4px 0 0;">{{ property.location.district.name }}</p></div>'
+            });
+            
+            marker.addListener('click', function() {
+                infoWindow.open(map, marker);
+            });
+        }
+        
+        // Mobile map
+        if (document.getElementById('property-map-mobile')) {
+            const mobileMap = new google.maps.Map(
+                document.getElementById('property-map-mobile'),
+                mapOptions
+            );
+            
+            const mobileMarker = new google.maps.Marker({
+                position: center,
+                map: mobileMap,
+                animation: google.maps.Animation.DROP,
+                icon: {
+                    url: "https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2_hdpi.png",
+                    scaledSize: new google.maps.Size(38, 38)
+                }
+            });
+            
+            const mobileInfoWindow = new google.maps.InfoWindow({
+                content: '<div style="padding: 8px; max-width: 200px;"><strong>{{ property.title }}</strong><p style="margin: 4px 0 0;">{{ property.location.district.name }}</p></div>'
+            });
+            
+            mobileMarker.addListener('click', function() {
+                mobileInfoWindow.open(mobileMap, mobileMarker);
+            });
+        }
+    }
 </script>
 {% endblock extra_js %}
 {% endblock content %}

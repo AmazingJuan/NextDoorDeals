@@ -50,6 +50,18 @@ def createUser(request):
         bussinesForm = BussinesForm(request.POST)
         bussinesForm.is_valid()
         bussinesForm = bussinesForm.cleaned_data
+        
+        if User.objects.filter(username=regularForm["username"]).exists():
+            messages.error(request, "Username already exists. Please choose a different username.")
+            return redirect('signup')
+
+        if User.objects.filter(email=regularForm["email"]).exists():
+            messages.error(request, "Email already registered. Please use a different email address.")
+            return redirect('signup')
+
+        if Account.objects.filter(phone=regularForm["phone"]).exists():
+            messages.error(request, "Phone number already registered. Please use a different phone number.")
+            return redirect('signup')
 
         user = User.objects.create_user(username = regularForm["username"], password = regularForm["password"], email = regularForm["email"])
         if(regularForm["userType"] == 'persona'):
@@ -70,8 +82,6 @@ def createUser(request):
             negocio.save()
         login(request, user)
         return redirect('SUsuccess')
-
-
 
 
 def signup(request): 
@@ -358,9 +368,46 @@ def send_message(request):
             return JsonResponse({'error': str(e)}, status=500)
          
 def subscription(request):
-    return render(request, 'subscription.html')       
+    return render(request, 'subscription.html')      
 
-@csrf_exempt
+def info_subscription(request):
+    # Check if user has an active subscription
+    has_subscription = False
+    subscription = None
+    
+    if checkSession(request.user):
+        has_subscription = posses_subscription(request.user)
+        if has_subscription:
+            # Get the active subscription
+            subscription = Subscription.objects.filter(
+                belongs_to=request.user.account, 
+                is_active=True
+            ).first()
+    
+    return render(request, 'subscription.html', {
+        'has_subscription': has_subscription,
+        'subscription': subscription
+    })
+    
+
+def cancel_subscription(request):
+    if request.method == 'POST':
+        subscription = Subscription.objects.filter(
+            belongs_to=request.user.account,
+            is_active=True
+        ).first()
+
+        if subscription:
+            subscription.delete()
+            cancelled = True
+        else:
+            cancelled = False
+
+        return render(request, 'cancel_subscription.html', {'cancelled': cancelled})
+
+    return render(request, 'cancel_subscription.html', {'cancelled': False})
+
+
 def create_checkout_session(request):
     if request.method == 'POST':
         if request.POST.get('period') == "monthly":
@@ -409,4 +456,3 @@ def fail(request):
             subscription.delete()
             continue
     return render(request, 'checkout_fail.html')
-

@@ -50,7 +50,7 @@ def home(request):
     print(len(highlighted_properties), "hp")
     normal_properties = Property.objects.exclude(id__in=highlighted_properties.values_list('id', flat=True))
     print(len(normal_properties), "np")
-
+ 
     highlighted_properties = filterPrice(minPrice, maxPrice, highlighted_properties)
     normal_properties = filterPrice(minPrice, maxPrice, normal_properties)
     if not isChecked:
@@ -116,6 +116,14 @@ def publish(request):
             messages.success(request, "Property published succesfully")
     else:
         publishForm = PublishForm()
+        
+        is_premium = True
+        if request.user.is_authenticated:
+            try:
+                is_premium = request.user.account.subscription.is_active
+            except:
+                pass
+
     return render(request, 'publish.html', {'publishForm':publishForm})
 
 def get_disabled_dates(property):
